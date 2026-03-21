@@ -1,0 +1,730 @@
+{
+    "results": [
+        {
+            "text": "PREFEITURA DO MUNIC\u00c3\u008dPIO DE TIBAGI",
+            "confidence": 0.98773,
+            "bounding_box": [
+                [
+                    294,
+                    33
+                ],
+                [
+                    710,
+                    28
+                ],
+                [
+                    710,
+                    53
+                ],
+                [
+                    294,
+                    59
+                ]
+            ]
+        },
+        {
+            "text": "ESTADO DO PARANA",
+            "confidence": 0.99673,
+            "bounding_box": [
+                [
+                    426,
+                    61
+                ],
+                [
+                    529,
+                    60
+                ],
+                [
+                    529,
+                    75
+                ],
+                [
+                    426,
+                    76
+                ]
+            ]
+        },
+        {
+            "text": "JUNTA DE SERVI\u00c3\u0087O MILITAR",
+            "confidence": 0.9787,
+            "bounding_box": [
+                [
+                    344,
+                    95
+                ],
+                [
+                    587,
+                    91
+                ],
+                [
+                    587,
+                    111
+                ],
+                [
+                    344,
+                    115
+                ]
+            ]
+        },
+        {
+            "text": "Of. n\u00c2\u00ba 046/JSM/148a/20a",
+            "confidence": 0.95397,
+            "bounding_box": [
+                [
+                    213,
+                    189
+                ],
+                [
+                    446,
+                    184
+                ],
+                [
+                    446,
+                    204
+                ],
+                [
+                    213,
+                    209
+                ]
+            ]
+        },
+        {
+            "text": "Em 18 de julho de 1.995.-",
+            "confidence": 0.98713,
+            "bounding_box": [
+                [
+                    564,
+                    183
+                ],
+                [
+                    819,
+                    181
+                ],
+                [
+                    819,
+                    201
+                ],
+                [
+                    564,
+                    203
+                ]
+            ]
+        },
+        {
+            "text": "Prezado Senhor:",
+            "confidence": 0.9998,
+            "bounding_box": [
+                [
+                    434,
+                    425
+                ],
+                [
+                    586,
+                    425
+                ],
+                [
+                    586,
+                    443
+                ],
+                [
+                    434,
+                    443
+                ]
+            ]
+        },
+        {
+            "text": "Com o presente, temos a grata satisfa",
+            "confidence": 0.98796,
+            "bounding_box": [
+                [
+                    434,
+                    452
+                ],
+                [
+                    820,
+                    453
+                ],
+                [
+                    820,
+                    471
+                ],
+                [
+                    434,
+                    469
+                ]
+            ]
+        },
+        {
+            "text": "\u00c3\u00a7\u00c3\u00a3o de convidar a V. Sa ., para prestigiar, com a sua hon",
+            "confidence": 0.95955,
+            "bounding_box": [
+                [
+                    210,
+                    473
+                ],
+                [
+                    823,
+                    477
+                ],
+                [
+                    823,
+                    500
+                ],
+                [
+                    210,
+                    496
+                ]
+            ]
+        },
+        {
+            "text": "rosa presen\u00c3\u00a7a, na Cerim\u00c3\u00b4nia de entrega de Certificados",
+            "confidence": 0.99282,
+            "bounding_box": [
+                [
+                    209,
+                    504
+                ],
+                [
+                    767,
+                    504
+                ],
+                [
+                    767,
+                    523
+                ],
+                [
+                    209,
+                    523
+                ]
+            ]
+        },
+        {
+            "text": "de",
+            "confidence": 1,
+            "bounding_box": [
+                [
+                    788,
+                    504
+                ],
+                [
+                    822,
+                    504
+                ],
+                [
+                    822,
+                    521
+                ],
+                [
+                    788,
+                    521
+                ]
+            ]
+        },
+        {
+            "text": "Dispensa de Incorpora\u00c3\u00a7\u00c3\u00a3o (cD\u00c4\u00b1), aos jovens da classe de 77 ,",
+            "confidence": 0.96696,
+            "bounding_box": [
+                [
+                    209,
+                    529
+                ],
+                [
+                    820,
+                    529
+                ],
+                [
+                    820,
+                    549
+                ],
+                [
+                    209,
+                    549
+                ]
+            ]
+        },
+        {
+            "text": "alistados por esta Junta de Servi\u00c3\u00a7o Militar, a ocorrer",
+            "confidence": 0.99679,
+            "bounding_box": [
+                [
+                    209,
+                    556
+                ],
+                [
+                    762,
+                    556
+                ],
+                [
+                    762,
+                    575
+                ],
+                [
+                    209,
+                    575
+                ]
+            ]
+        },
+        {
+            "text": "\u00c3\u00a0s",
+            "confidence": 0.99414,
+            "bounding_box": [
+                [
+                    788,
+                    556
+                ],
+                [
+                    822,
+                    556
+                ],
+                [
+                    822,
+                    573
+                ],
+                [
+                    788,
+                    573
+                ]
+            ]
+        },
+        {
+            "text": "10h0omin., no pr\u00c3\u00b3ximo dia 28 de julho do corrente ano(sexta-",
+            "confidence": 0.97139,
+            "bounding_box": [
+                [
+                    209,
+                    580
+                ],
+                [
+                    819,
+                    580
+                ],
+                [
+                    819,
+                    600
+                ],
+                [
+                    209,
+                    600
+                ]
+            ]
+        },
+        {
+            "text": "feira), em frente da Biblioteca P\u00c3\u00bablica Municipal.",
+            "confidence": 0.98809,
+            "bounding_box": [
+                [
+                    209,
+                    605
+                ],
+                [
+                    717,
+                    607
+                ],
+                [
+                    717,
+                    625
+                ],
+                [
+                    209,
+                    624
+                ]
+            ]
+        },
+        {
+            "text": "Na expectativa de sua honrosa",
+            "confidence": 0.99966,
+            "bounding_box": [
+                [
+                    431,
+                    639
+                ],
+                [
+                    729,
+                    640
+                ],
+                [
+                    729,
+                    659
+                ],
+                [
+                    431,
+                    657
+                ]
+            ]
+        },
+        {
+            "text": "presen",
+            "confidence": 1,
+            "bounding_box": [
+                [
+                    755,
+                    643
+                ],
+                [
+                    820,
+                    643
+                ],
+                [
+                    820,
+                    659
+                ],
+                [
+                    755,
+                    659
+                ]
+            ]
+        },
+        {
+            "text": "\u00c3\u00a7a, pela qual antecipamos agradecimentos, apresentamos",
+            "confidence": 0.99372,
+            "bounding_box": [
+                [
+                    210,
+                    665
+                ],
+                [
+                    758,
+                    664
+                ],
+                [
+                    758,
+                    681
+                ],
+                [
+                    210,
+                    683
+                ]
+            ]
+        },
+        {
+            "text": "a",
+            "confidence": 0.99707,
+            "bounding_box": [
+                [
+                    805,
+                    668
+                ],
+                [
+                    820,
+                    668
+                ],
+                [
+                    820,
+                    683
+                ],
+                [
+                    805,
+                    683
+                ]
+            ]
+        },
+        {
+            "text": "V. Sa ; na oportunidade, protestos de considera\u00c3\u00a7\u00c3\u00a3o",
+            "confidence": 0.98354,
+            "bounding_box": [
+                [
+                    211,
+                    687
+                ],
+                [
+                    739,
+                    691
+                ],
+                [
+                    739,
+                    712
+                ],
+                [
+                    211,
+                    707
+                ]
+            ]
+        },
+        {
+            "text": "e",
+            "confidence": 0.99902,
+            "bounding_box": [
+                [
+                    807,
+                    693
+                ],
+                [
+                    820,
+                    693
+                ],
+                [
+                    820,
+                    708
+                ],
+                [
+                    807,
+                    708
+                ]
+            ]
+        },
+        {
+            "text": "apre\u00c3\u00a7o.",
+            "confidence": 0.99749,
+            "bounding_box": [
+                [
+                    209,
+                    716
+                ],
+                [
+                    281,
+                    716
+                ],
+                [
+                    281,
+                    735
+                ],
+                [
+                    209,
+                    735
+                ]
+            ]
+        },
+        {
+            "text": "Cordialmente,",
+            "confidence": 0.99992,
+            "bounding_box": [
+                [
+                    432,
+                    765
+                ],
+                [
+                    563,
+                    765
+                ],
+                [
+                    563,
+                    784
+                ],
+                [
+                    432,
+                    784
+                ]
+            ]
+        },
+        {
+            "text": "JOSE IBAGY DE MELLO",
+            "confidence": 0.94231,
+            "bounding_box": [
+                [
+                    611,
+                    867
+                ],
+                [
+                    822,
+                    867
+                ],
+                [
+                    822,
+                    887
+                ],
+                [
+                    611,
+                    887
+                ]
+            ]
+        },
+        {
+            "text": "Presidente da JSM",
+            "confidence": 0.98972,
+            "bounding_box": [
+                [
+                    643,
+                    884
+                ],
+                [
+                    820,
+                    884
+                ],
+                [
+                    820,
+                    904
+                ],
+                [
+                    643,
+                    904
+                ]
+            ]
+        },
+        {
+            "text": "TEREZIO CARVALHO",
+            "confidence": 0.99866,
+            "bounding_box": [
+                [
+                    259,
+                    952
+                ],
+                [
+                    428,
+                    952
+                ],
+                [
+                    428,
+                    969
+                ],
+                [
+                    259,
+                    969
+                ]
+            ]
+        },
+        {
+            "text": "Secret\u00c3\u00a1rio da JSM",
+            "confidence": 0.99845,
+            "bounding_box": [
+                [
+                    260,
+                    969
+                ],
+                [
+                    435,
+                    969
+                ],
+                [
+                    435,
+                    985
+                ],
+                [
+                    260,
+                    985
+                ]
+            ]
+        },
+        {
+            "text": "Ilm\u00c2\u00b2 Sr.",
+            "confidence": 0.86215,
+            "bounding_box": [
+                [
+                    217,
+                    1123
+                ],
+                [
+                    298,
+                    1123
+                ],
+                [
+                    298,
+                    1139
+                ],
+                [
+                    217,
+                    1139
+                ]
+            ]
+        },
+        {
+            "text": "PrOf\u00c2\u00ba JOSE DO CARMO SILVEIRA JUNIOR",
+            "confidence": 0.97408,
+            "bounding_box": [
+                [
+                    217,
+                    1139
+                ],
+                [
+                    568,
+                    1141
+                ],
+                [
+                    568,
+                    1157
+                ],
+                [
+                    217,
+                    1155
+                ]
+            ]
+        },
+        {
+            "text": "MD. Maestro da Banda Municipal",
+            "confidence": 0.99733,
+            "bounding_box": [
+                [
+                    216,
+                    1156
+                ],
+                [
+                    518,
+                    1159
+                ],
+                [
+                    518,
+                    1175
+                ],
+                [
+                    216,
+                    1172
+                ]
+            ]
+        },
+        {
+            "text": "Nesta.-",
+            "confidence": 0.99456,
+            "bounding_box": [
+                [
+                    207,
+                    1187
+                ],
+                [
+                    282,
+                    1191
+                ],
+                [
+                    281,
+                    1211
+                ],
+                [
+                    207,
+                    1207
+                ]
+            ]
+        },
+        {
+            "text": "Mod. 02 - Kugler",
+            "confidence": 0.98663,
+            "bounding_box": [
+                [
+                    737,
+                    1207
+                ],
+                [
+                    808,
+                    1207
+                ],
+                [
+                    808,
+                    1221
+                ],
+                [
+                    737,
+                    1221
+                ]
+            ]
+        },
+        {
+            "text": "TC/tc.-",
+            "confidence": 0.96184,
+            "bounding_box": [
+                [
+                    207,
+                    1235
+                ],
+                [
+                    282,
+                    1240
+                ],
+                [
+                    281,
+                    1260
+                ],
+                [
+                    206,
+                    1256
+                ]
+            ]
+        }
+    ]
+}

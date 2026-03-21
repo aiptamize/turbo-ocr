@@ -1,0 +1,4840 @@
+{
+  "pages": [
+    {
+      "page": 1,
+      "results": [
+        {
+          "text": "Library of Congress",
+          "confidence": 0.99995,
+          "bounding_box": [
+            [
+              78,
+              78
+            ],
+            [
+              248,
+              80
+            ],
+            [
+              248,
+              102
+            ],
+            [
+              78,
+              99
+            ]
+          ]
+        },
+        {
+          "text": "In Congress, May 14, 1777",
+          "confidence": 0.99922,
+          "bounding_box": [
+            [
+              77,
+              153
+            ],
+            [
+              390,
+              151
+            ],
+            [
+              390,
+              176
+            ],
+            [
+              77,
+              178
+            ]
+          ]
+        },
+        {
+          "text": "In CONGRESS, MAY 14, 1777.",
+          "confidence": 0.9994,
+          "bounding_box": [
+            [
+              78,
+              198
+            ],
+            [
+              314,
+              198
+            ],
+            [
+              314,
+              217
+            ],
+            [
+              78,
+              217
+            ]
+          ]
+        },
+        {
+          "text": "RESOLVED, I. THAT the Quarter-Master General of the Army be authorised and",
+          "confidence": 0.98182,
+          "bounding_box": [
+            [
+              80,
+              241
+            ],
+            [
+              679,
+              242
+            ],
+            [
+              679,
+              257
+            ],
+            [
+              80,
+              256
+            ]
+          ]
+        },
+        {
+          "text": "empowered to appoint one Commissary of Forage for the Army, and one for each of the",
+          "confidence": 0.99131,
+          "bounding_box": [
+            [
+              78,
+              266
+            ],
+            [
+              725,
+              266
+            ],
+            [
+              725,
+              284
+            ],
+            [
+              78,
+              284
+            ]
+          ]
+        },
+        {
+          "text": "military departments thereof, with such and so many Forage-Masters as he shall judge",
+          "confidence": 0.98924,
+          "bounding_box": [
+            [
+              79,
+              290
+            ],
+            [
+              715,
+              292
+            ],
+            [
+              715,
+              310
+            ],
+            [
+              79,
+              308
+            ]
+          ]
+        },
+        {
+          "text": "necessary.",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              78,
+              317
+            ],
+            [
+              158,
+              318
+            ],
+            [
+              158,
+              334
+            ],
+            [
+              78,
+              333
+            ]
+          ]
+        },
+        {
+          "text": "II. That the duty of the Commissary of Forage shall be to purchase such quantities of",
+          "confidence": 0.98481,
+          "bounding_box": [
+            [
+              78,
+              357
+            ],
+            [
+              703,
+              357
+            ],
+            [
+              703,
+              376
+            ],
+            [
+              78,
+              376
+            ]
+          ]
+        },
+        {
+          "text": "forage, and store the same in such magazines as the Quarter-Master General or the",
+          "confidence": 0.99124,
+          "bounding_box": [
+            [
+              79,
+              384
+            ],
+            [
+              698,
+              384
+            ],
+            [
+              698,
+              400
+            ],
+            [
+              79,
+              400
+            ]
+          ]
+        },
+        {
+          "text": "Deputy Quarter-Master General of any department shall from time to time order and direct:",
+          "confidence": 0.99505,
+          "bounding_box": [
+            [
+              79,
+              409
+            ],
+            [
+              744,
+              409
+            ],
+            [
+              744,
+              424
+            ],
+            [
+              79,
+              424
+            ]
+          ]
+        },
+        {
+          "text": "That the Commissaries shall conform themselves in making purchases to such rules and",
+          "confidence": 0.99248,
+          "bounding_box": [
+            [
+              79,
+              432
+            ],
+            [
+              732,
+              433
+            ],
+            [
+              732,
+              452
+            ],
+            [
+              79,
+              451
+            ]
+          ]
+        },
+        {
+          "text": "regulations, as shall be prescribed to them by the Quarter-Master General or Deputy",
+          "confidence": 0.98671,
+          "bounding_box": [
+            [
+              79,
+              459
+            ],
+            [
+              699,
+              459
+            ],
+            [
+              699,
+              475
+            ],
+            [
+              79,
+              475
+            ]
+          ]
+        },
+        {
+          "text": "Quarter-Master General of the department to which they shall severally belong.",
+          "confidence": 0.99986,
+          "bounding_box": [
+            [
+              79,
+              481
+            ],
+            [
+              659,
+              484
+            ],
+            [
+              659,
+              502
+            ],
+            [
+              79,
+              500
+            ]
+          ]
+        },
+        {
+          "text": "III. That all forage, purchased by any Commissary of Forage, and delivered into any",
+          "confidence": 0.99072,
+          "bounding_box": [
+            [
+              78,
+              523
+            ],
+            [
+              694,
+              525
+            ],
+            [
+              694,
+              544
+            ],
+            [
+              78,
+              543
+            ]
+          ]
+        },
+        {
+          "text": "magazine, shall be received by the Forage-Master thereunto appointed, who shall give his",
+          "confidence": 0.99584,
+          "bounding_box": [
+            [
+              78,
+              550
+            ],
+            [
+              742,
+              549
+            ],
+            [
+              742,
+              567
+            ],
+            [
+              78,
+              568
+            ]
+          ]
+        },
+        {
+          "text": "receipt therefor, specifying the fort, quantity and quality, as a voucher for the Commissary",
+          "confidence": 0.99302,
+          "bounding_box": [
+            [
+              79,
+              574
+            ],
+            [
+              737,
+              575
+            ],
+            [
+              737,
+              591
+            ],
+            [
+              79,
+              590
+            ]
+          ]
+        },
+        {
+          "text": "of Forage, to be by him produced to the Quarter-Master General or Deputy Quarter-Master",
+          "confidence": 0.99965,
+          "bounding_box": [
+            [
+              78,
+              597
+            ],
+            [
+              746,
+              598
+            ],
+            [
+              746,
+              617
+            ],
+            [
+              78,
+              616
+            ]
+          ]
+        },
+        {
+          "text": "General of the department, in support of his account.",
+          "confidence": 0.99912,
+          "bounding_box": [
+            [
+              79,
+              623
+            ],
+            [
+              467,
+              624
+            ],
+            [
+              467,
+              642
+            ],
+            [
+              79,
+              641
+            ]
+          ]
+        },
+        {
+          "text": "IV. That the Commissaries of Forage shall make a monthly return to the Quarter-Master",
+          "confidence": 0.99974,
+          "bounding_box": [
+            [
+              78,
+              664
+            ],
+            [
+              725,
+              666
+            ],
+            [
+              725,
+              684
+            ],
+            [
+              78,
+              682
+            ]
+          ]
+        },
+        {
+          "text": "General or Deputy Quarter-Master General of the department, of all forage by them",
+          "confidence": 0.99249,
+          "bounding_box": [
+            [
+              79,
+              691
+            ],
+            [
+              691,
+              693
+            ],
+            [
+              691,
+              708
+            ],
+            [
+              79,
+              707
+            ]
+          ]
+        },
+        {
+          "text": "purchased, specifying to what Forage-Master and in which magazine the same was",
+          "confidence": 0.99191,
+          "bounding_box": [
+            [
+              78,
+              715
+            ],
+            [
+              694,
+              716
+            ],
+            [
+              694,
+              735
+            ],
+            [
+              78,
+              734
+            ]
+          ]
+        },
+        {
+          "text": "delivered, that the Forage-Master may stand charged therewith.",
+          "confidence": 0.99989,
+          "bounding_box": [
+            [
+              78,
+              741
+            ],
+            [
+              547,
+              741
+            ],
+            [
+              547,
+              758
+            ],
+            [
+              78,
+              758
+            ]
+          ]
+        },
+        {
+          "text": "V. That no Forage Master, to whose care any magazine of forage shall be committed,",
+          "confidence": 0.99677,
+          "bounding_box": [
+            [
+              78,
+              783
+            ],
+            [
+              709,
+              783
+            ],
+            [
+              709,
+              801
+            ],
+            [
+              78,
+              801
+            ]
+          ]
+        },
+        {
+          "text": "shall issue any part thereof, unless by a written order from the Commander in Chief, the",
+          "confidence": 0.99305,
+          "bounding_box": [
+            [
+              79,
+              808
+            ],
+            [
+              724,
+              809
+            ],
+            [
+              724,
+              825
+            ],
+            [
+              79,
+              824
+            ]
+          ]
+        },
+        {
+          "text": "commander in Chief of the department, the Commanding Officer of the post where such",
+          "confidence": 0.99609,
+          "bounding_box": [
+            [
+              78,
+              832
+            ],
+            [
+              725,
+              832
+            ],
+            [
+              725,
+              851
+            ],
+            [
+              78,
+              851
+            ]
+          ]
+        },
+        {
+          "text": "In Congress, May 14, 1777 http:/www.loc.gov/resource/bdsdcc.04301",
+          "confidence": 0.99011,
+          "bounding_box": [
+            [
+              78,
+              893
+            ],
+            [
+              423,
+              893
+            ],
+            [
+              423,
+              907
+            ],
+            [
+              78,
+              907
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "page": 2,
+      "results": [
+        {
+          "text": "Library of Congress",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              78,
+              77
+            ],
+            [
+              248,
+              80
+            ],
+            [
+              248,
+              101
+            ],
+            [
+              78,
+              99
+            ]
+          ]
+        },
+        {
+          "text": "magazine may be established, the Quarter-Master General or Deputy Quarter-Master",
+          "confidence": 0.99003,
+          "bounding_box": [
+            [
+              78,
+              123
+            ],
+            [
+              706,
+              123
+            ],
+            [
+              706,
+              138
+            ],
+            [
+              78,
+              138
+            ]
+          ]
+        },
+        {
+          "text": "General of the department or one of his Assistants, the Waggon-Master General or an",
+          "confidence": 0.98847,
+          "bounding_box": [
+            [
+              79,
+              147
+            ],
+            [
+              712,
+              148
+            ],
+            [
+              712,
+              163
+            ],
+            [
+              79,
+              162
+            ]
+          ]
+        },
+        {
+          "text": "other Waggon-Master; such orders to specify for whose use the forage is intended, and",
+          "confidence": 0.99492,
+          "bounding_box": [
+            [
+              78,
+              172
+            ],
+            [
+              722,
+              172
+            ],
+            [
+              722,
+              189
+            ],
+            [
+              78,
+              189
+            ]
+          ]
+        },
+        {
+          "text": "every such order to be filed by the Forage-Master, and a regular entry thereof made in a",
+          "confidence": 0.99061,
+          "bounding_box": [
+            [
+              79,
+              197
+            ],
+            [
+              728,
+              196
+            ],
+            [
+              728,
+              213
+            ],
+            [
+              79,
+              214
+            ]
+          ]
+        },
+        {
+          "text": "book to be by him kept for that purpose, as a voucher for the expenditure of the forage by",
+          "confidence": 0.99295,
+          "bounding_box": [
+            [
+              79,
+              220
+            ],
+            [
+              735,
+              223
+            ],
+            [
+              735,
+              240
+            ],
+            [
+              79,
+              237
+            ]
+          ]
+        },
+        {
+          "text": "him received.",
+          "confidence": 0.99992,
+          "bounding_box": [
+            [
+              78,
+              247
+            ],
+            [
+              177,
+              247
+            ],
+            [
+              177,
+              262
+            ],
+            [
+              78,
+              262
+            ]
+          ]
+        },
+        {
+          "text": "VI. That the Forage-Masters shall make monthly returns to the Quarter-Master General",
+          "confidence": 0.98724,
+          "bounding_box": [
+            [
+              79,
+              288
+            ],
+            [
+              718,
+              289
+            ],
+            [
+              718,
+              305
+            ],
+            [
+              79,
+              304
+            ]
+          ]
+        },
+        {
+          "text": "and Deputy Quarter Master General of the departments they belong to, of the state of their",
+          "confidence": 0.98561,
+          "bounding_box": [
+            [
+              79,
+              314
+            ],
+            [
+              744,
+              314
+            ],
+            [
+              744,
+              329
+            ],
+            [
+              79,
+              329
+            ]
+          ]
+        },
+        {
+          "text": "magazines, specifying the quantity left in store at the first and every succeeding return,",
+          "confidence": 0.99358,
+          "bounding_box": [
+            [
+              77,
+              339
+            ],
+            [
+              716,
+              339
+            ],
+            [
+              716,
+              354
+            ],
+            [
+              77,
+              354
+            ]
+          ]
+        },
+        {
+          "text": "the quantity received since the last return, the expenditure since such return, and what",
+          "confidence": 0.98791,
+          "bounding_box": [
+            [
+              79,
+              363
+            ],
+            [
+              715,
+              363
+            ],
+            [
+              715,
+              379
+            ],
+            [
+              79,
+              379
+            ]
+          ]
+        },
+        {
+          "text": "remains on hand.",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              79,
+              388
+            ],
+            [
+              206,
+              388
+            ],
+            [
+              206,
+              403
+            ],
+            [
+              79,
+              403
+            ]
+          ]
+        },
+        {
+          "text": "VII. AND WHEREAS it frequently happens that there is a necessity to detain hired",
+          "confidence": 0.98237,
+          "bounding_box": [
+            [
+              80,
+              430
+            ],
+            [
+              681,
+              430
+            ],
+            [
+              681,
+              447
+            ],
+            [
+              80,
+              447
+            ]
+          ]
+        },
+        {
+          "text": "carriages (the owners whereof were to find their own forage) far beyond the time for which",
+          "confidence": 0.98894,
+          "bounding_box": [
+            [
+              78,
+              454
+            ],
+            [
+              742,
+              455
+            ],
+            [
+              742,
+              473
+            ],
+            [
+              78,
+              472
+            ]
+          ]
+        },
+        {
+          "text": "the owners thereof agreed to serve, and who if their own forage is expended must have",
+          "confidence": 0.99878,
+          "bounding_box": [
+            [
+              79,
+              480
+            ],
+            [
+              722,
+              481
+            ],
+            [
+              722,
+              497
+            ],
+            [
+              79,
+              496
+            ]
+          ]
+        },
+        {
+          "text": "recourse to the public magazines--- 'TIS RESoLVED, That such person so detained and",
+          "confidence": 0.98243,
+          "bounding_box": [
+            [
+              79,
+              505
+            ],
+            [
+              733,
+              504
+            ],
+            [
+              733,
+              520
+            ],
+            [
+              79,
+              521
+            ]
+          ]
+        },
+        {
+          "text": "become destitute of forage shall, upon the written order of any of the officers mentioned in",
+          "confidence": 0.99296,
+          "bounding_box": [
+            [
+              79,
+              531
+            ],
+            [
+              741,
+              531
+            ],
+            [
+              741,
+              546
+            ],
+            [
+              79,
+              546
+            ]
+          ]
+        },
+        {
+          "text": "the fifth Resolution, be supplied out of the public magazine; and that the Waggon-Master,",
+          "confidence": 0.98312,
+          "bounding_box": [
+            [
+              78,
+              553
+            ],
+            [
+              735,
+              555
+            ],
+            [
+              735,
+              573
+            ],
+            [
+              78,
+              571
+            ]
+          ]
+        },
+        {
+          "text": "before he signs the discharge for any such hired carriage, shall direct the Forage-Master",
+          "confidence": 0.99414,
+          "bounding_box": [
+            [
+              79,
+              581
+            ],
+            [
+              730,
+              581
+            ],
+            [
+              730,
+              596
+            ],
+            [
+              79,
+              596
+            ]
+          ]
+        },
+        {
+          "text": "to endorse thereon the quantity, fort and quality of the forage furnished such person, that",
+          "confidence": 0.99233,
+          "bounding_box": [
+            [
+              78,
+              606
+            ],
+            [
+              732,
+              606
+            ],
+            [
+              732,
+              621
+            ],
+            [
+              78,
+              621
+            ]
+          ]
+        },
+        {
+          "text": "the same may be deducted out of the wages due to the owner of such hired carriage, all",
+          "confidence": 0.98697,
+          "bounding_box": [
+            [
+              79,
+              631
+            ],
+            [
+              727,
+              631
+            ],
+            [
+              727,
+              646
+            ],
+            [
+              79,
+              646
+            ]
+          ]
+        },
+        {
+          "text": "which deduction shall by the Quarter-Master General or Deputy Quarter-Master General",
+          "confidence": 0.99449,
+          "bounding_box": [
+            [
+              79,
+              656
+            ],
+            [
+              727,
+              656
+            ],
+            [
+              727,
+              670
+            ],
+            [
+              79,
+              670
+            ]
+          ]
+        },
+        {
+          "text": "of the department be carried to the credit of the Forage-Master's account, who shall have",
+          "confidence": 0.99879,
+          "bounding_box": [
+            [
+              78,
+              679
+            ],
+            [
+              735,
+              679
+            ],
+            [
+              735,
+              697
+            ],
+            [
+              78,
+              697
+            ]
+          ]
+        },
+        {
+          "text": "furnished the forage.",
+          "confidence": 0.99995,
+          "bounding_box": [
+            [
+              79,
+              704
+            ],
+            [
+              231,
+              707
+            ],
+            [
+              231,
+              722
+            ],
+            [
+              79,
+              720
+            ]
+          ]
+        },
+        {
+          "text": "VIll. That if the Commissary of Forage in any department should be ordered to procure",
+          "confidence": 0.98683,
+          "bounding_box": [
+            [
+              80,
+              746
+            ],
+            [
+              717,
+              748
+            ],
+            [
+              717,
+              764
+            ],
+            [
+              80,
+              762
+            ]
+          ]
+        },
+        {
+          "text": "such large quantities of forage as to render it impossible for him to do it without assistance,",
+          "confidence": 0.98495,
+          "bounding_box": [
+            [
+              79,
+              773
+            ],
+            [
+              745,
+              773
+            ],
+            [
+              745,
+              789
+            ],
+            [
+              79,
+              789
+            ]
+          ]
+        },
+        {
+          "text": "the Quarter-Master General or Deputy Quarter-Master General of the department shall",
+          "confidence": 0.98885,
+          "bounding_box": [
+            [
+              79,
+              798
+            ],
+            [
+              715,
+              798
+            ],
+            [
+              715,
+              813
+            ],
+            [
+              79,
+              813
+            ]
+          ]
+        },
+        {
+          "text": "direct one or more of his Assistants to aid the Commissary of Forage, pointing out the",
+          "confidence": 0.98948,
+          "bounding_box": [
+            [
+              79,
+              821
+            ],
+            [
+              708,
+              822
+            ],
+            [
+              708,
+              837
+            ],
+            [
+              79,
+              836
+            ]
+          ]
+        },
+        {
+          "text": "In Congress, May 14, 1777 http://www.loc.gov/resource/bdsdcc.04301",
+          "confidence": 0.9916,
+          "bounding_box": [
+            [
+              79,
+              894
+            ],
+            [
+              422,
+              894
+            ],
+            [
+              422,
+              906
+            ],
+            [
+              79,
+              906
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "page": 3,
+      "results": [
+        {
+          "text": "Library of Congress",
+          "confidence": 0.9999,
+          "bounding_box": [
+            [
+              79,
+              79
+            ],
+            [
+              248,
+              81
+            ],
+            [
+              248,
+              100
+            ],
+            [
+              79,
+              98
+            ]
+          ]
+        },
+        {
+          "text": "districts in which they are severally to purchase, that one may not enhance the price by",
+          "confidence": 0.9868,
+          "bounding_box": [
+            [
+              79,
+              122
+            ],
+            [
+              718,
+              123
+            ],
+            [
+              718,
+              139
+            ],
+            [
+              79,
+              138
+            ]
+          ]
+        },
+        {
+          "text": "bidding above another.",
+          "confidence": 0.99969,
+          "bounding_box": [
+            [
+              78,
+              147
+            ],
+            [
+              248,
+              147
+            ],
+            [
+              248,
+              164
+            ],
+            [
+              78,
+              164
+            ]
+          ]
+        },
+        {
+          "text": "IX. WHEREAS, notwithstanding the orders that have been from time to time issued by",
+          "confidence": 0.98344,
+          "bounding_box": [
+            [
+              79,
+              188
+            ],
+            [
+              711,
+              189
+            ],
+            [
+              711,
+              205
+            ],
+            [
+              79,
+              204
+            ]
+          ]
+        },
+        {
+          "text": "General Officers of our army to prevent the loss and embezzlement of intrenching tools",
+          "confidence": 0.99609,
+          "bounding_box": [
+            [
+              80,
+              214
+            ],
+            [
+              719,
+              214
+            ],
+            [
+              719,
+              229
+            ],
+            [
+              80,
+              229
+            ]
+          ]
+        },
+        {
+          "text": "and other military stores, great waste hath been made; to prevent which for the future",
+          "confidence": 0.98427,
+          "bounding_box": [
+            [
+              79,
+              239
+            ],
+            [
+              706,
+              239
+            ],
+            [
+              706,
+              254
+            ],
+            [
+              79,
+              254
+            ]
+          ]
+        },
+        {
+          "text": "IT IS REsoLVED, That every Commissary of Stores, Store-keeper, or person to whose",
+          "confidence": 0.98383,
+          "bounding_box": [
+            [
+              79,
+              262
+            ],
+            [
+              723,
+              263
+            ],
+            [
+              723,
+              279
+            ],
+            [
+              79,
+              278
+            ]
+          ]
+        },
+        {
+          "text": "charge and care any Military Stores, of what kind soever, shall be committed, shall pass",
+          "confidence": 0.99703,
+          "bounding_box": [
+            [
+              79,
+              289
+            ],
+            [
+              725,
+              289
+            ],
+            [
+              725,
+              305
+            ],
+            [
+              79,
+              305
+            ]
+          ]
+        },
+        {
+          "text": "his receipt for and stand charged to be accountable for the same, and shall not issue",
+          "confidence": 0.99156,
+          "bounding_box": [
+            [
+              79,
+              314
+            ],
+            [
+              702,
+              314
+            ],
+            [
+              702,
+              329
+            ],
+            [
+              79,
+              329
+            ]
+          ]
+        },
+        {
+          "text": "any of them without taking a receipt therefor, the receiver promising to be accountable:",
+          "confidence": 0.98112,
+          "bounding_box": [
+            [
+              79,
+              339
+            ],
+            [
+              717,
+              339
+            ],
+            [
+              717,
+              354
+            ],
+            [
+              79,
+              354
+            ]
+          ]
+        },
+        {
+          "text": "And if any person having received any such stores shall lose or embezzle the same, the",
+          "confidence": 0.99474,
+          "bounding_box": [
+            [
+              79,
+              363
+            ],
+            [
+              726,
+              365
+            ],
+            [
+              726,
+              380
+            ],
+            [
+              79,
+              379
+            ]
+          ]
+        },
+        {
+          "text": "Commissary, Store-keeper, or person by whom they were delivered, shall charge him",
+          "confidence": 0.99372,
+          "bounding_box": [
+            [
+              79,
+              389
+            ],
+            [
+              706,
+              389
+            ],
+            [
+              706,
+              404
+            ],
+            [
+              79,
+              404
+            ]
+          ]
+        },
+        {
+          "text": "with the value thereof, and transmit a copy of such charges to the Pay-Master General",
+          "confidence": 0.99387,
+          "bounding_box": [
+            [
+              79,
+              413
+            ],
+            [
+              714,
+              414
+            ],
+            [
+              714,
+              430
+            ],
+            [
+              79,
+              428
+            ]
+          ]
+        },
+        {
+          "text": "or Deputy Pay-Master General of the department, who is to charge the same to the",
+          "confidence": 0.98207,
+          "bounding_box": [
+            [
+              79,
+              438
+            ],
+            [
+              690,
+              438
+            ],
+            [
+              690,
+              454
+            ],
+            [
+              79,
+              454
+            ]
+          ]
+        },
+        {
+          "text": "Pay-Master of the corps such person may belong to, unless it shall appear that such",
+          "confidence": 0.99068,
+          "bounding_box": [
+            [
+              79,
+              464
+            ],
+            [
+              698,
+              464
+            ],
+            [
+              698,
+              479
+            ],
+            [
+              79,
+              479
+            ]
+          ]
+        },
+        {
+          "text": "loss happened without any blameable negligence or omission. And if any person in the",
+          "confidence": 0.99045,
+          "bounding_box": [
+            [
+              79,
+              488
+            ],
+            [
+              716,
+              489
+            ],
+            [
+              716,
+              505
+            ],
+            [
+              79,
+              504
+            ]
+          ]
+        },
+        {
+          "text": "Continental service shall sell or otherwise dispose of any stores committed to his care,",
+          "confidence": 0.99871,
+          "bounding_box": [
+            [
+              80,
+              512
+            ],
+            [
+              713,
+              514
+            ],
+            [
+              713,
+              531
+            ],
+            [
+              80,
+              528
+            ]
+          ]
+        },
+        {
+          "text": "without a written order for so doing, issued by the Commander in Chief, or Commander in",
+          "confidence": 0.9942,
+          "bounding_box": [
+            [
+              79,
+              539
+            ],
+            [
+              737,
+              539
+            ],
+            [
+              737,
+              554
+            ],
+            [
+              79,
+              554
+            ]
+          ]
+        },
+        {
+          "text": "Chief of the department, or General Officer commanding at a separate post, he shall be",
+          "confidence": 0.99066,
+          "bounding_box": [
+            [
+              79,
+              563
+            ],
+            [
+              722,
+              564
+            ],
+            [
+              722,
+              580
+            ],
+            [
+              79,
+              578
+            ]
+          ]
+        },
+        {
+          "text": "punished for theft.",
+          "confidence": 0.99861,
+          "bounding_box": [
+            [
+              79,
+              588
+            ],
+            [
+              211,
+              587
+            ],
+            [
+              211,
+              603
+            ],
+            [
+              79,
+              604
+            ]
+          ]
+        },
+        {
+          "text": "X. That the Waggon-Master General of the Army, or Waggon-Master in any of the",
+          "confidence": 0.99004,
+          "bounding_box": [
+            [
+              77,
+              629
+            ],
+            [
+              680,
+              630
+            ],
+            [
+              680,
+              648
+            ],
+            [
+              77,
+              647
+            ]
+          ]
+        },
+        {
+          "text": "departments thereof, shall receive from the Quarter-Master General or Deputy-Master of",
+          "confidence": 0.99515,
+          "bounding_box": [
+            [
+              79,
+              656
+            ],
+            [
+              730,
+              656
+            ],
+            [
+              730,
+              670
+            ],
+            [
+              79,
+              670
+            ]
+          ]
+        },
+        {
+          "text": "any department, all such horses, cattle and carriages, as the service may require, and that",
+          "confidence": 0.99872,
+          "bounding_box": [
+            [
+              79,
+              681
+            ],
+            [
+              744,
+              681
+            ],
+            [
+              744,
+              697
+            ],
+            [
+              79,
+              697
+            ]
+          ]
+        },
+        {
+          "text": "neither the Waggon-Master General or any other Waggon-Master shall on any account",
+          "confidence": 0.99671,
+          "bounding_box": [
+            [
+              79,
+              706
+            ],
+            [
+              718,
+              706
+            ],
+            [
+              718,
+              721
+            ],
+            [
+              79,
+              721
+            ]
+          ]
+        },
+        {
+          "text": "presume to purchase any horses, cattle or carriages, for the public service, without the",
+          "confidence": 0.99462,
+          "bounding_box": [
+            [
+              79,
+              731
+            ],
+            [
+              717,
+              730
+            ],
+            [
+              717,
+              746
+            ],
+            [
+              79,
+              747
+            ]
+          ]
+        },
+        {
+          "text": "express orders of the Commander in Chief, the Commander in Chief of the department,",
+          "confidence": 0.99141,
+          "bounding_box": [
+            [
+              79,
+              756
+            ],
+            [
+              722,
+              756
+            ],
+            [
+              722,
+              772
+            ],
+            [
+              79,
+              772
+            ]
+          ]
+        },
+        {
+          "text": "the Quarter-Master General or Deputy Quarter-Master General of a department; nor",
+          "confidence": 0.99557,
+          "bounding_box": [
+            [
+              79,
+              781
+            ],
+            [
+              696,
+              781
+            ],
+            [
+              696,
+              796
+            ],
+            [
+              79,
+              796
+            ]
+          ]
+        },
+        {
+          "text": "shall the Waggon-Master General or any other Waggon-Master hire any horses, cattle or",
+          "confidence": 0.99775,
+          "bounding_box": [
+            [
+              78,
+              805
+            ],
+            [
+              733,
+              805
+            ],
+            [
+              733,
+              822
+            ],
+            [
+              78,
+              822
+            ]
+          ]
+        },
+        {
+          "text": "In Congress, May 14, 1777 http://www.loc.gov/resource/bdsdcc.04301",
+          "confidence": 0.98332,
+          "bounding_box": [
+            [
+              79,
+              894
+            ],
+            [
+              422,
+              895
+            ],
+            [
+              422,
+              907
+            ],
+            [
+              79,
+              906
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "page": 4,
+      "results": [
+        {
+          "text": "Library of Congress",
+          "confidence": 0.9999,
+          "bounding_box": [
+            [
+              79,
+              78
+            ],
+            [
+              248,
+              81
+            ],
+            [
+              248,
+              100
+            ],
+            [
+              79,
+              98
+            ]
+          ]
+        },
+        {
+          "text": "carriages, unless by the authority aforesaid, or by that of an Assistant Deputy Quarter-",
+          "confidence": 0.99402,
+          "bounding_box": [
+            [
+              79,
+              123
+            ],
+            [
+              712,
+              123
+            ],
+            [
+              712,
+              138
+            ],
+            [
+              79,
+              138
+            ]
+          ]
+        },
+        {
+          "text": "Master General.",
+          "confidence": 0.99993,
+          "bounding_box": [
+            [
+              78,
+              147
+            ],
+            [
+              197,
+              147
+            ],
+            [
+              197,
+              162
+            ],
+            [
+              78,
+              162
+            ]
+          ]
+        },
+        {
+          "text": "XI. That the Quarter-Master General appoint such Assistants, and make such",
+          "confidence": 0.98798,
+          "bounding_box": [
+            [
+              79,
+              188
+            ],
+            [
+              647,
+              188
+            ],
+            [
+              647,
+              204
+            ],
+            [
+              79,
+              204
+            ]
+          ]
+        },
+        {
+          "text": "arrangements for conducting the business of his department, as to him and to the",
+          "confidence": 0.99172,
+          "bounding_box": [
+            [
+              79,
+              214
+            ],
+            [
+              678,
+              214
+            ],
+            [
+              678,
+              229
+            ],
+            [
+              79,
+              229
+            ]
+          ]
+        },
+        {
+          "text": "Commander in Chief and Commander of a department shall seem most conducive to the",
+          "confidence": 0.99729,
+          "bounding_box": [
+            [
+              79,
+              239
+            ],
+            [
+              732,
+              239
+            ],
+            [
+              732,
+              253
+            ],
+            [
+              79,
+              253
+            ]
+          ]
+        },
+        {
+          "text": "public weal; that a copy of such arrangement, specifying the names of the Assistants,",
+          "confidence": 0.99872,
+          "bounding_box": [
+            [
+              79,
+              264
+            ],
+            [
+              707,
+              264
+            ],
+            [
+              707,
+              279
+            ],
+            [
+              79,
+              279
+            ]
+          ]
+        },
+        {
+          "text": "Commissaries or Forage, Waggon-Masters, Forage-Masters, and Clerks of the several",
+          "confidence": 0.99727,
+          "bounding_box": [
+            [
+              80,
+              289
+            ],
+            [
+              717,
+              289
+            ],
+            [
+              717,
+              304
+            ],
+            [
+              80,
+              304
+            ]
+          ]
+        },
+        {
+          "text": "departments, be transmitted to the Board of War. That every Assistant of the Quarter-",
+          "confidence": 0.99793,
+          "bounding_box": [
+            [
+              79,
+              314
+            ],
+            [
+              709,
+              314
+            ],
+            [
+              709,
+              329
+            ],
+            [
+              79,
+              329
+            ]
+          ]
+        },
+        {
+          "text": "Master General of the army, and every Assistant of the Deputy Quarter-Master General of",
+          "confidence": 0.99965,
+          "bounding_box": [
+            [
+              79,
+              338
+            ],
+            [
+              742,
+              338
+            ],
+            [
+              742,
+              354
+            ],
+            [
+              79,
+              354
+            ]
+          ]
+        },
+        {
+          "text": "the several departments thereof, shall make monthly returns of every article of what kind",
+          "confidence": 0.99287,
+          "bounding_box": [
+            [
+              78,
+              363
+            ],
+            [
+              729,
+              363
+            ],
+            [
+              729,
+              379
+            ],
+            [
+              78,
+              379
+            ]
+          ]
+        },
+        {
+          "text": "soever that may be in or at any of the forts, encampments, magazines or places in the",
+          "confidence": 0.99334,
+          "bounding_box": [
+            [
+              79,
+              389
+            ],
+            [
+              712,
+              389
+            ],
+            [
+              712,
+              404
+            ],
+            [
+              79,
+              404
+            ]
+          ]
+        },
+        {
+          "text": "district committed to his care, to the Deputy Quarter-Master General of the department,",
+          "confidence": 0.99485,
+          "bounding_box": [
+            [
+              79,
+              413
+            ],
+            [
+              718,
+              414
+            ],
+            [
+              718,
+              429
+            ],
+            [
+              79,
+              428
+            ]
+          ]
+        },
+        {
+          "text": "noting what is good, what is reparable, and what is unfit for further service in separate",
+          "confidence": 0.99524,
+          "bounding_box": [
+            [
+              79,
+              438
+            ],
+            [
+              710,
+              438
+            ],
+            [
+              710,
+              454
+            ],
+            [
+              79,
+              454
+            ]
+          ]
+        },
+        {
+          "text": "columns, from which returns the Deputy Quarter-Master General shall make one general",
+          "confidence": 0.98589,
+          "bounding_box": [
+            [
+              79,
+              464
+            ],
+            [
+              731,
+              464
+            ],
+            [
+              731,
+              479
+            ],
+            [
+              79,
+              479
+            ]
+          ]
+        },
+        {
+          "text": "return, in which shall be specified the total of all the articles in every district within his",
+          "confidence": 0.99715,
+          "bounding_box": [
+            [
+              79,
+              489
+            ],
+            [
+              702,
+              488
+            ],
+            [
+              702,
+              503
+            ],
+            [
+              79,
+              504
+            ]
+          ]
+        },
+        {
+          "text": "departments; one copy whereof shall be monthly transmitted to the Board of War, one to",
+          "confidence": 0.98787,
+          "bounding_box": [
+            [
+              79,
+              514
+            ],
+            [
+              729,
+              513
+            ],
+            [
+              729,
+              529
+            ],
+            [
+              79,
+              530
+            ]
+          ]
+        },
+        {
+          "text": "the Commander in Chief of the department, and one to the Quarter-Master General, from",
+          "confidence": 0.99207,
+          "bounding_box": [
+            [
+              79,
+              539
+            ],
+            [
+              734,
+              539
+            ],
+            [
+              734,
+              554
+            ],
+            [
+              79,
+              554
+            ]
+          ]
+        },
+        {
+          "text": "which return the Quarter- Master General shall make a general return, specifying what is in",
+          "confidence": 0.99927,
+          "bounding_box": [
+            [
+              79,
+              564
+            ],
+            [
+              747,
+              563
+            ],
+            [
+              747,
+              579
+            ],
+            [
+              79,
+              580
+            ]
+          ]
+        },
+        {
+          "text": "each department and every district thereof; one copy whereof shall be monthly transmitted",
+          "confidence": 0.9863,
+          "bounding_box": [
+            [
+              79,
+              589
+            ],
+            [
+              744,
+              589
+            ],
+            [
+              744,
+              603
+            ],
+            [
+              79,
+              603
+            ]
+          ]
+        },
+        {
+          "text": "to the Board of War, one to the Commander in Chief, and one to the Commander of each",
+          "confidence": 0.98593,
+          "bounding_box": [
+            [
+              78,
+              614
+            ],
+            [
+              735,
+              614
+            ],
+            [
+              735,
+              629
+            ],
+            [
+              78,
+              629
+            ]
+          ]
+        },
+        {
+          "text": "department.",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              79,
+              639
+            ],
+            [
+              167,
+              639
+            ],
+            [
+              167,
+              654
+            ],
+            [
+              79,
+              654
+            ]
+          ]
+        },
+        {
+          "text": "XII. That every Assistant Quarter-Master, Commissary of Forage, Waggon-Master",
+          "confidence": 0.98136,
+          "bounding_box": [
+            [
+              78,
+              677
+            ],
+            [
+              682,
+              679
+            ],
+            [
+              682,
+              698
+            ],
+            [
+              78,
+              696
+            ]
+          ]
+        },
+        {
+          "text": "General, Forage-Master, and every other person employed in the Quarter-Master",
+          "confidence": 0.99977,
+          "bounding_box": [
+            [
+              79,
+              706
+            ],
+            [
+              676,
+              706
+            ],
+            [
+              676,
+              721
+            ],
+            [
+              79,
+              721
+            ]
+          ]
+        },
+        {
+          "text": "General's branch, who shall neglect or refuse to make such monthly returns, shall be",
+          "confidence": 0.99795,
+          "bounding_box": [
+            [
+              79,
+              731
+            ],
+            [
+              702,
+              731
+            ],
+            [
+              702,
+              746
+            ],
+            [
+              79,
+              746
+            ]
+          ]
+        },
+        {
+          "text": "dismissed the service by the Quarter-Master General or the Deputy Quarter-Master",
+          "confidence": 0.99351,
+          "bounding_box": [
+            [
+              79,
+              755
+            ],
+            [
+              693,
+              756
+            ],
+            [
+              693,
+              772
+            ],
+            [
+              79,
+              771
+            ]
+          ]
+        },
+        {
+          "text": "General of the department to which such delinquent belongs.",
+          "confidence": 0.98855,
+          "bounding_box": [
+            [
+              80,
+              780
+            ],
+            [
+              525,
+              781
+            ],
+            [
+              525,
+              797
+            ],
+            [
+              80,
+              796
+            ]
+          ]
+        },
+        {
+          "text": "In Congress, May 14, 1777 http://www.loc.gov/resource/bdsdcc.04301",
+          "confidence": 0.98332,
+          "bounding_box": [
+            [
+              79,
+              894
+            ],
+            [
+              422,
+              895
+            ],
+            [
+              422,
+              907
+            ],
+            [
+              79,
+              906
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "page": 5,
+      "results": [
+        {
+          "text": "Library of Congress",
+          "confidence": 0.99812,
+          "bounding_box": [
+            [
+              78,
+              77
+            ],
+            [
+              248,
+              80
+            ],
+            [
+              248,
+              102
+            ],
+            [
+              78,
+              99
+            ]
+          ]
+        },
+        {
+          "text": "XiIl. And in order that all Deputy Quarter-Masters General and Assistants may make their",
+          "confidence": 0.97541,
+          "bounding_box": [
+            [
+              79,
+              131
+            ],
+            [
+              736,
+              131
+            ],
+            [
+              736,
+              146
+            ],
+            [
+              79,
+              146
+            ]
+          ]
+        },
+        {
+          "text": "returns in such a manner as to avoid that great confusion which has heretofore arisen",
+          "confidence": 0.99397,
+          "bounding_box": [
+            [
+              78,
+              156
+            ],
+            [
+              708,
+              156
+            ],
+            [
+              708,
+              170
+            ],
+            [
+              78,
+              170
+            ]
+          ]
+        },
+        {
+          "text": "from a want of method, the Quarter-Master General is to furnish his Deputies with a form,",
+          "confidence": 0.98808,
+          "bounding_box": [
+            [
+              79,
+              179
+            ],
+            [
+              734,
+              180
+            ],
+            [
+              734,
+              196
+            ],
+            [
+              79,
+              195
+            ]
+          ]
+        },
+        {
+          "text": "copies whereof they are to deliver to the Assistants, and to every person in the Quarter-",
+          "confidence": 0.99956,
+          "bounding_box": [
+            [
+              79,
+              206
+            ],
+            [
+              723,
+              206
+            ],
+            [
+              723,
+              222
+            ],
+            [
+              79,
+              222
+            ]
+          ]
+        },
+        {
+          "text": "Master General's branch who may be called upon for a return.",
+          "confidence": 0.98988,
+          "bounding_box": [
+            [
+              78,
+              228
+            ],
+            [
+              535,
+              230
+            ],
+            [
+              535,
+              248
+            ],
+            [
+              78,
+              246
+            ]
+          ]
+        },
+        {
+          "text": "XIV. That the Quarter-Master General and the Deputy Quarter-Masters General in",
+          "confidence": 0.9914,
+          "bounding_box": [
+            [
+              79,
+              271
+            ],
+            [
+              682,
+              272
+            ],
+            [
+              682,
+              289
+            ],
+            [
+              79,
+              288
+            ]
+          ]
+        },
+        {
+          "text": "the several departments have full power and be authorised, with the consent of the",
+          "confidence": 0.99611,
+          "bounding_box": [
+            [
+              79,
+              298
+            ],
+            [
+              688,
+              298
+            ],
+            [
+              688,
+              313
+            ],
+            [
+              79,
+              313
+            ]
+          ]
+        },
+        {
+          "text": "Commander in Chief or the Commander of the department, to dismiss any person by them",
+          "confidence": 0.98242,
+          "bounding_box": [
+            [
+              80,
+              323
+            ],
+            [
+              744,
+              323
+            ],
+            [
+              744,
+              338
+            ],
+            [
+              80,
+              338
+            ]
+          ]
+        },
+        {
+          "text": "employed, who shall refuse or neglect any duty enjoined by the foregoing Resolutions or",
+          "confidence": 0.99538,
+          "bounding_box": [
+            [
+              79,
+              348
+            ],
+            [
+              730,
+              348
+            ],
+            [
+              730,
+              363
+            ],
+            [
+              79,
+              363
+            ]
+          ]
+        },
+        {
+          "text": "any other duty he may be charged with, and appoint others in the stead of such as may be",
+          "confidence": 0.99492,
+          "bounding_box": [
+            [
+              79,
+              374
+            ],
+            [
+              744,
+              373
+            ],
+            [
+              744,
+              388
+            ],
+            [
+              79,
+              389
+            ]
+          ]
+        },
+        {
+          "text": "dismissed. Resolve of Congress for May 14, 1777",
+          "confidence": 0.99698,
+          "bounding_box": [
+            [
+              79,
+              398
+            ],
+            [
+              444,
+              398
+            ],
+            [
+              444,
+              413
+            ],
+            [
+              79,
+              413
+            ]
+          ]
+        },
+        {
+          "text": "XV. That the General and Commander in Chief of our armies, and the Commander of any",
+          "confidence": 0.99218,
+          "bounding_box": [
+            [
+              79,
+              437
+            ],
+            [
+              737,
+              439
+            ],
+            [
+              737,
+              455
+            ],
+            [
+              79,
+              453
+            ]
+          ]
+        },
+        {
+          "text": "department thereof, be allowed as much forage for their horses and those of their suite as",
+          "confidence": 0.99275,
+          "bounding_box": [
+            [
+              79,
+              464
+            ],
+            [
+              739,
+              464
+            ],
+            [
+              739,
+              479
+            ],
+            [
+              79,
+              479
+            ]
+          ]
+        },
+        {
+          "text": "the service may require.",
+          "confidence": 0.99959,
+          "bounding_box": [
+            [
+              79,
+              488
+            ],
+            [
+              254,
+              490
+            ],
+            [
+              254,
+              505
+            ],
+            [
+              79,
+              503
+            ]
+          ]
+        },
+        {
+          "text": "XVI. That the Major General and Brigadier General, not having the command of a separate",
+          "confidence": 0.98844,
+          "bounding_box": [
+            [
+              79,
+              531
+            ],
+            [
+              746,
+              531
+            ],
+            [
+              746,
+              546
+            ],
+            [
+              79,
+              546
+            ]
+          ]
+        },
+        {
+          "text": "department, shall each be allowed forage for six horses for themselves, their Aids de",
+          "confidence": 0.98828,
+          "bounding_box": [
+            [
+              78,
+              555
+            ],
+            [
+              703,
+              555
+            ],
+            [
+              703,
+              572
+            ],
+            [
+              78,
+              572
+            ]
+          ]
+        },
+        {
+          "text": "Camp or Brigade Majors, and servants.",
+          "confidence": 0.97801,
+          "bounding_box": [
+            [
+              79,
+              580
+            ],
+            [
+              368,
+              580
+            ],
+            [
+              368,
+              597
+            ],
+            [
+              79,
+              597
+            ]
+          ]
+        },
+        {
+          "text": "XVIl. That the Commander in Chief and the Commander in any separate department",
+          "confidence": 0.97756,
+          "bounding_box": [
+            [
+              79,
+              623
+            ],
+            [
+              702,
+              623
+            ],
+            [
+              702,
+              638
+            ],
+            [
+              79,
+              638
+            ]
+          ]
+        },
+        {
+          "text": "be authorised to allow such forage, and for and during such times as they shall think",
+          "confidence": 0.99015,
+          "bounding_box": [
+            [
+              78,
+              648
+            ],
+            [
+              699,
+              648
+            ],
+            [
+              699,
+              662
+            ],
+            [
+              78,
+              662
+            ]
+          ]
+        },
+        {
+          "text": "proper, to the Quarter-Master General and his Deputies, to the Muster-Master General",
+          "confidence": 0.98687,
+          "bounding_box": [
+            [
+              79,
+              673
+            ],
+            [
+              715,
+              671
+            ],
+            [
+              715,
+              687
+            ],
+            [
+              79,
+              690
+            ]
+          ]
+        },
+        {
+          "text": "and his Deputies, the Chief Engineer and his Assistants, the Commissary General and",
+          "confidence": 0.98813,
+          "bounding_box": [
+            [
+              79,
+              698
+            ],
+            [
+              714,
+              698
+            ],
+            [
+              714,
+              713
+            ],
+            [
+              79,
+              713
+            ]
+          ]
+        },
+        {
+          "text": "his Deputies, the Director-General of the Hospital, his Subs and Surgeons-General, to",
+          "confidence": 0.99875,
+          "bounding_box": [
+            [
+              78,
+              722
+            ],
+            [
+              713,
+              722
+            ],
+            [
+              713,
+              739
+            ],
+            [
+              78,
+              739
+            ]
+          ]
+        },
+        {
+          "text": "the Adjutant-General and his Deputies, to the Colonels, Lieutenant Colonels, Majors,",
+          "confidence": 0.99909,
+          "bounding_box": [
+            [
+              79,
+              746
+            ],
+            [
+              701,
+              748
+            ],
+            [
+              701,
+              765
+            ],
+            [
+              79,
+              762
+            ]
+          ]
+        },
+        {
+          "text": "Adjutants, Quarter-Masters, and Surgeons of regiments, and to Provost-Marshals, or to",
+          "confidence": 0.98888,
+          "bounding_box": [
+            [
+              79,
+              773
+            ],
+            [
+              720,
+              773
+            ],
+            [
+              720,
+              788
+            ],
+            [
+              79,
+              788
+            ]
+          ]
+        },
+        {
+          "text": "such and so many of the beforementioned Officers and their Deputies as the service shall",
+          "confidence": 0.99457,
+          "bounding_box": [
+            [
+              79,
+              798
+            ],
+            [
+              739,
+              798
+            ],
+            [
+              739,
+              813
+            ],
+            [
+              79,
+              813
+            ]
+          ]
+        },
+        {
+          "text": "necessarily require: Provided always, That if any of the Officers abovementioned their",
+          "confidence": 0.98064,
+          "bounding_box": [
+            [
+              79,
+              822
+            ],
+            [
+              709,
+              822
+            ],
+            [
+              709,
+              837
+            ],
+            [
+              79,
+              837
+            ]
+          ]
+        },
+        {
+          "text": "In Congress, May 14, 1777 http://www.loc.gov/resource/bdsdcc.04301",
+          "confidence": 0.9916,
+          "bounding_box": [
+            [
+              79,
+              894
+            ],
+            [
+              422,
+              894
+            ],
+            [
+              422,
+              906
+            ],
+            [
+              79,
+              906
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "page": 6,
+      "results": [
+        {
+          "text": "Library of Congress",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              78,
+              77
+            ],
+            [
+              248,
+              80
+            ],
+            [
+              248,
+              101
+            ],
+            [
+              78,
+              99
+            ]
+          ]
+        },
+        {
+          "text": "Deputies or Assistants, should be allowed forage in consequence of any General Orders",
+          "confidence": 0.9989,
+          "bounding_box": [
+            [
+              80,
+              123
+            ],
+            [
+              730,
+              123
+            ],
+            [
+              730,
+              138
+            ],
+            [
+              80,
+              138
+            ]
+          ]
+        },
+        {
+          "text": "hereafter given, and should nevertheless not keep any or so many horses as they would",
+          "confidence": 0.99271,
+          "bounding_box": [
+            [
+              78,
+              148
+            ],
+            [
+              728,
+              148
+            ],
+            [
+              728,
+              163
+            ],
+            [
+              78,
+              163
+            ]
+          ]
+        },
+        {
+          "text": "be permitted to draw forage for, in such case no forage shall be issued for more horses",
+          "confidence": 0.9913,
+          "bounding_box": [
+            [
+              79,
+              173
+            ],
+            [
+              721,
+              173
+            ],
+            [
+              721,
+              188
+            ],
+            [
+              79,
+              188
+            ]
+          ]
+        },
+        {
+          "text": "than they really have, nor shall they at any time thereafter be allowed any forage as back",
+          "confidence": 0.99561,
+          "bounding_box": [
+            [
+              79,
+              197
+            ],
+            [
+              732,
+              197
+            ],
+            [
+              732,
+              213
+            ],
+            [
+              79,
+              213
+            ]
+          ]
+        },
+        {
+          "text": "allowance, or any money in lieu thereof.",
+          "confidence": 0.98546,
+          "bounding_box": [
+            [
+              79,
+              223
+            ],
+            [
+              371,
+              223
+            ],
+            [
+              371,
+              238
+            ],
+            [
+              79,
+              238
+            ]
+          ]
+        },
+        {
+          "text": "XVIl. That a Deputy Quarter-Master General be appointed to each department, and one",
+          "confidence": 0.97991,
+          "bounding_box": [
+            [
+              78,
+              261
+            ],
+            [
+              729,
+              262
+            ],
+            [
+              729,
+              280
+            ],
+            [
+              78,
+              279
+            ]
+          ]
+        },
+        {
+          "text": "to each grand division of the Army: The rank of the former to be that of a Colonel, and the",
+          "confidence": 0.99359,
+          "bounding_box": [
+            [
+              78,
+              288
+            ],
+            [
+              737,
+              288
+            ],
+            [
+              737,
+              304
+            ],
+            [
+              78,
+              304
+            ]
+          ]
+        },
+        {
+          "text": "latter that of a Lieutenant-Colonel.",
+          "confidence": 0.99962,
+          "bounding_box": [
+            [
+              79,
+              313
+            ],
+            [
+              329,
+              313
+            ],
+            [
+              329,
+              328
+            ],
+            [
+              79,
+              328
+            ]
+          ]
+        },
+        {
+          "text": "XIX. That the Quarter-Master General, with the approbation of the Commander in Chief",
+          "confidence": 0.99518,
+          "bounding_box": [
+            [
+              78,
+              353
+            ],
+            [
+              721,
+              353
+            ],
+            [
+              721,
+              372
+            ],
+            [
+              78,
+              372
+            ]
+          ]
+        },
+        {
+          "text": "or Commander of any separate department, appoint a competent number of Deputy",
+          "confidence": 0.99233,
+          "bounding_box": [
+            [
+              79,
+              380
+            ],
+            [
+              694,
+              382
+            ],
+            [
+              694,
+              398
+            ],
+            [
+              79,
+              396
+            ]
+          ]
+        },
+        {
+          "text": "Quarter-Masters General, a Waggon-Master General, and so many Waggon-Masters as",
+          "confidence": 0.99445,
+          "bounding_box": [
+            [
+              79,
+              404
+            ],
+            [
+              728,
+              406
+            ],
+            [
+              728,
+              422
+            ],
+            [
+              79,
+              420
+            ]
+          ]
+        },
+        {
+          "text": "the service from time to time may require, and make a return to the Board of War of the",
+          "confidence": 0.99191,
+          "bounding_box": [
+            [
+              79,
+              430
+            ],
+            [
+              720,
+              430
+            ],
+            [
+              720,
+              446
+            ],
+            [
+              79,
+              446
+            ]
+          ]
+        },
+        {
+          "text": "names of the persons so appointed.",
+          "confidence": 0.98676,
+          "bounding_box": [
+            [
+              79,
+              457
+            ],
+            [
+              343,
+              456
+            ],
+            [
+              343,
+              471
+            ],
+            [
+              79,
+              472
+            ]
+          ]
+        },
+        {
+          "text": "XX. That Major General MiFFLiN be allowed for his services as Quarter-Master General",
+          "confidence": 0.99264,
+          "bounding_box": [
+            [
+              79,
+              497
+            ],
+            [
+              727,
+              497
+            ],
+            [
+              727,
+              512
+            ],
+            [
+              79,
+              512
+            ]
+          ]
+        },
+        {
+          "text": "One Hundred and Sixty-six Dollars per month, in addition to his pay as Major-General.----",
+          "confidence": 0.9834,
+          "bounding_box": [
+            [
+              78,
+              521
+            ],
+            [
+              734,
+              521
+            ],
+            [
+              734,
+              539
+            ],
+            [
+              78,
+              539
+            ]
+          ]
+        },
+        {
+          "text": "That the pay of a Deputy Quarter-Master General of a grand division of the Army be",
+          "confidence": 0.99319,
+          "bounding_box": [
+            [
+              79,
+              547
+            ],
+            [
+              695,
+              547
+            ],
+            [
+              695,
+              564
+            ],
+            [
+              79,
+              564
+            ]
+          ]
+        },
+        {
+          "text": "Seventy-five Dollars per month.----That the pay of an Assistant Deputy Quarter-Master",
+          "confidence": 0.99297,
+          "bounding_box": [
+            [
+              79,
+              572
+            ],
+            [
+              715,
+              573
+            ],
+            [
+              715,
+              589
+            ],
+            [
+              79,
+              588
+            ]
+          ]
+        },
+        {
+          "text": "General be Forty Dollars per month, and that he have the rank of Captain.---- That the",
+          "confidence": 0.97121,
+          "bounding_box": [
+            [
+              80,
+              597
+            ],
+            [
+              711,
+              597
+            ],
+            [
+              711,
+              614
+            ],
+            [
+              80,
+              614
+            ]
+          ]
+        },
+        {
+          "text": "pay of a Waggon-Master General be Seventy-five Dollars per month.----That the pay of a",
+          "confidence": 0.99882,
+          "bounding_box": [
+            [
+              79,
+              623
+            ],
+            [
+              733,
+              621
+            ],
+            [
+              733,
+              638
+            ],
+            [
+              79,
+              640
+            ]
+          ]
+        },
+        {
+          "text": "Deputy Waggon-Master General be Fifty Dollars per month.----That the pay of a Barrack-",
+          "confidence": 0.99385,
+          "bounding_box": [
+            [
+              78,
+              646
+            ],
+            [
+              734,
+              646
+            ],
+            [
+              734,
+              664
+            ],
+            [
+              78,
+              664
+            ]
+          ]
+        },
+        {
+          "text": "Master General be Seventy-five Dollars per month.----That the pay of a Waggon-Master or",
+          "confidence": 0.9991,
+          "bounding_box": [
+            [
+              79,
+              671
+            ],
+            [
+              743,
+              673
+            ],
+            [
+              743,
+              689
+            ],
+            [
+              79,
+              687
+            ]
+          ]
+        },
+        {
+          "text": "Conductor of Waggons be Forty Dollars per month.----That the pay of a Forage-Master be",
+          "confidence": 0.99434,
+          "bounding_box": [
+            [
+              78,
+              696
+            ],
+            [
+              741,
+              697
+            ],
+            [
+              741,
+              715
+            ],
+            [
+              78,
+              714
+            ]
+          ]
+        },
+        {
+          "text": "Forty Dollars per month.",
+          "confidence": 0.98584,
+          "bounding_box": [
+            [
+              78,
+              722
+            ],
+            [
+              257,
+              722
+            ],
+            [
+              257,
+              739
+            ],
+            [
+              78,
+              739
+            ]
+          ]
+        },
+        {
+          "text": "MAY 15.",
+          "confidence": 0.98549,
+          "bounding_box": [
+            [
+              77,
+              761
+            ],
+            [
+              144,
+              761
+            ],
+            [
+              144,
+              780
+            ],
+            [
+              77,
+              780
+            ]
+          ]
+        },
+        {
+          "text": "Resolved, That every Officer, non-commissioned Officer or Soldier in the Army of the",
+          "confidence": 0.99587,
+          "bounding_box": [
+            [
+              79,
+              804
+            ],
+            [
+              704,
+              804
+            ],
+            [
+              704,
+              821
+            ],
+            [
+              79,
+              821
+            ]
+          ]
+        },
+        {
+          "text": "United States, who shall on any pretence whatever presume to take out of any stable,",
+          "confidence": 0.99494,
+          "bounding_box": [
+            [
+              78,
+              829
+            ],
+            [
+              709,
+              829
+            ],
+            [
+              709,
+              847
+            ],
+            [
+              78,
+              847
+            ]
+          ]
+        },
+        {
+          "text": "In Congress, May 14, 1777 http:/www.loc.gov/resource/bdsdcc.04301",
+          "confidence": 0.99011,
+          "bounding_box": [
+            [
+              78,
+              893
+            ],
+            [
+              423,
+              893
+            ],
+            [
+              423,
+              907
+            ],
+            [
+              78,
+              907
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "page": 7,
+      "results": [
+        {
+          "text": "Library of Congress",
+          "confidence": 0.99311,
+          "bounding_box": [
+            [
+              78,
+              79
+            ],
+            [
+              248,
+              79
+            ],
+            [
+              248,
+              100
+            ],
+            [
+              78,
+              100
+            ]
+          ]
+        },
+        {
+          "text": "pasture park or carriage, any horse or horses belonging to the public, or any belonging",
+          "confidence": 0.98771,
+          "bounding_box": [
+            [
+              79,
+              123
+            ],
+            [
+              715,
+              123
+            ],
+            [
+              715,
+              139
+            ],
+            [
+              79,
+              139
+            ]
+          ]
+        },
+        {
+          "text": "to private persons actually employed in the public service, without having authority to",
+          "confidence": 0.99642,
+          "bounding_box": [
+            [
+              78,
+              148
+            ],
+            [
+              704,
+              148
+            ],
+            [
+              704,
+              163
+            ],
+            [
+              78,
+              163
+            ]
+          ]
+        },
+        {
+          "text": "do so by written order of the Commander in Chief, the Commander of any department,",
+          "confidence": 0.99354,
+          "bounding_box": [
+            [
+              79,
+              172
+            ],
+            [
+              714,
+              172
+            ],
+            [
+              714,
+              187
+            ],
+            [
+              79,
+              187
+            ]
+          ]
+        },
+        {
+          "text": "the Commanding Officer of any post where such horses may be, the Quarter-Master",
+          "confidence": 0.98604,
+          "bounding_box": [
+            [
+              79,
+              197
+            ],
+            [
+              698,
+              197
+            ],
+            [
+              698,
+              213
+            ],
+            [
+              79,
+              213
+            ]
+          ]
+        },
+        {
+          "text": "General or any of his Deputies or Assistants, or by the Commanding Officer of Artillery",
+          "confidence": 0.99524,
+          "bounding_box": [
+            [
+              78,
+              219
+            ],
+            [
+              714,
+              222
+            ],
+            [
+              714,
+              241
+            ],
+            [
+              78,
+              238
+            ]
+          ]
+        },
+        {
+          "text": "or any detachment thereof, who may give order for the taking of horses assigned to",
+          "confidence": 0.99618,
+          "bounding_box": [
+            [
+              79,
+              247
+            ],
+            [
+              692,
+              247
+            ],
+            [
+              692,
+              263
+            ],
+            [
+              79,
+              263
+            ]
+          ]
+        },
+        {
+          "text": "that corps only, such orders to specify the particular service for which such horse or",
+          "confidence": 0.99165,
+          "bounding_box": [
+            [
+              79,
+              272
+            ],
+            [
+              694,
+              272
+            ],
+            [
+              694,
+              289
+            ],
+            [
+              79,
+              289
+            ]
+          ]
+        },
+        {
+          "text": "horses are taken, shall be for such offence, as soon as may be, brought to a General",
+          "confidence": 0.99791,
+          "bounding_box": [
+            [
+              78,
+              298
+            ],
+            [
+              704,
+              298
+            ],
+            [
+              704,
+              313
+            ],
+            [
+              78,
+              313
+            ]
+          ]
+        },
+        {
+          "text": "Court-Martial; and if the fact is proved to the satisfaction of the Court, the Commander in",
+          "confidence": 0.99646,
+          "bounding_box": [
+            [
+              79,
+              322
+            ],
+            [
+              729,
+              322
+            ],
+            [
+              729,
+              337
+            ],
+            [
+              79,
+              337
+            ]
+          ]
+        },
+        {
+          "text": "Chief or other General Officer having given orders for such Court to convene, shall upon",
+          "confidence": 0.9885,
+          "bounding_box": [
+            [
+              79,
+              346
+            ],
+            [
+              728,
+              348
+            ],
+            [
+              728,
+              363
+            ],
+            [
+              79,
+              361
+            ]
+          ]
+        },
+        {
+          "text": "conviction immediately dismiss from the service such offender if an officer, unless from",
+          "confidence": 0.99435,
+          "bounding_box": [
+            [
+              79,
+              373
+            ],
+            [
+              717,
+              372
+            ],
+            [
+              717,
+              387
+            ],
+            [
+              79,
+              388
+            ]
+          ]
+        },
+        {
+          "text": "some circumstances the Commander in Chief or such General Officer shall see cause",
+          "confidence": 0.98494,
+          "bounding_box": [
+            [
+              79,
+              398
+            ],
+            [
+              713,
+              397
+            ],
+            [
+              713,
+              412
+            ],
+            [
+              79,
+              413
+            ]
+          ]
+        },
+        {
+          "text": "to pardon the offence; and if a non-commissioned Officer or Private, he shall order such",
+          "confidence": 0.9943,
+          "bounding_box": [
+            [
+              79,
+              422
+            ],
+            [
+              724,
+              420
+            ],
+            [
+              724,
+              436
+            ],
+            [
+              79,
+              438
+            ]
+          ]
+        },
+        {
+          "text": "corporal punishment to be inflicted as he may think proper, not exceeding one hundred",
+          "confidence": 0.98729,
+          "bounding_box": [
+            [
+              79,
+              448
+            ],
+            [
+              718,
+              448
+            ],
+            [
+              718,
+              463
+            ],
+            [
+              79,
+              463
+            ]
+          ]
+        },
+        {
+          "text": "lashes, unless from some circumstances the Commander in Chief or such General Officer",
+          "confidence": 0.99356,
+          "bounding_box": [
+            [
+              79,
+              472
+            ],
+            [
+              741,
+              472
+            ],
+            [
+              741,
+              487
+            ],
+            [
+              79,
+              487
+            ]
+          ]
+        },
+        {
+          "text": "shall see cause to pardon the offence.",
+          "confidence": 0.96657,
+          "bounding_box": [
+            [
+              78,
+              498
+            ],
+            [
+              359,
+              498
+            ],
+            [
+              359,
+              512
+            ],
+            [
+              78,
+              512
+            ]
+          ]
+        },
+        {
+          "text": "MAY 29.",
+          "confidence": 0.99972,
+          "bounding_box": [
+            [
+              77,
+              536
+            ],
+            [
+              144,
+              536
+            ],
+            [
+              144,
+              554
+            ],
+            [
+              77,
+              554
+            ]
+          ]
+        },
+        {
+          "text": "Resolved, That no persons, horses or carriages, going to the army with provisions, and",
+          "confidence": 0.99269,
+          "bounding_box": [
+            [
+              79,
+              579
+            ],
+            [
+              720,
+              579
+            ],
+            [
+              720,
+              597
+            ],
+            [
+              79,
+              597
+            ]
+          ]
+        },
+        {
+          "text": "returning from thence, be pressed upon any pretence whatever.",
+          "confidence": 0.99433,
+          "bounding_box": [
+            [
+              79,
+              605
+            ],
+            [
+              547,
+              606
+            ],
+            [
+              547,
+              622
+            ],
+            [
+              79,
+              621
+            ]
+          ]
+        },
+        {
+          "text": "AUGUST 1.",
+          "confidence": 0.99935,
+          "bounding_box": [
+            [
+              78,
+              645
+            ],
+            [
+              169,
+              644
+            ],
+            [
+              169,
+              662
+            ],
+            [
+              78,
+              663
+            ]
+          ]
+        },
+        {
+          "text": "Resolved, That the Quarter-Master General be directed to appoint a Deputy Quarter-",
+          "confidence": 0.9865,
+          "bounding_box": [
+            [
+              80,
+              689
+            ],
+            [
+              702,
+              689
+            ],
+            [
+              702,
+              704
+            ],
+            [
+              80,
+              704
+            ]
+          ]
+        },
+        {
+          "text": "Master General in the State of Georgia; and that he be directed to use his utmost",
+          "confidence": 0.99102,
+          "bounding_box": [
+            [
+              79,
+              713
+            ],
+            [
+              675,
+              713
+            ],
+            [
+              675,
+              728
+            ],
+            [
+              79,
+              728
+            ]
+          ]
+        },
+        {
+          "text": "endeavours to procure tents and other essential articles for the use of the troops there",
+          "confidence": 0.99082,
+          "bounding_box": [
+            [
+              79,
+              738
+            ],
+            [
+              712,
+              738
+            ],
+            [
+              712,
+              753
+            ],
+            [
+              79,
+              753
+            ]
+          ]
+        },
+        {
+          "text": "without delay.",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              78,
+              761
+            ],
+            [
+              181,
+              762
+            ],
+            [
+              181,
+              781
+            ],
+            [
+              78,
+              780
+            ]
+          ]
+        },
+        {
+          "text": "FEBRUARY 6, 1778.",
+          "confidence": 0.99948,
+          "bounding_box": [
+            [
+              79,
+              805
+            ],
+            [
+              236,
+              805
+            ],
+            [
+              236,
+              819
+            ],
+            [
+              79,
+              819
+            ]
+          ]
+        },
+        {
+          "text": "In Congress, May 14, 1777 http://www.loc.gov/resource/bdsdcc.04301",
+          "confidence": 0.98332,
+          "bounding_box": [
+            [
+              79,
+              894
+            ],
+            [
+              422,
+              895
+            ],
+            [
+              422,
+              907
+            ],
+            [
+              79,
+              906
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "page": 8,
+      "results": [
+        {
+          "text": "Library of Congress",
+          "confidence": 0.99995,
+          "bounding_box": [
+            [
+              78,
+              77
+            ],
+            [
+              248,
+              80
+            ],
+            [
+              248,
+              102
+            ],
+            [
+              78,
+              100
+            ]
+          ]
+        },
+        {
+          "text": "Resolved, That the Quarter-Master General, and his Deputies, be respectively directed to",
+          "confidence": 0.9964,
+          "bounding_box": [
+            [
+              80,
+              128
+            ],
+            [
+              737,
+              129
+            ],
+            [
+              737,
+              148
+            ],
+            [
+              80,
+              147
+            ]
+          ]
+        },
+        {
+          "text": "provide the Auditors in each army with a convenient house near Head-Quarters, and that",
+          "confidence": 0.98687,
+          "bounding_box": [
+            [
+              78,
+              155
+            ],
+            [
+              733,
+              153
+            ],
+            [
+              733,
+              172
+            ],
+            [
+              78,
+              174
+            ]
+          ]
+        },
+        {
+          "text": "no other officers be quartered therein.",
+          "confidence": 0.99614,
+          "bounding_box": [
+            [
+              78,
+              179
+            ],
+            [
+              357,
+              178
+            ],
+            [
+              357,
+              197
+            ],
+            [
+              78,
+              198
+            ]
+          ]
+        },
+        {
+          "text": "That, for the preservation of the public papers, the Quarter-Master General or his Deputies",
+          "confidence": 0.99191,
+          "bounding_box": [
+            [
+              79,
+              222
+            ],
+            [
+              744,
+              222
+            ],
+            [
+              744,
+              240
+            ],
+            [
+              79,
+              240
+            ]
+          ]
+        },
+        {
+          "text": "shall provide for the Auditors in each army a good covered waggon with horses, under",
+          "confidence": 0.98639,
+          "bounding_box": [
+            [
+              78,
+              246
+            ],
+            [
+              713,
+              247
+            ],
+            [
+              713,
+              266
+            ],
+            [
+              78,
+              264
+            ]
+          ]
+        },
+        {
+          "text": "their direction; and the said Auditors shall also be provided with suitable guards for the",
+          "confidence": 0.99245,
+          "bounding_box": [
+            [
+              78,
+              271
+            ],
+            [
+              715,
+              271
+            ],
+            [
+              715,
+              290
+            ],
+            [
+              78,
+              290
+            ]
+          ]
+        },
+        {
+          "text": "same purpose.",
+          "confidence": 0.99985,
+          "bounding_box": [
+            [
+              77,
+              298
+            ],
+            [
+              189,
+              298
+            ],
+            [
+              189,
+              316
+            ],
+            [
+              77,
+              316
+            ]
+          ]
+        },
+        {
+          "text": "MARCH 2.",
+          "confidence": 0.99963,
+          "bounding_box": [
+            [
+              78,
+              336
+            ],
+            [
+              160,
+              336
+            ],
+            [
+              160,
+              355
+            ],
+            [
+              78,
+              355
+            ]
+          ]
+        },
+        {
+          "text": "Resolved, That there be one Quarter-Master General, and two Assistant Quarter-Masters",
+          "confidence": 0.99395,
+          "bounding_box": [
+            [
+              79,
+              378
+            ],
+            [
+              736,
+              379
+            ],
+            [
+              736,
+              398
+            ],
+            [
+              79,
+              397
+            ]
+          ]
+        },
+        {
+          "text": "General.",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              78,
+              404
+            ],
+            [
+              143,
+              404
+            ],
+            [
+              143,
+              422
+            ],
+            [
+              78,
+              422
+            ]
+          ]
+        },
+        {
+          "text": "That these three be allowed, for their trouble and expence, One per Cent, upon the monies",
+          "confidence": 0.99269,
+          "bounding_box": [
+            [
+              79,
+              446
+            ],
+            [
+              747,
+              447
+            ],
+            [
+              747,
+              466
+            ],
+            [
+              79,
+              464
+            ]
+          ]
+        },
+        {
+          "text": "issued in the department, to be divided as they shall agree, and including an addition to",
+          "confidence": 0.99553,
+          "bounding_box": [
+            [
+              78,
+              472
+            ],
+            [
+              722,
+              472
+            ],
+            [
+              722,
+              490
+            ],
+            [
+              78,
+              490
+            ]
+          ]
+        },
+        {
+          "text": "the pay of the Waggon-Master General and his Deputy.",
+          "confidence": 0.98929,
+          "bounding_box": [
+            [
+              78,
+              497
+            ],
+            [
+              485,
+              497
+            ],
+            [
+              485,
+              516
+            ],
+            [
+              78,
+              516
+            ]
+          ]
+        },
+        {
+          "text": "That Major General Green be appointed Quarter-Master General.",
+          "confidence": 0.9891,
+          "bounding_box": [
+            [
+              80,
+              538
+            ],
+            [
+              559,
+              538
+            ],
+            [
+              559,
+              555
+            ],
+            [
+              80,
+              555
+            ]
+          ]
+        },
+        {
+          "text": "That John Cox and Charles Petit, Esquires, be appointed Assistant Quarter-Masters",
+          "confidence": 0.98853,
+          "bounding_box": [
+            [
+              79,
+              579
+            ],
+            [
+              698,
+              579
+            ],
+            [
+              698,
+              597
+            ],
+            [
+              79,
+              597
+            ]
+          ]
+        },
+        {
+          "text": "General.",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              78,
+              604
+            ],
+            [
+              143,
+              604
+            ],
+            [
+              143,
+              623
+            ],
+            [
+              78,
+              623
+            ]
+          ]
+        },
+        {
+          "text": "That the Forage-Masters, Waggon-Masters, and other officers in the department, be in the",
+          "confidence": 0.99532,
+          "bounding_box": [
+            [
+              79,
+              646
+            ],
+            [
+              744,
+              646
+            ],
+            [
+              744,
+              664
+            ],
+            [
+              79,
+              664
+            ]
+          ]
+        },
+        {
+          "text": "appointment of the Quarter-Master General, who is to be responsible for their conduct.",
+          "confidence": 0.99306,
+          "bounding_box": [
+            [
+              78,
+              671
+            ],
+            [
+              714,
+              670
+            ],
+            [
+              714,
+              690
+            ],
+            [
+              78,
+              691
+            ]
+          ]
+        },
+        {
+          "text": "Resolved, That Major General Green retain his rank of Major General in the army:",
+          "confidence": 0.99304,
+          "bounding_box": [
+            [
+              80,
+              711
+            ],
+            [
+              681,
+              713
+            ],
+            [
+              681,
+              732
+            ],
+            [
+              80,
+              730
+            ]
+          ]
+        },
+        {
+          "text": "Extract from the Minutes, CHARLES THOMSON, Secretary.",
+          "confidence": 0.97448,
+          "bounding_box": [
+            [
+              80,
+              753
+            ],
+            [
+              523,
+              755
+            ],
+            [
+              523,
+              774
+            ],
+            [
+              80,
+              772
+            ]
+          ]
+        },
+        {
+          "text": "FISH-KILL: Printed by SAMUEL LOUDON.",
+          "confidence": 0.99421,
+          "bounding_box": [
+            [
+              79,
+              796
+            ],
+            [
+              400,
+              796
+            ],
+            [
+              400,
+              814
+            ],
+            [
+              79,
+              814
+            ]
+          ]
+        },
+        {
+          "text": "In Congress, May 14, 1777 http://www.loc.gov/resource/bdsdcc.04301",
+          "confidence": 0.9916,
+          "bounding_box": [
+            [
+              79,
+              894
+            ],
+            [
+              422,
+              894
+            ],
+            [
+              422,
+              906
+            ],
+            [
+              79,
+              906
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

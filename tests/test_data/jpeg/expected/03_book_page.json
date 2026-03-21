@@ -1,0 +1,268 @@
+{
+    "results": [
+        {
+            "text": "The fort Kays Meirah, commanded by the governor,",
+            "confidence": 0.99945,
+            "bounding_box": [
+                [
+                    75,
+                    12
+                ],
+                [
+                    1396,
+                    12
+                ],
+                [
+                    1396,
+                    68
+                ],
+                [
+                    75,
+                    68
+                ]
+            ]
+        },
+        {
+            "text": "Colonel Mittman, received a summons from H.M.S. Dover",
+            "confidence": 0.99254,
+            "bounding_box": [
+                [
+                    26,
+                    79
+                ],
+                [
+                    1400,
+                    74
+                ],
+                [
+                    1400,
+                    130
+                ],
+                [
+                    26,
+                    135
+                ]
+            ]
+        },
+        {
+            "text": "to surrender, but returned a spirited answer. Next day",
+            "confidence": 0.985,
+            "bounding_box": [
+                [
+                    25,
+                    143
+                ],
+                [
+                    1397,
+                    140
+                ],
+                [
+                    1397,
+                    195
+                ],
+                [
+                    25,
+                    197
+                ]
+            ]
+        },
+        {
+            "text": "Captain Forbes, accompanied by Lieutenants Jefferies,",
+            "confidence": 0.98322,
+            "bounding_box": [
+                [
+                    25,
+                    208
+                ],
+                [
+                    1400,
+                    202
+                ],
+                [
+                    1400,
+                    258
+                ],
+                [
+                    25,
+                    264
+                ]
+            ]
+        },
+        {
+            "text": "Royal Navy, Higginson, Royal Marines, and Forbes and",
+            "confidence": 0.9996,
+            "bounding_box": [
+                [
+                    24,
+                    270
+                ],
+                [
+                    1400,
+                    265
+                ],
+                [
+                    1400,
+                    324
+                ],
+                [
+                    24,
+                    330
+                ]
+            ]
+        },
+        {
+            "text": "Curshaw, of the Madras Service, placed ladders against the",
+            "confidence": 0.9927,
+            "bounding_box": [
+                [
+                    26,
+                    333
+                ],
+                [
+                    1402,
+                    333
+                ],
+                [
+                    1402,
+                    388
+                ],
+                [
+                    26,
+                    388
+                ]
+            ]
+        },
+        {
+            "text": "fort, after having crossed the ditch under a heavy grape fire,",
+            "confidence": 0.9873,
+            "bounding_box": [
+                [
+                    25,
+                    395
+                ],
+                [
+                    1403,
+                    396
+                ],
+                [
+                    1403,
+                    454
+                ],
+                [
+                    25,
+                    453
+                ]
+            ]
+        },
+        {
+            "text": "escaladed the walls, and carried it, killing a number of the",
+            "confidence": 0.99797,
+            "bounding_box": [
+                [
+                    28,
+                    463
+                ],
+                [
+                    1402,
+                    458
+                ],
+                [
+                    1402,
+                    513
+                ],
+                [
+                    28,
+                    516
+                ]
+            ]
+        },
+        {
+            "text": "garrison, and taking the governor and sixty-eight men",
+            "confidence": 0.98296,
+            "bounding_box": [
+                [
+                    28,
+                    527
+                ],
+                [
+                    1405,
+                    525
+                ],
+                [
+                    1405,
+                    582
+                ],
+                [
+                    28,
+                    585
+                ]
+            ]
+        },
+        {
+            "text": "prisoners.",
+            "confidence": 1,
+            "bounding_box": [
+                [
+                    29,
+                    597
+                ],
+                [
+                    254,
+                    597
+                ],
+                [
+                    254,
+                    646
+                ],
+                [
+                    29,
+                    646
+                ]
+            ]
+        },
+        {
+            "text": "The British loss was the sergeant-major and two privates",
+            "confidence": 0.99843,
+            "bounding_box": [
+                [
+                    81,
+                    650
+                ],
+                [
+                    1408,
+                    651
+                ],
+                [
+                    1408,
+                    708
+                ],
+                [
+                    81,
+                    706
+                ]
+            ]
+        },
+        {
+            "text": "killed, and one lieutenant, one sergeant, one seaman, one",
+            "confidence": 0.99114,
+            "bounding_box": [
+                [
+                    32,
+                    716
+                ],
+                [
+                    1411,
+                    716
+                ],
+                [
+                    1411,
+                    770
+                ],
+                [
+                    32,
+                    770
+                ]
+            ]
+        }
+    ]
+}

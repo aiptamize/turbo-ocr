@@ -1,0 +1,2808 @@
+{
+    "pages": [
+        {
+            "page": 1,
+            "results": [
+                {
+                    "text": "SCHEDULE SE",
+                    "confidence": 0.99885,
+                    "bounding_box": [
+                        [
+                            47,
+                            47
+                        ],
+                        [
+                            150,
+                            47
+                        ],
+                        [
+                            150,
+                            63
+                        ],
+                        [
+                            47,
+                            63
+                        ]
+                    ]
+                },
+                {
+                    "text": "OMB No. 1545-0074",
+                    "confidence": 0.99977,
+                    "bounding_box": [
+                        [
+                            692,
+                            48
+                        ],
+                        [
+                            786,
+                            49
+                        ],
+                        [
+                            786,
+                            62
+                        ],
+                        [
+                            692,
+                            61
+                        ]
+                    ]
+                },
+                {
+                    "text": "Self-Employment Tax",
+                    "confidence": 0.99155,
+                    "bounding_box": [
+                        [
+                            333,
+                            54
+                        ],
+                        [
+                            516,
+                            54
+                        ],
+                        [
+                            516,
+                            71
+                        ],
+                        [
+                            333,
+                            71
+                        ]
+                    ]
+                },
+                {
+                    "text": "(Form 1040)",
+                    "confidence": 0.99334,
+                    "bounding_box": [
+                        [
+                            49,
+                            63
+                        ],
+                        [
+                            121,
+                            63
+                        ],
+                        [
+                            121,
+                            77
+                        ],
+                        [
+                            49,
+                            77
+                        ]
+                    ]
+                },
+                {
+                    "text": "2025",
+                    "confidence": 0.99976,
+                    "bounding_box": [
+                        [
+                            700,
+                            65
+                        ],
+                        [
+                            777,
+                            65
+                        ],
+                        [
+                            777,
+                            93
+                        ],
+                        [
+                            700,
+                            93
+                        ]
+                    ]
+                },
+                {
+                    "text": "Department of the Treasury",
+                    "confidence": 0.99662,
+                    "bounding_box": [
+                        [
+                            47,
+                            88
+                        ],
+                        [
+                            165,
+                            88
+                        ],
+                        [
+                            165,
+                            101
+                        ],
+                        [
+                            47,
+                            101
+                        ]
+                    ]
+                },
+                {
+                    "text": "Attach to Form 1040, 1040-SR, 1040-SS, or 1040-NR.",
+                    "confidence": 0.99941,
+                    "bounding_box": [
+                        [
+                            286,
+                            86
+                        ],
+                        [
+                            564,
+                            86
+                        ],
+                        [
+                            564,
+                            99
+                        ],
+                        [
+                            286,
+                            99
+                        ]
+                    ]
+                },
+                {
+                    "text": "Attachment",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            694,
+                            92
+                        ],
+                        [
+                            751,
+                            92
+                        ],
+                        [
+                            751,
+                            104
+                        ],
+                        [
+                            694,
+                            104
+                        ]
+                    ]
+                },
+                {
+                    "text": "Intemal Revenue Service",
+                    "confidence": 0.99548,
+                    "bounding_box": [
+                        [
+                            49,
+                            102
+                        ],
+                        [
+                            155,
+                            102
+                        ],
+                        [
+                            155,
+                            111
+                        ],
+                        [
+                            49,
+                            111
+                        ]
+                    ]
+                },
+                {
+                    "text": "Go to www.irs.gov/ScheduleSE for instructions and the latest information.",
+                    "confidence": 0.99882,
+                    "bounding_box": [
+                        [
+                            228,
+                            100
+                        ],
+                        [
+                            620,
+                            101
+                        ],
+                        [
+                            620,
+                            115
+                        ],
+                        [
+                            228,
+                            113
+                        ]
+                    ]
+                },
+                {
+                    "text": "Sequence No.17",
+                    "confidence": 0.99784,
+                    "bounding_box": [
+                        [
+                            694,
+                            102
+                        ],
+                        [
+                            780,
+                            97
+                        ],
+                        [
+                            780,
+                            112
+                        ],
+                        [
+                            694,
+                            117
+                        ]
+                    ]
+                },
+                {
+                    "text": "Name of person with self-employment income (as shown on Form 1040, 1040-SR, 1040-SS, or 1040-NR)",
+                    "confidence": 0.99419,
+                    "bounding_box": [
+                        [
+                            47,
+                            117
+                        ],
+                        [
+                            500,
+                            117
+                        ],
+                        [
+                            500,
+                            128
+                        ],
+                        [
+                            47,
+                            128
+                        ]
+                    ]
+                },
+                {
+                    "text": "Social security number of person",
+                    "confidence": 0.97092,
+                    "bounding_box": [
+                        [
+                            502,
+                            119
+                        ],
+                        [
+                            674,
+                            120
+                        ],
+                        [
+                            674,
+                            134
+                        ],
+                        [
+                            502,
+                            133
+                        ]
+                    ]
+                },
+                {
+                    "text": "with self-employment income",
+                    "confidence": 0.98823,
+                    "bounding_box": [
+                        [
+                            505,
+                            133
+                        ],
+                        [
+                            661,
+                            133
+                        ],
+                        [
+                            661,
+                            144
+                        ],
+                        [
+                            505,
+                            144
+                        ]
+                    ]
+                },
+                {
+                    "text": "Part I",
+                    "confidence": 0.93555,
+                    "bounding_box": [
+                        [
+                            50,
+                            149
+                        ],
+                        [
+                            100,
+                            149
+                        ],
+                        [
+                            100,
+                            166
+                        ],
+                        [
+                            50,
+                            166
+                        ]
+                    ]
+                },
+                {
+                    "text": "Self-Employment Tax",
+                    "confidence": 0.99512,
+                    "bounding_box": [
+                        [
+                            118,
+                            151
+                        ],
+                        [
+                            262,
+                            151
+                        ],
+                        [
+                            262,
+                            164
+                        ],
+                        [
+                            118,
+                            164
+                        ]
+                    ]
+                },
+                {
+                    "text": "Note: If your only income subject to self-employment tax is church employee income, see instructions for how to report your income",
+                    "confidence": 0.98847,
+                    "bounding_box": [
+                        [
+                            49,
+                            170
+                        ],
+                        [
+                            800,
+                            170
+                        ],
+                        [
+                            800,
+                            182
+                        ],
+                        [
+                            49,
+                            182
+                        ]
+                    ]
+                },
+                {
+                    "text": "and the definition of church employee income.",
+                    "confidence": 0.99646,
+                    "bounding_box": [
+                        [
+                            47,
+                            184
+                        ],
+                        [
+                            308,
+                            184
+                        ],
+                        [
+                            308,
+                            197
+                        ],
+                        [
+                            47,
+                            197
+                        ]
+                    ]
+                },
+                {
+                    "text": "A",
+                    "confidence": 0.99609,
+                    "bounding_box": [
+                        [
+                            45,
+                            202
+                        ],
+                        [
+                            62,
+                            202
+                        ],
+                        [
+                            62,
+                            217
+                        ],
+                        [
+                            45,
+                            217
+                        ]
+                    ]
+                },
+                {
+                    "text": "If you are a minister, member of a religious order, or Christian Science practitioner and you filed Form 4361, but you had",
+                    "confidence": 0.98793,
+                    "bounding_box": [
+                        [
+                            89,
+                            203
+                        ],
+                        [
+                            780,
+                            203
+                        ],
+                        [
+                            780,
+                            215
+                        ],
+                        [
+                            89,
+                            215
+                        ]
+                    ]
+                },
+                {
+                    "text": "$400 or more of other net earnings from self-employment, check here and continue with Part I",
+                    "confidence": 0.99176,
+                    "bounding_box": [
+                        [
+                            89,
+                            218
+                        ],
+                        [
+                            618,
+                            219
+                        ],
+                        [
+                            618,
+                            233
+                        ],
+                        [
+                            89,
+                            231
+                        ]
+                    ]
+                },
+                {
+                    "text": "Skip lines 1a and 1b if you use the farm optional method in Part II. See instructions.",
+                    "confidence": 0.97958,
+                    "bounding_box": [
+                        [
+                            49,
+                            235
+                        ],
+                        [
+                            513,
+                            235
+                        ],
+                        [
+                            513,
+                            248
+                        ],
+                        [
+                            49,
+                            248
+                        ]
+                    ]
+                },
+                {
+                    "text": "1a Net farm profit or (loss) from Schedule F, line 34, and farm partnerships, Schedule K-1 (Form 1065),",
+                    "confidence": 0.98889,
+                    "bounding_box": [
+                        [
+                            61,
+                            252
+                        ],
+                        [
+                            658,
+                            252
+                        ],
+                        [
+                            658,
+                            266
+                        ],
+                        [
+                            61,
+                            266
+                        ]
+                    ]
+                },
+                {
+                    "text": "box 14, code A .",
+                    "confidence": 0.992,
+                    "bounding_box": [
+                        [
+                            89,
+                            268
+                        ],
+                        [
+                            191,
+                            268
+                        ],
+                        [
+                            191,
+                            281
+                        ],
+                        [
+                            89,
+                            281
+                        ]
+                    ]
+                },
+                {
+                    "text": "1a",
+                    "confidence": 0.99902,
+                    "bounding_box": [
+                        [
+                            676,
+                            267
+                        ],
+                        [
+                            695,
+                            267
+                        ],
+                        [
+                            695,
+                            282
+                        ],
+                        [
+                            676,
+                            282
+                        ]
+                    ]
+                },
+                {
+                    "text": "b If you received social security retirement or disability benefits, enter the amount of Conservation Reserve",
+                    "confidence": 0.98349,
+                    "bounding_box": [
+                        [
+                            68,
+                            286
+                        ],
+                        [
+                            659,
+                            286
+                        ],
+                        [
+                            659,
+                            299
+                        ],
+                        [
+                            68,
+                            299
+                        ]
+                    ]
+                },
+                {
+                    "text": "Program payments included on Schedule F, line 4b, or listed on Schedule K-1 (Form 1065), box 20, code AQ",
+                    "confidence": 0.98186,
+                    "bounding_box": [
+                        [
+                            85,
+                            301
+                        ],
+                        [
+                            659,
+                            301
+                        ],
+                        [
+                            659,
+                            315
+                        ],
+                        [
+                            85,
+                            315
+                        ]
+                    ]
+                },
+                {
+                    "text": "1b",
+                    "confidence": 0.99805,
+                    "bounding_box": [
+                        [
+                            674,
+                            300
+                        ],
+                        [
+                            695,
+                            300
+                        ],
+                        [
+                            695,
+                            314
+                        ],
+                        [
+                            674,
+                            314
+                        ]
+                    ]
+                },
+                {
+                    "text": "Skip line 2 if you use the nonfarm optional method in Part II. See instructions.",
+                    "confidence": 0.98767,
+                    "bounding_box": [
+                        [
+                            49,
+                            319
+                        ],
+                        [
+                            482,
+                            319
+                        ],
+                        [
+                            482,
+                            331
+                        ],
+                        [
+                            49,
+                            331
+                        ]
+                    ]
+                },
+                {
+                    "text": "2",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            59,
+                            336
+                        ],
+                        [
+                            75,
+                            336
+                        ],
+                        [
+                            75,
+                            351
+                        ],
+                        [
+                            59,
+                            351
+                        ]
+                    ]
+                },
+                {
+                    "text": "Net profit or (loss) from Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than",
+                    "confidence": 0.9909,
+                    "bounding_box": [
+                        [
+                            87,
+                            337
+                        ],
+                        [
+                            659,
+                            337
+                        ],
+                        [
+                            659,
+                            349
+                        ],
+                        [
+                            87,
+                            349
+                        ]
+                    ]
+                },
+                {
+                    "text": "2",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            677,
+                            349
+                        ],
+                        [
+                            692,
+                            349
+                        ],
+                        [
+                            692,
+                            364
+                        ],
+                        [
+                            677,
+                            364
+                        ]
+                    ]
+                },
+                {
+                    "text": "farming). See instructions for other income to report or if you are a minister or member of a religious order",
+                    "confidence": 0.98746,
+                    "bounding_box": [
+                        [
+                            88,
+                            352
+                        ],
+                        [
+                            655,
+                            352
+                        ],
+                        [
+                            655,
+                            364
+                        ],
+                        [
+                            88,
+                            364
+                        ]
+                    ]
+                },
+                {
+                    "text": "3",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            60,
+                            369
+                        ],
+                        [
+                            75,
+                            369
+                        ],
+                        [
+                            75,
+                            380
+                        ],
+                        [
+                            60,
+                            380
+                        ]
+                    ]
+                },
+                {
+                    "text": "Combine lines 1a, 1b, and 2 .",
+                    "confidence": 0.98838,
+                    "bounding_box": [
+                        [
+                            88,
+                            369
+                        ],
+                        [
+                            256,
+                            369
+                        ],
+                        [
+                            256,
+                            382
+                        ],
+                        [
+                            88,
+                            382
+                        ]
+                    ]
+                },
+                {
+                    "text": "3",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            676,
+                            366
+                        ],
+                        [
+                            692,
+                            366
+                        ],
+                        [
+                            692,
+                            383
+                        ],
+                        [
+                            676,
+                            383
+                        ]
+                    ]
+                },
+                {
+                    "text": "4a",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            60,
+                            384
+                        ],
+                        [
+                            82,
+                            384
+                        ],
+                        [
+                            82,
+                            398
+                        ],
+                        [
+                            60,
+                            398
+                        ]
+                    ]
+                },
+                {
+                    "text": "If line 3 is more than zero, multiply line 3 by 92.35% (0.9235). Otherwise, enter amount from line 3",
+                    "confidence": 0.98444,
+                    "bounding_box": [
+                        [
+                            85,
+                            384
+                        ],
+                        [
+                            635,
+                            384
+                        ],
+                        [
+                            635,
+                            398
+                        ],
+                        [
+                            85,
+                            398
+                        ]
+                    ]
+                },
+                {
+                    "text": "4a",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            673,
+                            383
+                        ],
+                        [
+                            695,
+                            383
+                        ],
+                        [
+                            695,
+                            399
+                        ],
+                        [
+                            673,
+                            399
+                        ]
+                    ]
+                },
+                {
+                    "text": "Note: If line 4a is less than $400 due to Conservation Reserve Program payments on line 1b, see instructions.",
+                    "confidence": 0.99007,
+                    "bounding_box": [
+                        [
+                            89,
+                            401
+                        ],
+                        [
+                            657,
+                            402
+                        ],
+                        [
+                            657,
+                            415
+                        ],
+                        [
+                            89,
+                            414
+                        ]
+                    ]
+                },
+                {
+                    "text": "b",
+                    "confidence": 0.99219,
+                    "bounding_box": [
+                        [
+                            68,
+                            419
+                        ],
+                        [
+                            89,
+                            419
+                        ],
+                        [
+                            89,
+                            430
+                        ],
+                        [
+                            68,
+                            430
+                        ]
+                    ]
+                },
+                {
+                    "text": "If you elect one or both of the optional methods, enter the total of lines 15 and 17 here",
+                    "confidence": 0.99319,
+                    "bounding_box": [
+                        [
+                            87,
+                            418
+                        ],
+                        [
+                            573,
+                            418
+                        ],
+                        [
+                            573,
+                            431
+                        ],
+                        [
+                            87,
+                            431
+                        ]
+                    ]
+                },
+                {
+                    "text": "4b",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            674,
+                            417
+                        ],
+                        [
+                            694,
+                            417
+                        ],
+                        [
+                            694,
+                            432
+                        ],
+                        [
+                            674,
+                            432
+                        ]
+                    ]
+                },
+                {
+                    "text": "c",
+                    "confidence": 0.99121,
+                    "bounding_box": [
+                        [
+                            68,
+                            439
+                        ],
+                        [
+                            87,
+                            439
+                        ],
+                        [
+                            87,
+                            448
+                        ],
+                        [
+                            68,
+                            448
+                        ]
+                    ]
+                },
+                {
+                    "text": "Combine lines 4a and 4b. If less than $400, stop; you don't owe self-employment tax. Exception: If",
+                    "confidence": 0.99013,
+                    "bounding_box": [
+                        [
+                            87,
+                            437
+                        ],
+                        [
+                            661,
+                            437
+                        ],
+                        [
+                            661,
+                            449
+                        ],
+                        [
+                            87,
+                            449
+                        ]
+                    ]
+                },
+                {
+                    "text": "less than $400 and you had church employee income, enter -0- and continue",
+                    "confidence": 0.98417,
+                    "bounding_box": [
+                        [
+                            89,
+                            451
+                        ],
+                        [
+                            532,
+                            451
+                        ],
+                        [
+                            532,
+                            464
+                        ],
+                        [
+                            89,
+                            464
+                        ]
+                    ]
+                },
+                {
+                    "text": "4c",
+                    "confidence": 0.99951,
+                    "bounding_box": [
+                        [
+                            673,
+                            450
+                        ],
+                        [
+                            695,
+                            450
+                        ],
+                        [
+                            695,
+                            465
+                        ],
+                        [
+                            673,
+                            465
+                        ]
+                    ]
+                },
+                {
+                    "text": "5a",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            61,
+                            469
+                        ],
+                        [
+                            81,
+                            469
+                        ],
+                        [
+                            81,
+                            482
+                        ],
+                        [
+                            61,
+                            482
+                        ]
+                    ]
+                },
+                {
+                    "text": "Enter your church employee income from Form W-2. See instructions for",
+                    "confidence": 0.99281,
+                    "bounding_box": [
+                        [
+                            88,
+                            470
+                        ],
+                        [
+                            530,
+                            470
+                        ],
+                        [
+                            530,
+                            482
+                        ],
+                        [
+                            88,
+                            482
+                        ]
+                    ]
+                },
+                {
+                    "text": "definition of church employee income",
+                    "confidence": 0.99863,
+                    "bounding_box": [
+                        [
+                            89,
+                            484
+                        ],
+                        [
+                            303,
+                            486
+                        ],
+                        [
+                            303,
+                            498
+                        ],
+                        [
+                            89,
+                            496
+                        ]
+                    ]
+                },
+                {
+                    "text": "5a",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            544,
+                            484
+                        ],
+                        [
+                            566,
+                            484
+                        ],
+                        [
+                            566,
+                            497
+                        ],
+                        [
+                            544,
+                            497
+                        ]
+                    ]
+                },
+                {
+                    "text": "5b",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            672,
+                            498
+                        ],
+                        [
+                            696,
+                            498
+                        ],
+                        [
+                            696,
+                            517
+                        ],
+                        [
+                            672,
+                            517
+                        ]
+                    ]
+                },
+                {
+                    "text": "b",
+                    "confidence": 0.96973,
+                    "bounding_box": [
+                        [
+                            68,
+                            503
+                        ],
+                        [
+                            89,
+                            503
+                        ],
+                        [
+                            89,
+                            513
+                        ],
+                        [
+                            68,
+                            513
+                        ]
+                    ]
+                },
+                {
+                    "text": "Multiply line 5a by 92.35% (0.9235). If less than $100, enter -0-",
+                    "confidence": 0.99283,
+                    "bounding_box": [
+                        [
+                            87,
+                            502
+                        ],
+                        [
+                            443,
+                            502
+                        ],
+                        [
+                            443,
+                            514
+                        ],
+                        [
+                            87,
+                            514
+                        ]
+                    ]
+                },
+                {
+                    "text": "6",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            61,
+                            519
+                        ],
+                        [
+                            73,
+                            519
+                        ],
+                        [
+                            73,
+                            531
+                        ],
+                        [
+                            61,
+                            531
+                        ]
+                    ]
+                },
+                {
+                    "text": "Add lines 4c and 5b",
+                    "confidence": 0.99697,
+                    "bounding_box": [
+                        [
+                            87,
+                            518
+                        ],
+                        [
+                            214,
+                            518
+                        ],
+                        [
+                            214,
+                            531
+                        ],
+                        [
+                            87,
+                            531
+                        ]
+                    ]
+                },
+                {
+                    "text": "6",
+                    "confidence": 0.99902,
+                    "bounding_box": [
+                        [
+                            676,
+                            517
+                        ],
+                        [
+                            693,
+                            517
+                        ],
+                        [
+                            693,
+                            533
+                        ],
+                        [
+                            676,
+                            533
+                        ]
+                    ]
+                },
+                {
+                    "text": "/",
+                    "confidence": 0.80371,
+                    "bounding_box": [
+                        [
+                            64,
+                            539
+                        ],
+                        [
+                            69,
+                            539
+                        ],
+                        [
+                            69,
+                            547
+                        ],
+                        [
+                            64,
+                            547
+                        ]
+                    ]
+                },
+                {
+                    "text": "Maximum amount of combined wages and self-employment earnings subject to social security tax or",
+                    "confidence": 0.99446,
+                    "bounding_box": [
+                        [
+                            88,
+                            536
+                        ],
+                        [
+                            659,
+                            536
+                        ],
+                        [
+                            659,
+                            549
+                        ],
+                        [
+                            88,
+                            549
+                        ]
+                    ]
+                },
+                {
+                    "text": "7",
+                    "confidence": 0.99609,
+                    "bounding_box": [
+                        [
+                            677,
+                            549
+                        ],
+                        [
+                            691,
+                            549
+                        ],
+                        [
+                            691,
+                            565
+                        ],
+                        [
+                            677,
+                            565
+                        ]
+                    ]
+                },
+                {
+                    "text": "$176,100",
+                    "confidence": 0.99866,
+                    "bounding_box": [
+                        [
+                            731,
+                            548
+                        ],
+                        [
+                            799,
+                            548
+                        ],
+                        [
+                            799,
+                            565
+                        ],
+                        [
+                            731,
+                            565
+                        ]
+                    ]
+                },
+                {
+                    "text": "the 6.2% portion of the 7.65% railroad retirement (tier 1) tax for 2025",
+                    "confidence": 0.99038,
+                    "bounding_box": [
+                        [
+                            89,
+                            552
+                        ],
+                        [
+                            476,
+                            552
+                        ],
+                        [
+                            476,
+                            564
+                        ],
+                        [
+                            89,
+                            564
+                        ]
+                    ]
+                },
+                {
+                    "text": "8a",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            61,
+                            572
+                        ],
+                        [
+                            81,
+                            572
+                        ],
+                        [
+                            81,
+                            583
+                        ],
+                        [
+                            61,
+                            583
+                        ]
+                    ]
+                },
+                {
+                    "text": "Total social security wages and tips (total of boxes 3 and 7 on Form(s) W-2)",
+                    "confidence": 0.98907,
+                    "bounding_box": [
+                        [
+                            88,
+                            572
+                        ],
+                        [
+                            529,
+                            572
+                        ],
+                        [
+                            529,
+                            584
+                        ],
+                        [
+                            88,
+                            584
+                        ]
+                    ]
+                },
+                {
+                    "text": "and railroad retirement (tier 1) compensation. If $176,100 or more, skip lines",
+                    "confidence": 0.9853,
+                    "bounding_box": [
+                        [
+                            89,
+                            587
+                        ],
+                        [
+                            530,
+                            587
+                        ],
+                        [
+                            530,
+                            599
+                        ],
+                        [
+                            89,
+                            599
+                        ]
+                    ]
+                },
+                {
+                    "text": "8b through 10, and go to line 11",
+                    "confidence": 0.95663,
+                    "bounding_box": [
+                        [
+                            89,
+                            602
+                        ],
+                        [
+                            271,
+                            602
+                        ],
+                        [
+                            271,
+                            614
+                        ],
+                        [
+                            89,
+                            614
+                        ]
+                    ]
+                },
+                {
+                    "text": "8a",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            544,
+                            600
+                        ],
+                        [
+                            565,
+                            600
+                        ],
+                        [
+                            565,
+                            615
+                        ],
+                        [
+                            544,
+                            615
+                        ]
+                    ]
+                },
+                {
+                    "text": "Unreported tips subject to social security tax from Form 4137, line 10",
+                    "confidence": 0.99291,
+                    "bounding_box": [
+                        [
+                            87,
+                            619
+                        ],
+                        [
+                            482,
+                            619
+                        ],
+                        [
+                            482,
+                            631
+                        ],
+                        [
+                            87,
+                            631
+                        ]
+                    ]
+                },
+                {
+                    "text": "8b",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            542,
+                            615
+                        ],
+                        [
+                            566,
+                            615
+                        ],
+                        [
+                            566,
+                            634
+                        ],
+                        [
+                            542,
+                            634
+                        ]
+                    ]
+                },
+                {
+                    "text": "b",
+                    "confidence": 0.99902,
+                    "bounding_box": [
+                        [
+                            69,
+                            620
+                        ],
+                        [
+                            80,
+                            620
+                        ],
+                        [
+                            80,
+                            629
+                        ],
+                        [
+                            69,
+                            629
+                        ]
+                    ]
+                },
+                {
+                    "text": "c",
+                    "confidence": 0.98291,
+                    "bounding_box": [
+                        [
+                            68,
+                            636
+                        ],
+                        [
+                            80,
+                            636
+                        ],
+                        [
+                            80,
+                            646
+                        ],
+                        [
+                            68,
+                            646
+                        ]
+                    ]
+                },
+                {
+                    "text": "Wages subject to social security tax from Form 8919, line 10",
+                    "confidence": 0.98582,
+                    "bounding_box": [
+                        [
+                            87,
+                            635
+                        ],
+                        [
+                            431,
+                            635
+                        ],
+                        [
+                            431,
+                            647
+                        ],
+                        [
+                            87,
+                            647
+                        ]
+                    ]
+                },
+                {
+                    "text": "8c",
+                    "confidence": 0.99951,
+                    "bounding_box": [
+                        [
+                            540,
+                            633
+                        ],
+                        [
+                            567,
+                            633
+                        ],
+                        [
+                            567,
+                            650
+                        ],
+                        [
+                            540,
+                            650
+                        ]
+                    ]
+                },
+                {
+                    "text": "d",
+                    "confidence": 0.96143,
+                    "bounding_box": [
+                        [
+                            68,
+                            652
+                        ],
+                        [
+                            80,
+                            652
+                        ],
+                        [
+                            80,
+                            662
+                        ],
+                        [
+                            68,
+                            662
+                        ]
+                    ]
+                },
+                {
+                    "text": "Add lines 8a, 8b, and 8c . .",
+                    "confidence": 0.98866,
+                    "bounding_box": [
+                        [
+                            87,
+                            651
+                        ],
+                        [
+                            261,
+                            652
+                        ],
+                        [
+                            261,
+                            665
+                        ],
+                        [
+                            87,
+                            663
+                        ]
+                    ]
+                },
+                {
+                    "text": "8d",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            673,
+                            650
+                        ],
+                        [
+                            695,
+                            650
+                        ],
+                        [
+                            695,
+                            665
+                        ],
+                        [
+                            673,
+                            665
+                        ]
+                    ]
+                },
+                {
+                    "text": "9",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            60,
+                            668
+                        ],
+                        [
+                            77,
+                            668
+                        ],
+                        [
+                            77,
+                            681
+                        ],
+                        [
+                            60,
+                            681
+                        ]
+                    ]
+                },
+                {
+                    "text": "Subtract line 8d from line 7. If zero or less, enter -0- here and on line 10 and go to line 11",
+                    "confidence": 0.9926,
+                    "bounding_box": [
+                        [
+                            89,
+                            668
+                        ],
+                        [
+                            586,
+                            669
+                        ],
+                        [
+                            586,
+                            682
+                        ],
+                        [
+                            89,
+                            681
+                        ]
+                    ]
+                },
+                {
+                    "text": "9",
+                    "confidence": 0.99902,
+                    "bounding_box": [
+                        [
+                            676,
+                            666
+                        ],
+                        [
+                            693,
+                            666
+                        ],
+                        [
+                            693,
+                            682
+                        ],
+                        [
+                            676,
+                            682
+                        ]
+                    ]
+                },
+                {
+                    "text": "10",
+                    "confidence": 0.99951,
+                    "bounding_box": [
+                        [
+                            54,
+                            683
+                        ],
+                        [
+                            73,
+                            683
+                        ],
+                        [
+                            73,
+                            698
+                        ],
+                        [
+                            54,
+                            698
+                        ]
+                    ]
+                },
+                {
+                    "text": "Multiply the smaller of line 6 or line 9 by 12.4% (0.124) .",
+                    "confidence": 0.99415,
+                    "bounding_box": [
+                        [
+                            88,
+                            685
+                        ],
+                        [
+                            412,
+                            685
+                        ],
+                        [
+                            412,
+                            698
+                        ],
+                        [
+                            88,
+                            698
+                        ]
+                    ]
+                },
+                {
+                    "text": "10",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            674,
+                            683
+                        ],
+                        [
+                            695,
+                            683
+                        ],
+                        [
+                            695,
+                            698
+                        ],
+                        [
+                            674,
+                            698
+                        ]
+                    ]
+                },
+                {
+                    "text": "11",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            673,
+                            699
+                        ],
+                        [
+                            694,
+                            699
+                        ],
+                        [
+                            694,
+                            715
+                        ],
+                        [
+                            673,
+                            715
+                        ]
+                    ]
+                },
+                {
+                    "text": "11",
+                    "confidence": 0.97852,
+                    "bounding_box": [
+                        [
+                            53,
+                            700
+                        ],
+                        [
+                            72,
+                            700
+                        ],
+                        [
+                            72,
+                            715
+                        ],
+                        [
+                            53,
+                            715
+                        ]
+                    ]
+                },
+                {
+                    "text": "Multiply line 6 by 2.9% (0.029) . .",
+                    "confidence": 0.96703,
+                    "bounding_box": [
+                        [
+                            88,
+                            700
+                        ],
+                        [
+                            288,
+                            701
+                        ],
+                        [
+                            288,
+                            715
+                        ],
+                        [
+                            88,
+                            714
+                        ]
+                    ]
+                },
+                {
+                    "text": "12",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            53,
+                            718
+                        ],
+                        [
+                            73,
+                            718
+                        ],
+                        [
+                            73,
+                            732
+                        ],
+                        [
+                            53,
+                            732
+                        ]
+                    ]
+                },
+                {
+                    "text": "Self-employment tax. Add lines 10 and 11. Enter here and on Schedule 2 (Form 1040), line 4, or",
+                    "confidence": 0.98566,
+                    "bounding_box": [
+                        [
+                            88,
+                            720
+                        ],
+                        [
+                            661,
+                            720
+                        ],
+                        [
+                            661,
+                            732
+                        ],
+                        [
+                            88,
+                            732
+                        ]
+                    ]
+                },
+                {
+                    "text": "Form 1040-SS, Part I, line 3",
+                    "confidence": 0.99149,
+                    "bounding_box": [
+                        [
+                            89,
+                            733
+                        ],
+                        [
+                            254,
+                            734
+                        ],
+                        [
+                            254,
+                            748
+                        ],
+                        [
+                            89,
+                            747
+                        ]
+                    ]
+                },
+                {
+                    "text": "12",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            676,
+                            733
+                        ],
+                        [
+                            695,
+                            733
+                        ],
+                        [
+                            695,
+                            748
+                        ],
+                        [
+                            676,
+                            748
+                        ]
+                    ]
+                },
+                {
+                    "text": "13",
+                    "confidence": 0.88647,
+                    "bounding_box": [
+                        [
+                            53,
+                            751
+                        ],
+                        [
+                            74,
+                            751
+                        ],
+                        [
+                            74,
+                            764
+                        ],
+                        [
+                            53,
+                            764
+                        ]
+                    ]
+                },
+                {
+                    "text": "Deduction for one-half of self-employment tax.",
+                    "confidence": 0.99607,
+                    "bounding_box": [
+                        [
+                            88,
+                            752
+                        ],
+                        [
+                            368,
+                            752
+                        ],
+                        [
+                            368,
+                            764
+                        ],
+                        [
+                            88,
+                            764
+                        ]
+                    ]
+                },
+                {
+                    "text": "Multiply line 12 by 50% (0.50). Enter here and on Schedule 1 (Form 1040),",
+                    "confidence": 0.96872,
+                    "bounding_box": [
+                        [
+                            89,
+                            770
+                        ],
+                        [
+                            529,
+                            770
+                        ],
+                        [
+                            529,
+                            783
+                        ],
+                        [
+                            89,
+                            783
+                        ]
+                    ]
+                },
+                {
+                    "text": "line 15 .",
+                    "confidence": 0.98432,
+                    "bounding_box": [
+                        [
+                            88,
+                            784
+                        ],
+                        [
+                            142,
+                            784
+                        ],
+                        [
+                            142,
+                            798
+                        ],
+                        [
+                            88,
+                            798
+                        ]
+                    ]
+                },
+                {
+                    "text": "13",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            546,
+                            783
+                        ],
+                        [
+                            566,
+                            783
+                        ],
+                        [
+                            566,
+                            798
+                        ],
+                        [
+                            546,
+                            798
+                        ]
+                    ]
+                },
+                {
+                    "text": "For Paperwork Reduction Act Notice, see your tax return instructions.",
+                    "confidence": 0.99653,
+                    "bounding_box": [
+                        [
+                            50,
+                            801
+                        ],
+                        [
+                            419,
+                            803
+                        ],
+                        [
+                            419,
+                            816
+                        ],
+                        [
+                            50,
+                            814
+                        ]
+                    ]
+                },
+                {
+                    "text": "Cat. No. 11358Z",
+                    "confidence": 0.99827,
+                    "bounding_box": [
+                        [
+                            467,
+                            803
+                        ],
+                        [
+                            542,
+                            803
+                        ],
+                        [
+                            542,
+                            816
+                        ],
+                        [
+                            467,
+                            816
+                        ]
+                    ]
+                },
+                {
+                    "text": "Schedule SE (Form 1040) 2025 Created 5/7/25",
+                    "confidence": 0.98947,
+                    "bounding_box": [
+                        [
+                            590,
+                            803
+                        ],
+                        [
+                            800,
+                            803
+                        ],
+                        [
+                            800,
+                            815
+                        ],
+                        [
+                            590,
+                            815
+                        ]
+                    ]
+                }
+            ]
+        },
+        {
+            "page": 2,
+            "results": [
+                {
+                    "text": "Schedule SE (Form 1040) 2025",
+                    "confidence": 0.99623,
+                    "bounding_box": [
+                        [
+                            47,
+                            49
+                        ],
+                        [
+                            185,
+                            49
+                        ],
+                        [
+                            185,
+                            62
+                        ],
+                        [
+                            47,
+                            62
+                        ]
+                    ]
+                },
+                {
+                    "text": "Page 2",
+                    "confidence": 0.99268,
+                    "bounding_box": [
+                        [
+                            761,
+                            48
+                        ],
+                        [
+                            803,
+                            45
+                        ],
+                        [
+                            804,
+                            64
+                        ],
+                        [
+                            763,
+                            68
+                        ]
+                    ]
+                },
+                {
+                    "text": "Part II",
+                    "confidence": 0.94134,
+                    "bounding_box": [
+                        [
+                            49,
+                            65
+                        ],
+                        [
+                            103,
+                            65
+                        ],
+                        [
+                            103,
+                            81
+                        ],
+                        [
+                            49,
+                            81
+                        ]
+                    ]
+                },
+                {
+                    "text": "Optional Methods To Figure Net Earnings (see instructions)",
+                    "confidence": 0.9953,
+                    "bounding_box": [
+                        [
+                            115,
+                            66
+                        ],
+                        [
+                            502,
+                            66
+                        ],
+                        [
+                            502,
+                            80
+                        ],
+                        [
+                            115,
+                            80
+                        ]
+                    ]
+                },
+                {
+                    "text": "Farm Optional Method. You may use this method only if (a) your gross farm income' wasn't more than",
+                    "confidence": 0.97286,
+                    "bounding_box": [
+                        [
+                            49,
+                            85
+                        ],
+                        [
+                            661,
+                            86
+                        ],
+                        [
+                            661,
+                            100
+                        ],
+                        [
+                            49,
+                            99
+                        ]
+                    ]
+                },
+                {
+                    "text": "$10,860, or (b) your net farm profits\u00c2\u00b2 were less than $7,840.",
+                    "confidence": 0.99597,
+                    "bounding_box": [
+                        [
+                            47,
+                            100
+                        ],
+                        [
+                            382,
+                            101
+                        ],
+                        [
+                            382,
+                            116
+                        ],
+                        [
+                            47,
+                            115
+                        ]
+                    ]
+                },
+                {
+                    "text": "14",
+                    "confidence": 0.99756,
+                    "bounding_box": [
+                        [
+                            54,
+                            118
+                        ],
+                        [
+                            89,
+                            118
+                        ],
+                        [
+                            89,
+                            131
+                        ],
+                        [
+                            54,
+                            131
+                        ]
+                    ]
+                },
+                {
+                    "text": "Maximum income for optional methods",
+                    "confidence": 0.9936,
+                    "bounding_box": [
+                        [
+                            87,
+                            118
+                        ],
+                        [
+                            313,
+                            119
+                        ],
+                        [
+                            313,
+                            133
+                        ],
+                        [
+                            87,
+                            132
+                        ]
+                    ]
+                },
+                {
+                    "text": "14",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            672,
+                            116
+                        ],
+                        [
+                            700,
+                            116
+                        ],
+                        [
+                            700,
+                            133
+                        ],
+                        [
+                            672,
+                            133
+                        ]
+                    ]
+                },
+                {
+                    "text": "$7,240",
+                    "confidence": 0.98665,
+                    "bounding_box": [
+                        [
+                            746,
+                            112
+                        ],
+                        [
+                            803,
+                            112
+                        ],
+                        [
+                            803,
+                            134
+                        ],
+                        [
+                            746,
+                            134
+                        ]
+                    ]
+                },
+                {
+                    "text": ".",
+                    "confidence": 0.84619,
+                    "bounding_box": [
+                        [
+                            312,
+                            124
+                        ],
+                        [
+                            327,
+                            124
+                        ],
+                        [
+                            327,
+                            129
+                        ],
+                        [
+                            312,
+                            129
+                        ]
+                    ]
+                },
+                {
+                    "text": "15",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            53,
+                            134
+                        ],
+                        [
+                            74,
+                            134
+                        ],
+                        [
+                            74,
+                            149
+                        ],
+                        [
+                            53,
+                            149
+                        ]
+                    ]
+                },
+                {
+                    "text": "Enter the smaller of: two-thirds (\u00c2\u00b2/s) of gross farm income' (not less than zero) or $7,240. Also, include",
+                    "confidence": 0.9866,
+                    "bounding_box": [
+                        [
+                            89,
+                            135
+                        ],
+                        [
+                            659,
+                            135
+                        ],
+                        [
+                            659,
+                            149
+                        ],
+                        [
+                            89,
+                            149
+                        ]
+                    ]
+                },
+                {
+                    "text": "15",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            674,
+                            148
+                        ],
+                        [
+                            695,
+                            148
+                        ],
+                        [
+                            695,
+                            165
+                        ],
+                        [
+                            674,
+                            165
+                        ]
+                    ]
+                },
+                {
+                    "text": "this amount on line 4b above",
+                    "confidence": 0.9989,
+                    "bounding_box": [
+                        [
+                            88,
+                            150
+                        ],
+                        [
+                            254,
+                            151
+                        ],
+                        [
+                            254,
+                            165
+                        ],
+                        [
+                            88,
+                            164
+                        ]
+                    ]
+                },
+                {
+                    "text": "Nonfarm Optional Method. You may use this method only if (a) your net nonfarm profits\u00c2\u00b2 were less than $7,840",
+                    "confidence": 0.98871,
+                    "bounding_box": [
+                        [
+                            47,
+                            171
+                        ],
+                        [
+                            659,
+                            171
+                        ],
+                        [
+                            659,
+                            183
+                        ],
+                        [
+                            47,
+                            183
+                        ]
+                    ]
+                },
+                {
+                    "text": "and also less than 72.189% of your gross nonfarm income,' and (b) you had net earnings from self-employment",
+                    "confidence": 0.98777,
+                    "bounding_box": [
+                        [
+                            47,
+                            186
+                        ],
+                        [
+                            661,
+                            186
+                        ],
+                        [
+                            661,
+                            199
+                        ],
+                        [
+                            47,
+                            199
+                        ]
+                    ]
+                },
+                {
+                    "text": "of at least $400 in 2 of the prior 3 years. Caution: You may use this method no more than five times.",
+                    "confidence": 0.98466,
+                    "bounding_box": [
+                        [
+                            47,
+                            201
+                        ],
+                        [
+                            591,
+                            201
+                        ],
+                        [
+                            591,
+                            214
+                        ],
+                        [
+                            47,
+                            214
+                        ]
+                    ]
+                },
+                {
+                    "text": "16 Subtract line 15 from line 14.",
+                    "confidence": 0.9829,
+                    "bounding_box": [
+                        [
+                            52,
+                            218
+                        ],
+                        [
+                            255,
+                            218
+                        ],
+                        [
+                            255,
+                            231
+                        ],
+                        [
+                            52,
+                            231
+                        ]
+                    ]
+                },
+                {
+                    "text": "16",
+                    "confidence": 1,
+                    "bounding_box": [
+                        [
+                            672,
+                            215
+                        ],
+                        [
+                            698,
+                            215
+                        ],
+                        [
+                            698,
+                            234
+                        ],
+                        [
+                            672,
+                            234
+                        ]
+                    ]
+                },
+                {
+                    "text": "17",
+                    "confidence": 0.99805,
+                    "bounding_box": [
+                        [
+                            53,
+                            235
+                        ],
+                        [
+                            76,
+                            235
+                        ],
+                        [
+                            76,
+                            250
+                        ],
+                        [
+                            53,
+                            250
+                        ]
+                    ]
+                },
+                {
+                    "text": "Enter the smaller of: two-thirds (\u00c2\u00b2/s) of gross nonfarm income' (not less than zero) or the amount on",
+                    "confidence": 0.98148,
+                    "bounding_box": [
+                        [
+                            88,
+                            236
+                        ],
+                        [
+                            659,
+                            236
+                        ],
+                        [
+                            659,
+                            250
+                        ],
+                        [
+                            88,
+                            250
+                        ]
+                    ]
+                },
+                {
+                    "text": "line 16. Also, include this amount on line 4b above",
+                    "confidence": 0.9947,
+                    "bounding_box": [
+                        [
+                            89,
+                            252
+                        ],
+                        [
+                            372,
+                            252
+                        ],
+                        [
+                            372,
+                            265
+                        ],
+                        [
+                            89,
+                            265
+                        ]
+                    ]
+                },
+                {
+                    "text": "17",
+                    "confidence": 0.99902,
+                    "bounding_box": [
+                        [
+                            674,
+                            250
+                        ],
+                        [
+                            695,
+                            250
+                        ],
+                        [
+                            695,
+                            265
+                        ],
+                        [
+                            674,
+                            265
+                        ]
+                    ]
+                },
+                {
+                    "text": "1 From Sch. F, line 9; and Sch. K-1 (Form 1065), box 14, code B.",
+                    "confidence": 0.99001,
+                    "bounding_box": [
+                        [
+                            47,
+                            266
+                        ],
+                        [
+                            349,
+                            267
+                        ],
+                        [
+                            349,
+                            281
+                        ],
+                        [
+                            47,
+                            280
+                        ]
+                    ]
+                },
+                {
+                    "text": "3 From Sch. C, line 31; and Sch. K-1 (Form 1065), box 14, code A.",
+                    "confidence": 0.99208,
+                    "bounding_box": [
+                        [
+                            453,
+                            266
+                        ],
+                        [
+                            763,
+                            267
+                        ],
+                        [
+                            763,
+                            281
+                        ],
+                        [
+                            453,
+                            280
+                        ]
+                    ]
+                },
+                {
+                    "text": "2 From Sch. F, line 34; and Sch. K-1 (Form 1065), box 14, code A\u00e2\u0080\u0094minus the amount",
+                    "confidence": 0.98007,
+                    "bounding_box": [
+                        [
+                            47,
+                            280
+                        ],
+                        [
+                            449,
+                            282
+                        ],
+                        [
+                            449,
+                            296
+                        ],
+                        [
+                            47,
+                            293
+                        ]
+                    ]
+                },
+                {
+                    "text": "\u00e2\u0080\u009cFrom Sch. C, line 7; and Sch. K-1 (Form 1065), box 14, code C.",
+                    "confidence": 0.98106,
+                    "bounding_box": [
+                        [
+                            454,
+                            281
+                        ],
+                        [
+                            756,
+                            282
+                        ],
+                        [
+                            756,
+                            294
+                        ],
+                        [
+                            454,
+                            293
+                        ]
+                    ]
+                },
+                {
+                    "text": "you would have entered on line 1b had you not used the optional method.",
+                    "confidence": 0.99272,
+                    "bounding_box": [
+                        [
+                            53,
+                            293
+                        ],
+                        [
+                            400,
+                            293
+                        ],
+                        [
+                            400,
+                            305
+                        ],
+                        [
+                            53,
+                            305
+                        ]
+                    ]
+                },
+                {
+                    "text": "Schedule SE (Form 1040) 2025",
+                    "confidence": 0.99864,
+                    "bounding_box": [
+                        [
+                            658,
+                            312
+                        ],
+                        [
+                            800,
+                            311
+                        ],
+                        [
+                            800,
+                            324
+                        ],
+                        [
+                            658,
+                            325
+                        ]
+                    ]
+                }
+            ]
+        }
+    ]
+}

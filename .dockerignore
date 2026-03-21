@@ -1,0 +1,26 @@
+build/
+build_cpu/
+.git/
+.claude/
+__pycache__/
+.pytest_cache/
+*.pyc
+.DS_Store
+bench_docs/
+test_images/
+tests/test_data/
+benchmark/data/
+benchmark/results/
+.venv*/
+models/*.engine
+models/*.cache
+models/calibration_data/
+# .trt and .onnx files are included (models needed at runtime)
+*.log
+*.trt
+models/v3_original/
+models/ch_PP-OCRv4_det_server_infer/
+models/PP-OCRv5_server_det_infer/
+LICENSE
+README.md
+.clang-format

@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package ocr;
+
+service OCRService {
+  rpc Recognize (OCRRequest) returns (OCRResponse);
+  rpc RecognizeBatch (OCRBatchRequest) returns (OCRBatchResponse);
+}
+
+message OCRRequest {
+  bytes image = 1;
+}
+
+message OCRBatchRequest {
+  repeated bytes images = 1;
+  int32 det_batch_num = 2;
+}
+
+message BoundingBox {
+  repeated float x = 1;
+  repeated float y = 2;
+}
+
+message OCRResult {
+  string text = 1;
+  float confidence = 2;
+  repeated BoundingBox bounding_box = 3;
+}
+
+message OCRResponse {
+  repeated OCRResult results = 1;
+  int32 num_detections = 2;
+  // Fast path: pre-serialized JSON (same as HTTP response).
+  // When set, clients should use this instead of parsing repeated results.
+  // Eliminates ~455 heap allocations per response for 35 detections.
+  bytes json_response = 3;
+}
+
+message OCRBatchResponse {
+  repeated OCRResponse batch_results = 1;
+  int32 total_images = 2;
+}

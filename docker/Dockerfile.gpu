@@ -1,0 +1,72 @@
+# ============================================================
+# turbo-ocr GPU Dockerfile
+# ============================================================
+# Build:  docker build -f docker/Dockerfile.gpu -t turbo-ocr .
+# Run:    docker run --gpus all -p 8000:8000 turbo-ocr
+#
+# Models are auto-downloaded and converted during build.
+# To use your own models, mount: -v ./my_models:/app/models
+# ============================================================
+
+FROM nvcr.io/nvidia/tensorrt:26.01-py3
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    pkg-config \
+    libopencv-dev \
+    libboost-all-dev \
+    libgrpc++-dev \
+    libprotobuf-dev \
+    protobuf-compiler-grpc \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade cmake (base image has 3.24, need 3.17+ for CUDA C++20)
+ARG CMAKE_VERSION=3.31.6
+RUN cd /tmp && \
+    wget -q "https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz" && \
+    tar xzf cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz && \
+    cp -r cmake-${CMAKE_VERSION}-linux-x86_64/bin/* /usr/local/bin/ && \
+    cp -r cmake-${CMAKE_VERSION}-linux-x86_64/share/* /usr/local/share/ && \
+    rm -rf /tmp/cmake*
+
+# Install ONNX Runtime C++ SDK (for CPU mode)
+ARG ORT_VERSION=1.22.0
+RUN cd /tmp && \
+    wget -q "https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/onnxruntime-linux-x64-${ORT_VERSION}.tgz" && \
+    tar xzf onnxruntime-linux-x64-${ORT_VERSION}.tgz && \
+    cp -r onnxruntime-linux-x64-${ORT_VERSION}/include/* /usr/local/include/ && \
+    cp onnxruntime-linux-x64-${ORT_VERSION}/lib/libonnxruntime.so* /usr/local/lib/ && \
+    ldconfig && rm -rf /tmp/onnxruntime*
+
+WORKDIR /app
+COPY . .
+
+# Install fastpdf2png v2.0 (PDF renderer — daemon pool, raw PPM, /dev/shm)
+RUN bash scripts/install_fastpdf2png.sh && \
+    cp bin/libpdfium.so /usr/lib/ && ldconfig
+
+# Build GPU mode (HTTP + gRPC)
+RUN mkdir -p build && cd build && \
+    cmake .. -DTENSORRT_DIR=/usr/lib/x86_64-linux-gnu && \
+    make -j$(nproc)
+
+# Build CPU mode (HTTP only, ONNX Runtime) -- skip for now, has build issues
+# RUN mkdir -p build_cpu && cd build_cpu && \
+#     cmake .. -DUSE_CPU_ONLY=ON && \
+#     make -j$(nproc)
+
+# ONNX models + keys.txt are included in the repo.
+# TRT engines (.trt) are GPU-specific and must be built at RUNTIME (not during docker build).
+# On first run, if .trt files don't exist, the server uses .onnx via CPU fallback
+# or you can convert manually:
+#   docker run --gpus all turbo-ocr python3 scripts/convert_onnx_to_trt.py \
+#     --model models/det.onnx --output models/det.trt --type det
+
+EXPOSE 8000 50051
+
+# Entrypoint builds TRT engines on first run (needs GPU)
+COPY scripts/entrypoint.sh /app/scripts/
+ENTRYPOINT ["/app/scripts/entrypoint.sh"]
+CMD ["./build/paddle_highspeed_cpp"]

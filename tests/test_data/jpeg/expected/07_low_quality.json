@@ -1,0 +1,180 @@
+{
+    "results": [
+        {
+            "text": "}$",
+            "confidence": 0.75781,
+            "bounding_box": [
+                [
+                    1,
+                    3
+                ],
+                [
+                    43,
+                    0
+                ],
+                [
+                    47,
+                    41
+                ],
+                [
+                    5,
+                    44
+                ]
+            ]
+        },
+        {
+            "text": "7 65",
+            "confidence": 0.89502,
+            "bounding_box": [
+                [
+                    1,
+                    52
+                ],
+                [
+                    47,
+                    52
+                ],
+                [
+                    47,
+                    75
+                ],
+                [
+                    1,
+                    75
+                ]
+            ]
+        },
+        {
+            "text": "Weht = goDI'd lite youto gatherall your blongings",
+            "confidence": 0.86845,
+            "bounding_box": [
+                [
+                    8,
+                    150
+                ],
+                [
+                    1012,
+                    148
+                ],
+                [
+                    1012,
+                    212
+                ],
+                [
+                    8,
+                    213
+                ]
+            ]
+        },
+        {
+            "text": "to your problem.",
+            "confidence": 0.86427,
+            "bounding_box": [
+                [
+                    272,
+                    310
+                ],
+                [
+                    623,
+                    307
+                ],
+                [
+                    623,
+                    351
+                ],
+                [
+                    272,
+                    352
+                ]
+            ]
+        },
+        {
+            "text": "(3 It's quite lobvious that they are joing tomove",
+            "confidence": 0.91049,
+            "bounding_box": [
+                [
+                    228,
+                    343
+                ],
+                [
+                    1209,
+                    345
+                ],
+                [
+                    1209,
+                    420
+                ],
+                [
+                    228,
+                    418
+                ]
+            ]
+        },
+        {
+            "text": "to a rich heighbourhood.",
+            "confidence": 0.9531,
+            "bounding_box": [
+                [
+                    291,
+                    421
+                ],
+                [
+                    751,
+                    410
+                ],
+                [
+                    752,
+                    469
+                ],
+                [
+                    292,
+                    478
+                ]
+            ]
+        },
+        {
+            "text": "\u00e2\u0091\u00a3 Don't rewch the lcondusion, that he is hot rich",
+            "confidence": 0.83403,
+            "bounding_box": [
+                [
+                    237,
+                    495
+                ],
+                [
+                    1152,
+                    490
+                ],
+                [
+                    1152,
+                    553
+                ],
+                [
+                    237,
+                    559
+                ]
+            ]
+        },
+        {
+            "text": "only beicainse he is not driving ah expensive car.",
+            "confidence": 0.9182,
+            "bounding_box": [
+                [
+                    299,
+                    566
+                ],
+                [
+                    1137,
+                    568
+                ],
+                [
+                    1137,
+                    622
+                ],
+                [
+                    299,
+                    621
+                ]
+            ]
+        }
+    ]
+}

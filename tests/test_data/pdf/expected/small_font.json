@@ -1,0 +1,4722 @@
+{
+  "pages": [
+    {
+      "page": 1,
+      "results": [
+        {
+          "text": "SCHEDULE 1",
+          "confidence": 0.9833,
+          "bounding_box": [
+            [
+              47,
+              46
+            ],
+            [
+              140,
+              46
+            ],
+            [
+              140,
+              63
+            ],
+            [
+              47,
+              63
+            ]
+          ]
+        },
+        {
+          "text": "OMB No. 1545-0074",
+          "confidence": 0.99971,
+          "bounding_box": [
+            [
+              692,
+              48
+            ],
+            [
+              786,
+              49
+            ],
+            [
+              786,
+              63
+            ],
+            [
+              692,
+              62
+            ]
+          ]
+        },
+        {
+          "text": "Additional Income and Adjustments to Income",
+          "confidence": 0.9997,
+          "bounding_box": [
+            [
+              223,
+              53
+            ],
+            [
+              627,
+              54
+            ],
+            [
+              627,
+              71
+            ],
+            [
+              223,
+              70
+            ]
+          ]
+        },
+        {
+          "text": "(Form 1040)",
+          "confidence": 0.99991,
+          "bounding_box": [
+            [
+              47,
+              63
+            ],
+            [
+              129,
+              63
+            ],
+            [
+              129,
+              80
+            ],
+            [
+              47,
+              80
+            ]
+          ]
+        },
+        {
+          "text": "2025",
+          "confidence": 0.99976,
+          "bounding_box": [
+            [
+              699,
+              64
+            ],
+            [
+              780,
+              64
+            ],
+            [
+              780,
+              95
+            ],
+            [
+              699,
+              95
+            ]
+          ]
+        },
+        {
+          "text": "Attach to Form 1040, 1040-SR, or 1040-NR.",
+          "confidence": 0.99879,
+          "bounding_box": [
+            [
+              310,
+              79
+            ],
+            [
+              538,
+              79
+            ],
+            [
+              538,
+              92
+            ],
+            [
+              310,
+              92
+            ]
+          ]
+        },
+        {
+          "text": "Department of the Treasury",
+          "confidence": 0.98864,
+          "bounding_box": [
+            [
+              47,
+              87
+            ],
+            [
+              166,
+              88
+            ],
+            [
+              166,
+              102
+            ],
+            [
+              47,
+              101
+            ]
+          ]
+        },
+        {
+          "text": "Go to www.irs.gov/Form1040 for instructions and the latest information.",
+          "confidence": 0.98796,
+          "bounding_box": [
+            [
+              233,
+              96
+            ],
+            [
+              616,
+              96
+            ],
+            [
+              616,
+              109
+            ],
+            [
+              233,
+              109
+            ]
+          ]
+        },
+        {
+          "text": "Attachment",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              694,
+              92
+            ],
+            [
+              750,
+              92
+            ],
+            [
+              750,
+              105
+            ],
+            [
+              694,
+              105
+            ]
+          ]
+        },
+        {
+          "text": "Intemal Revenue Service",
+          "confidence": 0.98773,
+          "bounding_box": [
+            [
+              47,
+              101
+            ],
+            [
+              156,
+              101
+            ],
+            [
+              156,
+              113
+            ],
+            [
+              47,
+              113
+            ]
+          ]
+        },
+        {
+          "text": "Sequence No.01",
+          "confidence": 0.96889,
+          "bounding_box": [
+            [
+              694,
+              101
+            ],
+            [
+              776,
+              97
+            ],
+            [
+              776,
+              112
+            ],
+            [
+              694,
+              116
+            ]
+          ]
+        },
+        {
+          "text": "Name(s) shown on Form 1040, 1040-SR, or 1040-NR",
+          "confidence": 0.99656,
+          "bounding_box": [
+            [
+              47,
+              116
+            ],
+            [
+              314,
+              116
+            ],
+            [
+              314,
+              128
+            ],
+            [
+              47,
+              128
+            ]
+          ]
+        },
+        {
+          "text": "Your social security number",
+          "confidence": 0.9992,
+          "bounding_box": [
+            [
+              624,
+              116
+            ],
+            [
+              775,
+              116
+            ],
+            [
+              775,
+              128
+            ],
+            [
+              624,
+              128
+            ]
+          ]
+        },
+        {
+          "text": "For 2025, enter the amount reported to you on Form(s) 1099-K that was included in error or for personal items",
+          "confidence": 0.99399,
+          "bounding_box": [
+            [
+              47,
+              154
+            ],
+            [
+              661,
+              154
+            ],
+            [
+              661,
+              166
+            ],
+            [
+              47,
+              166
+            ]
+          ]
+        },
+        {
+          "text": "sold at a loss",
+          "confidence": 0.99951,
+          "bounding_box": [
+            [
+              47,
+              168
+            ],
+            [
+              127,
+              168
+            ],
+            [
+              127,
+              181
+            ],
+            [
+              47,
+              181
+            ]
+          ]
+        },
+        {
+          "text": "Note: The remaining amounts reported to you on Form(s) 1099-K should be reported elsewhere on your return depending on the",
+          "confidence": 0.99023,
+          "bounding_box": [
+            [
+              49,
+              189
+            ],
+            [
+              767,
+              190
+            ],
+            [
+              767,
+              204
+            ],
+            [
+              49,
+              203
+            ]
+          ]
+        },
+        {
+          "text": "nature of the transaction. See www.irs.gov/1099k.",
+          "confidence": 0.98824,
+          "bounding_box": [
+            [
+              47,
+              205
+            ],
+            [
+              327,
+              204
+            ],
+            [
+              327,
+              218
+            ],
+            [
+              47,
+              219
+            ]
+          ]
+        },
+        {
+          "text": "Part I  Additional Income",
+          "confidence": 0.94426,
+          "bounding_box": [
+            [
+              59,
+              225
+            ],
+            [
+              241,
+              226
+            ],
+            [
+              241,
+              239
+            ],
+            [
+              59,
+              238
+            ]
+          ]
+        },
+        {
+          "text": "1",
+          "confidence": 0.9873,
+          "bounding_box": [
+            [
+              64,
+              246
+            ],
+            [
+              69,
+              246
+            ],
+            [
+              69,
+              253
+            ],
+            [
+              64,
+              253
+            ]
+          ]
+        },
+        {
+          "text": "Taxable refunds, credits, or offsets of state and local income taxes .",
+          "confidence": 0.99257,
+          "bounding_box": [
+            [
+              88,
+              244
+            ],
+            [
+              471,
+              244
+            ],
+            [
+              471,
+              257
+            ],
+            [
+              88,
+              257
+            ]
+          ]
+        },
+        {
+          "text": "1",
+          "confidence": 0.9668,
+          "bounding_box": [
+            [
+              678,
+              244
+            ],
+            [
+              689,
+              244
+            ],
+            [
+              689,
+              254
+            ],
+            [
+              678,
+              254
+            ]
+          ]
+        },
+        {
+          "text": "2a",
+          "confidence": 0.99951,
+          "bounding_box": [
+            [
+              61,
+              259
+            ],
+            [
+              88,
+              259
+            ],
+            [
+              88,
+              273
+            ],
+            [
+              61,
+              273
+            ]
+          ]
+        },
+        {
+          "text": "2a",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              673,
+              258
+            ],
+            [
+              694,
+              258
+            ],
+            [
+              694,
+              273
+            ],
+            [
+              673,
+              273
+            ]
+          ]
+        },
+        {
+          "text": "Alimony received",
+          "confidence": 0.99927,
+          "bounding_box": [
+            [
+              85,
+              260
+            ],
+            [
+              188,
+              260
+            ],
+            [
+              188,
+              273
+            ],
+            [
+              85,
+              273
+            ]
+          ]
+        },
+        {
+          "text": "b",
+          "confidence": 0.97314,
+          "bounding_box": [
+            [
+              67,
+              277
+            ],
+            [
+              89,
+              277
+            ],
+            [
+              89,
+              288
+            ],
+            [
+              67,
+              288
+            ]
+          ]
+        },
+        {
+          "text": "Date of original divorce or separation agreement (see instructions):",
+          "confidence": 0.99117,
+          "bounding_box": [
+            [
+              85,
+              276
+            ],
+            [
+              461,
+              277
+            ],
+            [
+              461,
+              290
+            ],
+            [
+              85,
+              289
+            ]
+          ]
+        },
+        {
+          "text": "3",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              60,
+              294
+            ],
+            [
+              74,
+              294
+            ],
+            [
+              74,
+              306
+            ],
+            [
+              60,
+              306
+            ]
+          ]
+        },
+        {
+          "text": "Business income or (loss). Attach Schedule C .",
+          "confidence": 0.98977,
+          "bounding_box": [
+            [
+              88,
+              293
+            ],
+            [
+              360,
+              293
+            ],
+            [
+              360,
+              306
+            ],
+            [
+              88,
+              306
+            ]
+          ]
+        },
+        {
+          "text": "3",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              677,
+              291
+            ],
+            [
+              692,
+              291
+            ],
+            [
+              692,
+              308
+            ],
+            [
+              677,
+              308
+            ]
+          ]
+        },
+        {
+          "text": "4",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              60,
+              309
+            ],
+            [
+              73,
+              309
+            ],
+            [
+              73,
+              322
+            ],
+            [
+              60,
+              322
+            ]
+          ]
+        },
+        {
+          "text": "Other gains or (losses). Check if any from Form(s):  4797",
+          "confidence": 0.99209,
+          "bounding_box": [
+            [
+              88,
+              308
+            ],
+            [
+              431,
+              308
+            ],
+            [
+              431,
+              322
+            ],
+            [
+              88,
+              322
+            ]
+          ]
+        },
+        {
+          "text": "4684",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              445,
+              308
+            ],
+            [
+              498,
+              308
+            ],
+            [
+              498,
+              322
+            ],
+            [
+              445,
+              322
+            ]
+          ]
+        },
+        {
+          "text": "4",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              677,
+              308
+            ],
+            [
+              692,
+              308
+            ],
+            [
+              692,
+              323
+            ],
+            [
+              677,
+              323
+            ]
+          ]
+        },
+        {
+          "text": "5",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              60,
+              327
+            ],
+            [
+              73,
+              327
+            ],
+            [
+              73,
+              339
+            ],
+            [
+              60,
+              339
+            ]
+          ]
+        },
+        {
+          "text": "Rental real estate, royalties, partnerships, S corporations, trusts, etc. Attach Schedule E.",
+          "confidence": 0.99536,
+          "bounding_box": [
+            [
+              87,
+              327
+            ],
+            [
+              584,
+              327
+            ],
+            [
+              584,
+              339
+            ],
+            [
+              87,
+              339
+            ]
+          ]
+        },
+        {
+          "text": "5",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              677,
+              324
+            ],
+            [
+              692,
+              324
+            ],
+            [
+              692,
+              340
+            ],
+            [
+              677,
+              340
+            ]
+          ]
+        },
+        {
+          "text": "6",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              60,
+              344
+            ],
+            [
+              73,
+              344
+            ],
+            [
+              73,
+              356
+            ],
+            [
+              60,
+              356
+            ]
+          ]
+        },
+        {
+          "text": "Farm income or (loss). Attach Schedule F",
+          "confidence": 0.99302,
+          "bounding_box": [
+            [
+              88,
+              343
+            ],
+            [
+              322,
+              344
+            ],
+            [
+              322,
+              358
+            ],
+            [
+              88,
+              356
+            ]
+          ]
+        },
+        {
+          "text": "6",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              676,
+              341
+            ],
+            [
+              692,
+              341
+            ],
+            [
+              692,
+              358
+            ],
+            [
+              676,
+              358
+            ]
+          ]
+        },
+        {
+          "text": "Unemployment compensation. If you repaid a 2025 overpayment (see instructions), check here \u00cf\u0083 and",
+          "confidence": 0.98834,
+          "bounding_box": [
+            [
+              88,
+              360
+            ],
+            [
+              661,
+              360
+            ],
+            [
+              661,
+              372
+            ],
+            [
+              88,
+              372
+            ]
+          ]
+        },
+        {
+          "text": "enter amount repaid:",
+          "confidence": 0.9979,
+          "bounding_box": [
+            [
+              87,
+              376
+            ],
+            [
+              209,
+              376
+            ],
+            [
+              209,
+              391
+            ],
+            [
+              87,
+              391
+            ]
+          ]
+        },
+        {
+          "text": "7",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              678,
+              376
+            ],
+            [
+              691,
+              376
+            ],
+            [
+              691,
+              388
+            ],
+            [
+              678,
+              388
+            ]
+          ]
+        },
+        {
+          "text": "8",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              61,
+              393
+            ],
+            [
+              73,
+              393
+            ],
+            [
+              73,
+              406
+            ],
+            [
+              61,
+              406
+            ]
+          ]
+        },
+        {
+          "text": "Other income:",
+          "confidence": 0.99992,
+          "bounding_box": [
+            [
+              88,
+              393
+            ],
+            [
+              170,
+              394
+            ],
+            [
+              170,
+              408
+            ],
+            [
+              88,
+              406
+            ]
+          ]
+        },
+        {
+          "text": "8a",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              544,
+              408
+            ],
+            [
+              566,
+              408
+            ],
+            [
+              566,
+              423
+            ],
+            [
+              544,
+              423
+            ]
+          ]
+        },
+        {
+          "text": "a",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              67,
+              411
+            ],
+            [
+              80,
+              411
+            ],
+            [
+              80,
+              423
+            ],
+            [
+              67,
+              423
+            ]
+          ]
+        },
+        {
+          "text": "Net operating loss",
+          "confidence": 0.9844,
+          "bounding_box": [
+            [
+              87,
+              410
+            ],
+            [
+              194,
+              410
+            ],
+            [
+              194,
+              423
+            ],
+            [
+              87,
+              423
+            ]
+          ]
+        },
+        {
+          "text": "b",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              68,
+              427
+            ],
+            [
+              80,
+              427
+            ],
+            [
+              80,
+              439
+            ],
+            [
+              68,
+              439
+            ]
+          ]
+        },
+        {
+          "text": "Gambling . .",
+          "confidence": 0.95496,
+          "bounding_box": [
+            [
+              87,
+              424
+            ],
+            [
+              174,
+              429
+            ],
+            [
+              174,
+              442
+            ],
+            [
+              87,
+              439
+            ]
+          ]
+        },
+        {
+          "text": "8b",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              543,
+              425
+            ],
+            [
+              565,
+              425
+            ],
+            [
+              565,
+              440
+            ],
+            [
+              543,
+              440
+            ]
+          ]
+        },
+        {
+          "text": "c",
+          "confidence": 0.99316,
+          "bounding_box": [
+            [
+              68,
+              446
+            ],
+            [
+              80,
+              446
+            ],
+            [
+              80,
+              455
+            ],
+            [
+              68,
+              455
+            ]
+          ]
+        },
+        {
+          "text": "Cancellation of debt",
+          "confidence": 0.99778,
+          "bounding_box": [
+            [
+              87,
+              443
+            ],
+            [
+              203,
+              443
+            ],
+            [
+              203,
+              456
+            ],
+            [
+              87,
+              456
+            ]
+          ]
+        },
+        {
+          "text": "8c",
+          "confidence": 0.99951,
+          "bounding_box": [
+            [
+              543,
+              441
+            ],
+            [
+              565,
+              441
+            ],
+            [
+              565,
+              457
+            ],
+            [
+              543,
+              457
+            ]
+          ]
+        },
+        {
+          "text": "Foreign earned income exclusion from Form 2555",
+          "confidence": 0.99989,
+          "bounding_box": [
+            [
+              85,
+              459
+            ],
+            [
+              368,
+              459
+            ],
+            [
+              368,
+              473
+            ],
+            [
+              85,
+              473
+            ]
+          ]
+        },
+        {
+          "text": "8d",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              542,
+              457
+            ],
+            [
+              567,
+              457
+            ],
+            [
+              567,
+              474
+            ],
+            [
+              542,
+              474
+            ]
+          ]
+        },
+        {
+          "text": "a",
+          "confidence": 0.80176,
+          "bounding_box": [
+            [
+              70,
+              462
+            ],
+            [
+              88,
+              462
+            ],
+            [
+              88,
+              470
+            ],
+            [
+              70,
+              470
+            ]
+          ]
+        },
+        {
+          "text": "e",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              68,
+              479
+            ],
+            [
+              80,
+              479
+            ],
+            [
+              80,
+              488
+            ],
+            [
+              68,
+              488
+            ]
+          ]
+        },
+        {
+          "text": "Income from Form 8853",
+          "confidence": 0.99991,
+          "bounding_box": [
+            [
+              87,
+              477
+            ],
+            [
+              225,
+              477
+            ],
+            [
+              225,
+              489
+            ],
+            [
+              87,
+              489
+            ]
+          ]
+        },
+        {
+          "text": "8e",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              543,
+              473
+            ],
+            [
+              566,
+              473
+            ],
+            [
+              566,
+              492
+            ],
+            [
+              543,
+              492
+            ]
+          ]
+        },
+        {
+          "text": "f",
+          "confidence": 0.95605,
+          "bounding_box": [
+            [
+              68,
+              495
+            ],
+            [
+              80,
+              495
+            ],
+            [
+              80,
+              503
+            ],
+            [
+              68,
+              503
+            ]
+          ]
+        },
+        {
+          "text": "Income from Form 8889",
+          "confidence": 0.99981,
+          "bounding_box": [
+            [
+              87,
+              493
+            ],
+            [
+              225,
+              493
+            ],
+            [
+              225,
+              505
+            ],
+            [
+              87,
+              505
+            ]
+          ]
+        },
+        {
+          "text": "8f",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              544,
+              492
+            ],
+            [
+              565,
+              492
+            ],
+            [
+              565,
+              506
+            ],
+            [
+              544,
+              506
+            ]
+          ]
+        },
+        {
+          "text": "8g",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              542,
+              506
+            ],
+            [
+              567,
+              506
+            ],
+            [
+              567,
+              526
+            ],
+            [
+              542,
+              526
+            ]
+          ]
+        },
+        {
+          "text": "g",
+          "confidence": 0.71973,
+          "bounding_box": [
+            [
+              69,
+              513
+            ],
+            [
+              88,
+              513
+            ],
+            [
+              88,
+              523
+            ],
+            [
+              69,
+              523
+            ]
+          ]
+        },
+        {
+          "text": "Alaska Permanent Fund dividends",
+          "confidence": 0.9972,
+          "bounding_box": [
+            [
+              87,
+              510
+            ],
+            [
+              279,
+              510
+            ],
+            [
+              279,
+              523
+            ],
+            [
+              87,
+              523
+            ]
+          ]
+        },
+        {
+          "text": "h",
+          "confidence": 0.78809,
+          "bounding_box": [
+            [
+              68,
+              527
+            ],
+            [
+              81,
+              527
+            ],
+            [
+              81,
+              539
+            ],
+            [
+              68,
+              539
+            ]
+          ]
+        },
+        {
+          "text": "Jury duty pay",
+          "confidence": 0.9816,
+          "bounding_box": [
+            [
+              85,
+              526
+            ],
+            [
+              166,
+              526
+            ],
+            [
+              166,
+              540
+            ],
+            [
+              85,
+              540
+            ]
+          ]
+        },
+        {
+          "text": "8h",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              542,
+              524
+            ],
+            [
+              566,
+              524
+            ],
+            [
+              566,
+              542
+            ],
+            [
+              542,
+              542
+            ]
+          ]
+        },
+        {
+          "text": "Prizes and awards",
+          "confidence": 0.99314,
+          "bounding_box": [
+            [
+              87,
+              543
+            ],
+            [
+              195,
+              543
+            ],
+            [
+              195,
+              556
+            ],
+            [
+              87,
+              556
+            ]
+          ]
+        },
+        {
+          "text": "8i",
+          "confidence": 0.99951,
+          "bounding_box": [
+            [
+              544,
+              542
+            ],
+            [
+              564,
+              542
+            ],
+            [
+              564,
+              557
+            ],
+            [
+              544,
+              557
+            ]
+          ]
+        },
+        {
+          "text": "Activity not engaged in for profit income",
+          "confidence": 0.99998,
+          "bounding_box": [
+            [
+              87,
+              559
+            ],
+            [
+              313,
+              560
+            ],
+            [
+              313,
+              574
+            ],
+            [
+              87,
+              573
+            ]
+          ]
+        },
+        {
+          "text": "8j",
+          "confidence": 0.99756,
+          "bounding_box": [
+            [
+              545,
+              558
+            ],
+            [
+              564,
+              558
+            ],
+            [
+              564,
+              575
+            ],
+            [
+              545,
+              575
+            ]
+          ]
+        },
+        {
+          "text": "k",
+          "confidence": 0.99805,
+          "bounding_box": [
+            [
+              67,
+              578
+            ],
+            [
+              80,
+              578
+            ],
+            [
+              80,
+              588
+            ],
+            [
+              67,
+              588
+            ]
+          ]
+        },
+        {
+          "text": "Stock options",
+          "confidence": 0.99568,
+          "bounding_box": [
+            [
+              87,
+              576
+            ],
+            [
+              171,
+              576
+            ],
+            [
+              171,
+              589
+            ],
+            [
+              87,
+              589
+            ]
+          ]
+        },
+        {
+          "text": "8k",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              543,
+              574
+            ],
+            [
+              566,
+              574
+            ],
+            [
+              566,
+              590
+            ],
+            [
+              543,
+              590
+            ]
+          ]
+        },
+        {
+          "text": "Income from the rental of personal property if you engaged in the rental for",
+          "confidence": 0.99401,
+          "bounding_box": [
+            [
+              88,
+              595
+            ],
+            [
+              531,
+              595
+            ],
+            [
+              531,
+              607
+            ],
+            [
+              88,
+              607
+            ]
+          ]
+        },
+        {
+          "text": "profit but were not in the business of renting such property",
+          "confidence": 0.99319,
+          "bounding_box": [
+            [
+              88,
+              608
+            ],
+            [
+              419,
+              610
+            ],
+            [
+              419,
+              623
+            ],
+            [
+              88,
+              622
+            ]
+          ]
+        },
+        {
+          "text": "8l",
+          "confidence": 0.97021,
+          "bounding_box": [
+            [
+              544,
+              607
+            ],
+            [
+              562,
+              607
+            ],
+            [
+              562,
+              623
+            ],
+            [
+              544,
+              623
+            ]
+          ]
+        },
+        {
+          "text": "m Olympic and Paralympic medals and UsOC prize money (see instructions)",
+          "confidence": 0.9838,
+          "bounding_box": [
+            [
+              68,
+              627
+            ],
+            [
+              505,
+              627
+            ],
+            [
+              505,
+              639
+            ],
+            [
+              68,
+              639
+            ]
+          ]
+        },
+        {
+          "text": "8m",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              540,
+              623
+            ],
+            [
+              568,
+              623
+            ],
+            [
+              568,
+              642
+            ],
+            [
+              540,
+              642
+            ]
+          ]
+        },
+        {
+          "text": "n",
+          "confidence": 0.91113,
+          "bounding_box": [
+            [
+              68,
+              645
+            ],
+            [
+              89,
+              645
+            ],
+            [
+              89,
+              655
+            ],
+            [
+              68,
+              655
+            ]
+          ]
+        },
+        {
+          "text": "Section 951(a) inclusion (see instructions)",
+          "confidence": 0.99104,
+          "bounding_box": [
+            [
+              85,
+              644
+            ],
+            [
+              322,
+              644
+            ],
+            [
+              322,
+              657
+            ],
+            [
+              85,
+              657
+            ]
+          ]
+        },
+        {
+          "text": "8n",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              542,
+              642
+            ],
+            [
+              567,
+              642
+            ],
+            [
+              567,
+              659
+            ],
+            [
+              542,
+              659
+            ]
+          ]
+        },
+        {
+          "text": "Section 951A(a) inclusion (see instructions) .",
+          "confidence": 0.98533,
+          "bounding_box": [
+            [
+              85,
+              659
+            ],
+            [
+              341,
+              660
+            ],
+            [
+              341,
+              674
+            ],
+            [
+              85,
+              673
+            ]
+          ]
+        },
+        {
+          "text": "80",
+          "confidence": 0.94067,
+          "bounding_box": [
+            [
+              542,
+              657
+            ],
+            [
+              566,
+              657
+            ],
+            [
+              566,
+              675
+            ],
+            [
+              542,
+              675
+            ]
+          ]
+        },
+        {
+          "text": "o",
+          "confidence": 0.74023,
+          "bounding_box": [
+            [
+              68,
+              661
+            ],
+            [
+              89,
+              661
+            ],
+            [
+              89,
+              671
+            ],
+            [
+              68,
+              671
+            ]
+          ]
+        },
+        {
+          "text": "P",
+          "confidence": 0.74512,
+          "bounding_box": [
+            [
+              68,
+              679
+            ],
+            [
+              89,
+              677
+            ],
+            [
+              90,
+              688
+            ],
+            [
+              69,
+              690
+            ]
+          ]
+        },
+        {
+          "text": "Section 461(l) excess business loss adjustment",
+          "confidence": 0.9946,
+          "bounding_box": [
+            [
+              85,
+              676
+            ],
+            [
+              355,
+              676
+            ],
+            [
+              355,
+              689
+            ],
+            [
+              85,
+              689
+            ]
+          ]
+        },
+        {
+          "text": "8p",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              542,
+              674
+            ],
+            [
+              566,
+              674
+            ],
+            [
+              566,
+              692
+            ],
+            [
+              542,
+              692
+            ]
+          ]
+        },
+        {
+          "text": "Taxable distributions from an ABLE account (see instructions)",
+          "confidence": 0.99624,
+          "bounding_box": [
+            [
+              87,
+              693
+            ],
+            [
+              433,
+              693
+            ],
+            [
+              433,
+              706
+            ],
+            [
+              87,
+              706
+            ]
+          ]
+        },
+        {
+          "text": "8q",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              542,
+              691
+            ],
+            [
+              566,
+              691
+            ],
+            [
+              566,
+              709
+            ],
+            [
+              542,
+              709
+            ]
+          ]
+        },
+        {
+          "text": "Scholarship and fellowship grants not reported on Form W-2",
+          "confidence": 0.993,
+          "bounding_box": [
+            [
+              88,
+              709
+            ],
+            [
+              431,
+              709
+            ],
+            [
+              431,
+              723
+            ],
+            [
+              88,
+              723
+            ]
+          ]
+        },
+        {
+          "text": "8r",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              543,
+              708
+            ],
+            [
+              564,
+              708
+            ],
+            [
+              564,
+              723
+            ],
+            [
+              543,
+              723
+            ]
+          ]
+        },
+        {
+          "text": "Nontaxable amount of Medicaid waiver payments included on Form 1040, line",
+          "confidence": 0.99545,
+          "bounding_box": [
+            [
+              87,
+              728
+            ],
+            [
+              530,
+              728
+            ],
+            [
+              530,
+              740
+            ],
+            [
+              87,
+              740
+            ]
+          ]
+        },
+        {
+          "text": "s",
+          "confidence": 0.99805,
+          "bounding_box": [
+            [
+              70,
+              731
+            ],
+            [
+              80,
+              731
+            ],
+            [
+              80,
+              738
+            ],
+            [
+              70,
+              738
+            ]
+          ]
+        },
+        {
+          "text": "1a or 1d",
+          "confidence": 0.99335,
+          "bounding_box": [
+            [
+              88,
+              743
+            ],
+            [
+              141,
+              743
+            ],
+            [
+              141,
+              755
+            ],
+            [
+              88,
+              755
+            ]
+          ]
+        },
+        {
+          "text": "8s",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              544,
+              743
+            ],
+            [
+              566,
+              743
+            ],
+            [
+              566,
+              757
+            ],
+            [
+              544,
+              757
+            ]
+          ]
+        },
+        {
+          "text": "Pension or annuity from a nonqualifed deferred compensation plan or a",
+          "confidence": 0.97572,
+          "bounding_box": [
+            [
+              87,
+              760
+            ],
+            [
+              530,
+              761
+            ],
+            [
+              530,
+              775
+            ],
+            [
+              87,
+              773
+            ]
+          ]
+        },
+        {
+          "text": "nongovernmental section 457 plan",
+          "confidence": 0.99979,
+          "bounding_box": [
+            [
+              88,
+              776
+            ],
+            [
+              286,
+              776
+            ],
+            [
+              286,
+              788
+            ],
+            [
+              88,
+              788
+            ]
+          ]
+        },
+        {
+          "text": "8t",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              544,
+              775
+            ],
+            [
+              564,
+              775
+            ],
+            [
+              564,
+              791
+            ],
+            [
+              544,
+              791
+            ]
+          ]
+        },
+        {
+          "text": "u",
+          "confidence": 0.87598,
+          "bounding_box": [
+            [
+              69,
+              795
+            ],
+            [
+              80,
+              795
+            ],
+            [
+              80,
+              806
+            ],
+            [
+              69,
+              806
+            ]
+          ]
+        },
+        {
+          "text": "Wages earned while incarcerated",
+          "confidence": 0.99419,
+          "bounding_box": [
+            [
+              85,
+              793
+            ],
+            [
+              278,
+              794
+            ],
+            [
+              278,
+              808
+            ],
+            [
+              85,
+              807
+            ]
+          ]
+        },
+        {
+          "text": "8u",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              543,
+              791
+            ],
+            [
+              566,
+              791
+            ],
+            [
+              566,
+              808
+            ],
+            [
+              543,
+              808
+            ]
+          ]
+        },
+        {
+          "text": "Digital assets received as ordinary income not reported elsewhere. See",
+          "confidence": 0.98452,
+          "bounding_box": [
+            [
+              87,
+              810
+            ],
+            [
+              531,
+              810
+            ],
+            [
+              531,
+              824
+            ],
+            [
+              87,
+              824
+            ]
+          ]
+        },
+        {
+          "text": "instructions .",
+          "confidence": 0.99044,
+          "bounding_box": [
+            [
+              88,
+              826
+            ],
+            [
+              178,
+              826
+            ],
+            [
+              178,
+              839
+            ],
+            [
+              88,
+              839
+            ]
+          ]
+        },
+        {
+          "text": "8v",
+          "confidence": 0.99951,
+          "bounding_box": [
+            [
+              544,
+              825
+            ],
+            [
+              565,
+              825
+            ],
+            [
+              565,
+              840
+            ],
+            [
+              544,
+              840
+            ]
+          ]
+        },
+        {
+          "text": "z",
+          "confidence": 0.97998,
+          "bounding_box": [
+            [
+              70,
+              847
+            ],
+            [
+              84,
+              847
+            ],
+            [
+              84,
+              853
+            ],
+            [
+              70,
+              853
+            ]
+          ]
+        },
+        {
+          "text": "Other income. List type and amount:",
+          "confidence": 0.99241,
+          "bounding_box": [
+            [
+              85,
+              844
+            ],
+            [
+              294,
+              844
+            ],
+            [
+              294,
+              858
+            ],
+            [
+              85,
+              858
+            ]
+          ]
+        },
+        {
+          "text": "8z",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              543,
+              875
+            ],
+            [
+              565,
+              875
+            ],
+            [
+              565,
+              890
+            ],
+            [
+              543,
+              890
+            ]
+          ]
+        },
+        {
+          "text": "9",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              60,
+              894
+            ],
+            [
+              72,
+              894
+            ],
+            [
+              72,
+              906
+            ],
+            [
+              60,
+              906
+            ]
+          ]
+        },
+        {
+          "text": "Total other income. Add lines 8a through 8z",
+          "confidence": 0.99926,
+          "bounding_box": [
+            [
+              88,
+              893
+            ],
+            [
+              336,
+              894
+            ],
+            [
+              336,
+              906
+            ],
+            [
+              88,
+              905
+            ]
+          ]
+        },
+        {
+          "text": "9",
+          "confidence": 0.99805,
+          "bounding_box": [
+            [
+              677,
+              891
+            ],
+            [
+              692,
+              891
+            ],
+            [
+              692,
+              908
+            ],
+            [
+              677,
+              908
+            ]
+          ]
+        },
+        {
+          "text": "10",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              53,
+              910
+            ],
+            [
+              74,
+              910
+            ],
+            [
+              74,
+              924
+            ],
+            [
+              53,
+              924
+            ]
+          ]
+        },
+        {
+          "text": "Combine lines 1 through 7 and 9. This is your additional income. Enter here and on Form 1040,",
+          "confidence": 0.99001,
+          "bounding_box": [
+            [
+              89,
+              910
+            ],
+            [
+              658,
+              910
+            ],
+            [
+              658,
+              924
+            ],
+            [
+              89,
+              924
+            ]
+          ]
+        },
+        {
+          "text": "1040-SR, or 1040-NR, line 8",
+          "confidence": 0.99589,
+          "bounding_box": [
+            [
+              90,
+              926
+            ],
+            [
+              251,
+              926
+            ],
+            [
+              251,
+              938
+            ],
+            [
+              90,
+              938
+            ]
+          ]
+        },
+        {
+          "text": "10",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              676,
+              925
+            ],
+            [
+              695,
+              925
+            ],
+            [
+              695,
+              940
+            ],
+            [
+              676,
+              940
+            ]
+          ]
+        },
+        {
+          "text": "For Paperwork Reduction Act Notice, see your tax return instructions.",
+          "confidence": 0.99655,
+          "bounding_box": [
+            [
+              49,
+              943
+            ],
+            [
+              419,
+              944
+            ],
+            [
+              419,
+              958
+            ],
+            [
+              49,
+              957
+            ]
+          ]
+        },
+        {
+          "text": "Cat. No. 71479F",
+          "confidence": 0.99714,
+          "bounding_box": [
+            [
+              467,
+              945
+            ],
+            [
+              542,
+              945
+            ],
+            [
+              542,
+              958
+            ],
+            [
+              467,
+              958
+            ]
+          ]
+        },
+        {
+          "text": "Schedule 1 (Form 1040) 2025 Created 7/25/25",
+          "confidence": 0.98678,
+          "bounding_box": [
+            [
+              591,
+              945
+            ],
+            [
+              800,
+              945
+            ],
+            [
+              800,
+              958
+            ],
+            [
+              591,
+              958
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "page": 2,
+      "results": [
+        {
+          "text": "Schedule 1 (Form 1040) 2025",
+          "confidence": 0.98389,
+          "bounding_box": [
+            [
+              47,
+              49
+            ],
+            [
+              179,
+              49
+            ],
+            [
+              179,
+              62
+            ],
+            [
+              47,
+              62
+            ]
+          ]
+        },
+        {
+          "text": "Page 2",
+          "confidence": 0.99121,
+          "bounding_box": [
+            [
+              762,
+              46
+            ],
+            [
+              803,
+              46
+            ],
+            [
+              803,
+              65
+            ],
+            [
+              762,
+              65
+            ]
+          ]
+        },
+        {
+          "text": "Part II Adjustments to Income",
+          "confidence": 0.96895,
+          "bounding_box": [
+            [
+              51,
+              66
+            ],
+            [
+              274,
+              66
+            ],
+            [
+              274,
+              80
+            ],
+            [
+              51,
+              80
+            ]
+          ]
+        },
+        {
+          "text": "11",
+          "confidence": 0.97095,
+          "bounding_box": [
+            [
+              53,
+              84
+            ],
+            [
+              73,
+              84
+            ],
+            [
+              73,
+              99
+            ],
+            [
+              53,
+              99
+            ]
+          ]
+        },
+        {
+          "text": "Educator expenses",
+          "confidence": 0.99463,
+          "bounding_box": [
+            [
+              88,
+              85
+            ],
+            [
+              200,
+              85
+            ],
+            [
+              200,
+              97
+            ],
+            [
+              88,
+              97
+            ]
+          ]
+        },
+        {
+          "text": "11",
+          "confidence": 0.88574,
+          "bounding_box": [
+            [
+              676,
+              84
+            ],
+            [
+              695,
+              84
+            ],
+            [
+              695,
+              97
+            ],
+            [
+              676,
+              97
+            ]
+          ]
+        },
+        {
+          "text": "12",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              101
+            ],
+            [
+              73,
+              101
+            ],
+            [
+              73,
+              116
+            ],
+            [
+              53,
+              116
+            ]
+          ]
+        },
+        {
+          "text": "Certain business expenses of reservists, performing artists, and fee-basis government officials. Attach",
+          "confidence": 0.99186,
+          "bounding_box": [
+            [
+              88,
+              102
+            ],
+            [
+              659,
+              103
+            ],
+            [
+              659,
+              117
+            ],
+            [
+              88,
+              116
+            ]
+          ]
+        },
+        {
+          "text": "Form 2106",
+          "confidence": 0.99957,
+          "bounding_box": [
+            [
+              88,
+              117
+            ],
+            [
+              152,
+              117
+            ],
+            [
+              152,
+              129
+            ],
+            [
+              88,
+              129
+            ]
+          ]
+        },
+        {
+          "text": "12",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              673,
+              115
+            ],
+            [
+              696,
+              115
+            ],
+            [
+              696,
+              134
+            ],
+            [
+              673,
+              134
+            ]
+          ]
+        },
+        {
+          "text": "13",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              133
+            ],
+            [
+              74,
+              133
+            ],
+            [
+              74,
+              148
+            ],
+            [
+              53,
+              148
+            ]
+          ]
+        },
+        {
+          "text": "Health savings account deduction. Attach Form 8889",
+          "confidence": 0.99091,
+          "bounding_box": [
+            [
+              88,
+              134
+            ],
+            [
+              388,
+              134
+            ],
+            [
+              388,
+              148
+            ],
+            [
+              88,
+              148
+            ]
+          ]
+        },
+        {
+          "text": "13",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              674,
+              133
+            ],
+            [
+              695,
+              133
+            ],
+            [
+              695,
+              149
+            ],
+            [
+              674,
+              149
+            ]
+          ]
+        },
+        {
+          "text": "14",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              150
+            ],
+            [
+              75,
+              150
+            ],
+            [
+              75,
+              165
+            ],
+            [
+              53,
+              165
+            ]
+          ]
+        },
+        {
+          "text": "Moving expenses for members of the Armed Forces. Attach Form 3903. If claiming only storage fees",
+          "confidence": 0.99276,
+          "bounding_box": [
+            [
+              88,
+              151
+            ],
+            [
+              651,
+              151
+            ],
+            [
+              651,
+              165
+            ],
+            [
+              88,
+              165
+            ]
+          ]
+        },
+        {
+          "text": "(see instructions), check here ",
+          "confidence": 0.9877,
+          "bounding_box": [
+            [
+              89,
+              168
+            ],
+            [
+              271,
+              168
+            ],
+            [
+              271,
+              181
+            ],
+            [
+              89,
+              181
+            ]
+          ]
+        },
+        {
+          "text": "14",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              673,
+              166
+            ],
+            [
+              695,
+              166
+            ],
+            [
+              695,
+              182
+            ],
+            [
+              673,
+              182
+            ]
+          ]
+        },
+        {
+          "text": "15",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              183
+            ],
+            [
+              74,
+              183
+            ],
+            [
+              74,
+              198
+            ],
+            [
+              53,
+              198
+            ]
+          ]
+        },
+        {
+          "text": "Deductible part of self-employment tax. Attach Schedule SE",
+          "confidence": 0.98496,
+          "bounding_box": [
+            [
+              88,
+              184
+            ],
+            [
+              427,
+              184
+            ],
+            [
+              427,
+              197
+            ],
+            [
+              88,
+              197
+            ]
+          ]
+        },
+        {
+          "text": "15",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              674,
+              182
+            ],
+            [
+              695,
+              182
+            ],
+            [
+              695,
+              199
+            ],
+            [
+              674,
+              199
+            ]
+          ]
+        },
+        {
+          "text": "16",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              673,
+              198
+            ],
+            [
+              696,
+              198
+            ],
+            [
+              696,
+              217
+            ],
+            [
+              673,
+              217
+            ]
+          ]
+        },
+        {
+          "text": "16",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              201
+            ],
+            [
+              74,
+              201
+            ],
+            [
+              74,
+              215
+            ],
+            [
+              53,
+              215
+            ]
+          ]
+        },
+        {
+          "text": "Self-employed SEP, SIMPLE, and qualified plans",
+          "confidence": 0.99568,
+          "bounding_box": [
+            [
+              88,
+              201
+            ],
+            [
+              366,
+              202
+            ],
+            [
+              366,
+              215
+            ],
+            [
+              88,
+              214
+            ]
+          ]
+        },
+        {
+          "text": "17",
+          "confidence": 0.99951,
+          "bounding_box": [
+            [
+              53,
+              217
+            ],
+            [
+              74,
+              217
+            ],
+            [
+              74,
+              231
+            ],
+            [
+              53,
+              231
+            ]
+          ]
+        },
+        {
+          "text": "Self-employed health insurance deduction",
+          "confidence": 0.99653,
+          "bounding_box": [
+            [
+              87,
+              218
+            ],
+            [
+              327,
+              219
+            ],
+            [
+              327,
+              233
+            ],
+            [
+              87,
+              231
+            ]
+          ]
+        },
+        {
+          "text": "17",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              674,
+              217
+            ],
+            [
+              695,
+              217
+            ],
+            [
+              695,
+              233
+            ],
+            [
+              674,
+              233
+            ]
+          ]
+        },
+        {
+          "text": "18",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              52,
+              233
+            ],
+            [
+              75,
+              233
+            ],
+            [
+              75,
+              249
+            ],
+            [
+              52,
+              249
+            ]
+          ]
+        },
+        {
+          "text": "Penalty on early withdrawal of savings",
+          "confidence": 0.99856,
+          "bounding_box": [
+            [
+              87,
+              234
+            ],
+            [
+              303,
+              235
+            ],
+            [
+              303,
+              249
+            ],
+            [
+              87,
+              248
+            ]
+          ]
+        },
+        {
+          "text": "18",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              672,
+              231
+            ],
+            [
+              696,
+              231
+            ],
+            [
+              696,
+              250
+            ],
+            [
+              672,
+              250
+            ]
+          ]
+        },
+        {
+          "text": "19a",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              670,
+              248
+            ],
+            [
+              699,
+              248
+            ],
+            [
+              699,
+              267
+            ],
+            [
+              670,
+              267
+            ]
+          ]
+        },
+        {
+          "text": "19a",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              251
+            ],
+            [
+              82,
+              251
+            ],
+            [
+              82,
+              265
+            ],
+            [
+              53,
+              265
+            ]
+          ]
+        },
+        {
+          "text": "Alimony paid .",
+          "confidence": 0.97531,
+          "bounding_box": [
+            [
+              85,
+              251
+            ],
+            [
+              172,
+              251
+            ],
+            [
+              172,
+              265
+            ],
+            [
+              85,
+              265
+            ]
+          ]
+        },
+        {
+          "text": "b",
+          "confidence": 0.979,
+          "bounding_box": [
+            [
+              67,
+              269
+            ],
+            [
+              87,
+              269
+            ],
+            [
+              87,
+              281
+            ],
+            [
+              67,
+              281
+            ]
+          ]
+        },
+        {
+          "text": "Recipient's SSN",
+          "confidence": 0.97305,
+          "bounding_box": [
+            [
+              84,
+              267
+            ],
+            [
+              184,
+              267
+            ],
+            [
+              184,
+              283
+            ],
+            [
+              84,
+              283
+            ]
+          ]
+        },
+        {
+          "text": "c",
+          "confidence": 0.94385,
+          "bounding_box": [
+            [
+              67,
+              285
+            ],
+            [
+              81,
+              285
+            ],
+            [
+              81,
+              297
+            ],
+            [
+              67,
+              297
+            ]
+          ]
+        },
+        {
+          "text": "Date of original divorce or separation agreement (see instructions):",
+          "confidence": 0.99008,
+          "bounding_box": [
+            [
+              87,
+              284
+            ],
+            [
+              461,
+              284
+            ],
+            [
+              461,
+              298
+            ],
+            [
+              87,
+              298
+            ]
+          ]
+        },
+        {
+          "text": "20",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              300
+            ],
+            [
+              80,
+              300
+            ],
+            [
+              80,
+              315
+            ],
+            [
+              53,
+              315
+            ]
+          ]
+        },
+        {
+          "text": "IRA deduction. If you are married filing separately and lived apart from your spouse for the entire year",
+          "confidence": 0.99525,
+          "bounding_box": [
+            [
+              88,
+              300
+            ],
+            [
+              659,
+              303
+            ],
+            [
+              659,
+              316
+            ],
+            [
+              88,
+              314
+            ]
+          ]
+        },
+        {
+          "text": "(see instructions), check here ",
+          "confidence": 0.97924,
+          "bounding_box": [
+            [
+              88,
+              317
+            ],
+            [
+              273,
+              317
+            ],
+            [
+              273,
+              332
+            ],
+            [
+              88,
+              332
+            ]
+          ]
+        },
+        {
+          "text": "20",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              672,
+              315
+            ],
+            [
+              696,
+              315
+            ],
+            [
+              696,
+              333
+            ],
+            [
+              672,
+              333
+            ]
+          ]
+        },
+        {
+          "text": "21",
+          "confidence": 0.99951,
+          "bounding_box": [
+            [
+              53,
+              332
+            ],
+            [
+              73,
+              332
+            ],
+            [
+              73,
+              348
+            ],
+            [
+              53,
+              348
+            ]
+          ]
+        },
+        {
+          "text": "Student loan interest deduction",
+          "confidence": 0.99923,
+          "bounding_box": [
+            [
+              87,
+              333
+            ],
+            [
+              268,
+              333
+            ],
+            [
+              268,
+              348
+            ],
+            [
+              87,
+              348
+            ]
+          ]
+        },
+        {
+          "text": "21",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              672,
+              331
+            ],
+            [
+              695,
+              331
+            ],
+            [
+              695,
+              349
+            ],
+            [
+              672,
+              349
+            ]
+          ]
+        },
+        {
+          "text": "22",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              349
+            ],
+            [
+              73,
+              349
+            ],
+            [
+              73,
+              364
+            ],
+            [
+              53,
+              364
+            ]
+          ]
+        },
+        {
+          "text": "22",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              673,
+              349
+            ],
+            [
+              695,
+              349
+            ],
+            [
+              695,
+              366
+            ],
+            [
+              673,
+              366
+            ]
+          ]
+        },
+        {
+          "text": "Reserved for future use",
+          "confidence": 0.99996,
+          "bounding_box": [
+            [
+              87,
+              352
+            ],
+            [
+              222,
+              352
+            ],
+            [
+              222,
+              364
+            ],
+            [
+              87,
+              364
+            ]
+          ]
+        },
+        {
+          "text": "23",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              367
+            ],
+            [
+              73,
+              367
+            ],
+            [
+              73,
+              382
+            ],
+            [
+              53,
+              382
+            ]
+          ]
+        },
+        {
+          "text": "Archer MSA deduction",
+          "confidence": 0.99995,
+          "bounding_box": [
+            [
+              87,
+              368
+            ],
+            [
+              217,
+              368
+            ],
+            [
+              217,
+              382
+            ],
+            [
+              87,
+              382
+            ]
+          ]
+        },
+        {
+          "text": "23",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              673,
+              367
+            ],
+            [
+              695,
+              367
+            ],
+            [
+              695,
+              383
+            ],
+            [
+              673,
+              383
+            ]
+          ]
+        },
+        {
+          "text": "24",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              383
+            ],
+            [
+              74,
+              383
+            ],
+            [
+              74,
+              399
+            ],
+            [
+              53,
+              399
+            ]
+          ]
+        },
+        {
+          "text": "Other adjustments:",
+          "confidence": 0.99962,
+          "bounding_box": [
+            [
+              88,
+              384
+            ],
+            [
+              196,
+              384
+            ],
+            [
+              196,
+              398
+            ],
+            [
+              88,
+              398
+            ]
+          ]
+        },
+        {
+          "text": "24a",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              540,
+              399
+            ],
+            [
+              569,
+              399
+            ],
+            [
+              569,
+              416
+            ],
+            [
+              540,
+              416
+            ]
+          ]
+        },
+        {
+          "text": "a",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              67,
+              403
+            ],
+            [
+              87,
+              403
+            ],
+            [
+              87,
+              414
+            ],
+            [
+              67,
+              414
+            ]
+          ]
+        },
+        {
+          "text": "Jury duty pay (see instructions)",
+          "confidence": 0.99887,
+          "bounding_box": [
+            [
+              87,
+              402
+            ],
+            [
+              264,
+              402
+            ],
+            [
+              264,
+              415
+            ],
+            [
+              87,
+              415
+            ]
+          ]
+        },
+        {
+          "text": "Deductible expenses related to income reported on line 8l from the rental of",
+          "confidence": 0.98141,
+          "bounding_box": [
+            [
+              87,
+              419
+            ],
+            [
+              531,
+              419
+            ],
+            [
+              531,
+              432
+            ],
+            [
+              87,
+              432
+            ]
+          ]
+        },
+        {
+          "text": "b",
+          "confidence": 0.99609,
+          "bounding_box": [
+            [
+              68,
+              421
+            ],
+            [
+              87,
+              421
+            ],
+            [
+              87,
+              431
+            ],
+            [
+              68,
+              431
+            ]
+          ]
+        },
+        {
+          "text": "personal property engaged in for profit",
+          "confidence": 0.99661,
+          "bounding_box": [
+            [
+              88,
+              435
+            ],
+            [
+              310,
+              434
+            ],
+            [
+              310,
+              448
+            ],
+            [
+              88,
+              449
+            ]
+          ]
+        },
+        {
+          "text": "24b",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              540,
+              431
+            ],
+            [
+              569,
+              431
+            ],
+            [
+              569,
+              449
+            ],
+            [
+              540,
+              449
+            ]
+          ]
+        },
+        {
+          "text": "c",
+          "confidence": 0.99121,
+          "bounding_box": [
+            [
+              69,
+              455
+            ],
+            [
+              80,
+              455
+            ],
+            [
+              80,
+              464
+            ],
+            [
+              69,
+              464
+            ]
+          ]
+        },
+        {
+          "text": "Nontaxable amount of the value of Olympic and Paralympic medals and UsOC",
+          "confidence": 0.97513,
+          "bounding_box": [
+            [
+              85,
+              453
+            ],
+            [
+              529,
+              451
+            ],
+            [
+              529,
+              465
+            ],
+            [
+              85,
+              466
+            ]
+          ]
+        },
+        {
+          "text": "prize money reported on line 8m_ .",
+          "confidence": 0.96832,
+          "bounding_box": [
+            [
+              88,
+              469
+            ],
+            [
+              301,
+              469
+            ],
+            [
+              301,
+              481
+            ],
+            [
+              88,
+              481
+            ]
+          ]
+        },
+        {
+          "text": "24c",
+          "confidence": 0.99967,
+          "bounding_box": [
+            [
+              540,
+              465
+            ],
+            [
+              569,
+              465
+            ],
+            [
+              569,
+              485
+            ],
+            [
+              540,
+              485
+            ]
+          ]
+        },
+        {
+          "text": "a",
+          "confidence": 0.91992,
+          "bounding_box": [
+            [
+              70,
+              487
+            ],
+            [
+              85,
+              487
+            ],
+            [
+              85,
+              495
+            ],
+            [
+              70,
+              495
+            ]
+          ]
+        },
+        {
+          "text": "Reforestation amortization and expenses",
+          "confidence": 0.99941,
+          "bounding_box": [
+            [
+              85,
+              485
+            ],
+            [
+              321,
+              485
+            ],
+            [
+              321,
+              497
+            ],
+            [
+              85,
+              497
+            ]
+          ]
+        },
+        {
+          "text": "24d",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              539,
+              481
+            ],
+            [
+              569,
+              481
+            ],
+            [
+              569,
+              500
+            ],
+            [
+              539,
+              500
+            ]
+          ]
+        },
+        {
+          "text": "e",
+          "confidence": 0.99805,
+          "bounding_box": [
+            [
+              69,
+              505
+            ],
+            [
+              80,
+              505
+            ],
+            [
+              80,
+              514
+            ],
+            [
+              69,
+              514
+            ]
+          ]
+        },
+        {
+          "text": "Repayment of supplemental unemployment benefits under the Trade Act of",
+          "confidence": 0.98901,
+          "bounding_box": [
+            [
+              87,
+              503
+            ],
+            [
+              531,
+              503
+            ],
+            [
+              531,
+              516
+            ],
+            [
+              87,
+              516
+            ]
+          ]
+        },
+        {
+          "text": "1974",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              89,
+              517
+            ],
+            [
+              121,
+              517
+            ],
+            [
+              121,
+              531
+            ],
+            [
+              89,
+              531
+            ]
+          ]
+        },
+        {
+          "text": "24e",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              539,
+              516
+            ],
+            [
+              569,
+              516
+            ],
+            [
+              569,
+              533
+            ],
+            [
+              539,
+              533
+            ]
+          ]
+        },
+        {
+          "text": "Contributions to section 501(c)(18)(D) pension plans",
+          "confidence": 0.98206,
+          "bounding_box": [
+            [
+              88,
+              534
+            ],
+            [
+              382,
+              535
+            ],
+            [
+              382,
+              549
+            ],
+            [
+              88,
+              547
+            ]
+          ]
+        },
+        {
+          "text": "24f",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              539,
+              532
+            ],
+            [
+              568,
+              532
+            ],
+            [
+              568,
+              550
+            ],
+            [
+              539,
+              550
+            ]
+          ]
+        },
+        {
+          "text": "24g",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              539,
+              548
+            ],
+            [
+              569,
+              548
+            ],
+            [
+              569,
+              567
+            ],
+            [
+              539,
+              567
+            ]
+          ]
+        },
+        {
+          "text": "Contributions by certain chaplains to section 403(b) plans .",
+          "confidence": 0.98979,
+          "bounding_box": [
+            [
+              87,
+              552
+            ],
+            [
+              420,
+              552
+            ],
+            [
+              420,
+              565
+            ],
+            [
+              87,
+              565
+            ]
+          ]
+        },
+        {
+          "text": "Attorney fees and court costs for actions involving certain unlawful",
+          "confidence": 0.9824,
+          "bounding_box": [
+            [
+              85,
+              569
+            ],
+            [
+              530,
+              569
+            ],
+            [
+              530,
+              583
+            ],
+            [
+              85,
+              583
+            ]
+          ]
+        },
+        {
+          "text": "discrimination claims (see instructions) .",
+          "confidence": 0.96695,
+          "bounding_box": [
+            [
+              89,
+              584
+            ],
+            [
+              325,
+              584
+            ],
+            [
+              325,
+              597
+            ],
+            [
+              89,
+              597
+            ]
+          ]
+        },
+        {
+          "text": "24h",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              540,
+              581
+            ],
+            [
+              569,
+              581
+            ],
+            [
+              569,
+              599
+            ],
+            [
+              540,
+              599
+            ]
+          ]
+        },
+        {
+          "text": "Attorney fees and court costs you paid in connection with an award from the",
+          "confidence": 0.98316,
+          "bounding_box": [
+            [
+              87,
+              603
+            ],
+            [
+              530,
+              603
+            ],
+            [
+              530,
+              616
+            ],
+            [
+              87,
+              616
+            ]
+          ]
+        },
+        {
+          "text": "IRS for information you provided that helped the IRS detect tax law violations",
+          "confidence": 0.98468,
+          "bounding_box": [
+            [
+              88,
+              618
+            ],
+            [
+              530,
+              618
+            ],
+            [
+              530,
+              631
+            ],
+            [
+              88,
+              631
+            ]
+          ]
+        },
+        {
+          "text": "24i",
+          "confidence": 0.99967,
+          "bounding_box": [
+            [
+              540,
+              615
+            ],
+            [
+              568,
+              615
+            ],
+            [
+              568,
+              634
+            ],
+            [
+              540,
+              634
+            ]
+          ]
+        },
+        {
+          "text": "Housing deduction from Form 2555",
+          "confidence": 0.99991,
+          "bounding_box": [
+            [
+              87,
+              635
+            ],
+            [
+              292,
+              635
+            ],
+            [
+              292,
+              647
+            ],
+            [
+              87,
+              647
+            ]
+          ]
+        },
+        {
+          "text": "24j",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              540,
+              631
+            ],
+            [
+              568,
+              631
+            ],
+            [
+              568,
+              650
+            ],
+            [
+              540,
+              650
+            ]
+          ]
+        },
+        {
+          "text": "24k",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              539,
+              649
+            ],
+            [
+              569,
+              649
+            ],
+            [
+              569,
+              667
+            ],
+            [
+              539,
+              667
+            ]
+          ]
+        },
+        {
+          "text": "k",
+          "confidence": 0.98438,
+          "bounding_box": [
+            [
+              68,
+              653
+            ],
+            [
+              80,
+              653
+            ],
+            [
+              80,
+              662
+            ],
+            [
+              68,
+              662
+            ]
+          ]
+        },
+        {
+          "text": "Excess deductions of section 67(e) expenses from Schedule K-1 (Form 1041)",
+          "confidence": 0.98053,
+          "bounding_box": [
+            [
+              87,
+              651
+            ],
+            [
+              521,
+              652
+            ],
+            [
+              521,
+              666
+            ],
+            [
+              87,
+              665
+            ]
+          ]
+        },
+        {
+          "text": "Other adjustments. List type and amount:",
+          "confidence": 0.99939,
+          "bounding_box": [
+            [
+              87,
+              669
+            ],
+            [
+              322,
+              670
+            ],
+            [
+              322,
+              684
+            ],
+            [
+              87,
+              682
+            ]
+          ]
+        },
+        {
+          "text": "E",
+          "confidence": 0.57666,
+          "bounding_box": [
+            [
+              66,
+              675
+            ],
+            [
+              74,
+              667
+            ],
+            [
+              81,
+              675
+            ],
+            [
+              73,
+              683
+            ]
+          ]
+        },
+        {
+          "text": "24z",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              539,
+              698
+            ],
+            [
+              569,
+              698
+            ],
+            [
+              569,
+              716
+            ],
+            [
+              539,
+              716
+            ]
+          ]
+        },
+        {
+          "text": "25",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              52,
+              716
+            ],
+            [
+              74,
+              716
+            ],
+            [
+              74,
+              732
+            ],
+            [
+              52,
+              732
+            ]
+          ]
+        },
+        {
+          "text": "Total other adjustments. Add lines 24a through 24z",
+          "confidence": 0.99057,
+          "bounding_box": [
+            [
+              88,
+              717
+            ],
+            [
+              378,
+              718
+            ],
+            [
+              378,
+              732
+            ],
+            [
+              88,
+              731
+            ]
+          ]
+        },
+        {
+          "text": "25",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              672,
+              715
+            ],
+            [
+              698,
+              715
+            ],
+            [
+              698,
+              733
+            ],
+            [
+              672,
+              733
+            ]
+          ]
+        },
+        {
+          "text": "26",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              733
+            ],
+            [
+              74,
+              733
+            ],
+            [
+              74,
+              749
+            ],
+            [
+              53,
+              749
+            ]
+          ]
+        },
+        {
+          "text": "Add lines 11 through 23 and 25. These are your adjustments to income. Enter here and on Form",
+          "confidence": 0.98983,
+          "bounding_box": [
+            [
+              87,
+              736
+            ],
+            [
+              661,
+              736
+            ],
+            [
+              661,
+              748
+            ],
+            [
+              87,
+              748
+            ]
+          ]
+        },
+        {
+          "text": "1040, 1040-SR, or 1040-NR, line 10",
+          "confidence": 0.98751,
+          "bounding_box": [
+            [
+              89,
+              749
+            ],
+            [
+              292,
+              751
+            ],
+            [
+              292,
+              764
+            ],
+            [
+              89,
+              763
+            ]
+          ]
+        },
+        {
+          "text": "26",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              672,
+              748
+            ],
+            [
+              698,
+              748
+            ],
+            [
+              698,
+              767
+            ],
+            [
+              672,
+              767
+            ]
+          ]
+        },
+        {
+          "text": "Schedule 1 (Form 1040) 2025",
+          "confidence": 0.99752,
+          "bounding_box": [
+            [
+              665,
+              770
+            ],
+            [
+              800,
+              770
+            ],
+            [
+              800,
+              783
+            ],
+            [
+              665,
+              783
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

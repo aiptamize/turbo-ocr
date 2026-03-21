@@ -1,0 +1,56 @@
+# ============================================================
+# CPU-only Dockerfile — No NVIDIA GPU required
+# ============================================================
+# Build:  docker build -f docker/Dockerfile.cpu -t turbo-ocr-cpu .
+# Run:    docker run -p 8000:8000 -v ./models:/app/models turbo-ocr-cpu
+#
+# Produces:  /app/build_cpu/paddle_cpu_server  (HTTP server)
+#
+# Models (.onnx) must be in /app/models/:
+#   det.onnx, rec.onnx, cls.onnx, keys.txt
+# Provide via volume mount or bake into the image.
+#
+# Image size: ~500MB (vs ~10GB for GPU image)
+# ============================================================
+
+FROM ubuntu:24.04
+
+# Avoid interactive prompts during apt install
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cmake \
+    g++ \
+    make \
+    pkg-config \
+    libopencv-dev \
+    libboost-all-dev \
+    wget \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install ONNX Runtime C++ SDK
+ARG ORT_VERSION=1.22.0
+RUN cd /tmp && \
+    wget -q "https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/onnxruntime-linux-x64-${ORT_VERSION}.tgz" && \
+    tar xzf onnxruntime-linux-x64-${ORT_VERSION}.tgz && \
+    cp -r onnxruntime-linux-x64-${ORT_VERSION}/include/* /usr/local/include/ && \
+    cp onnxruntime-linux-x64-${ORT_VERSION}/lib/libonnxruntime.so* /usr/local/lib/ && \
+    ldconfig && \
+    rm -rf /tmp/onnxruntime*
+
+# Copy project source
+WORKDIR /app
+COPY . .
+
+# Build CPU-only mode
+RUN mkdir -p build_cpu && cd build_cpu && \
+    cmake .. -DUSE_CPU_ONLY=ON && \
+    make -j$(nproc)
+
+# HTTP server port
+EXPOSE 8000
+
+# Default: CPU HTTP server
+CMD ["./build_cpu/paddle_cpu_server"]

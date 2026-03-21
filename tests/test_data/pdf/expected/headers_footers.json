@@ -1,0 +1,5580 @@
+{
+  "pages": [
+    {
+      "page": 1,
+      "results": [
+        {
+          "text": "SCHEDULE C",
+          "confidence": 0.98521,
+          "bounding_box": [
+            [
+              47,
+              47
+            ],
+            [
+              142,
+              47
+            ],
+            [
+              142,
+              63
+            ],
+            [
+              47,
+              63
+            ]
+          ]
+        },
+        {
+          "text": "Profit or Loss From Business",
+          "confidence": 0.97356,
+          "bounding_box": [
+            [
+              299,
+              49
+            ],
+            [
+              550,
+              49
+            ],
+            [
+              550,
+              66
+            ],
+            [
+              299,
+              66
+            ]
+          ]
+        },
+        {
+          "text": "OMB No. 1545-0074",
+          "confidence": 0.99971,
+          "bounding_box": [
+            [
+              692,
+              48
+            ],
+            [
+              786,
+              49
+            ],
+            [
+              786,
+              63
+            ],
+            [
+              692,
+              62
+            ]
+          ]
+        },
+        {
+          "text": "(Form 1040)",
+          "confidence": 0.99982,
+          "bounding_box": [
+            [
+              47,
+              62
+            ],
+            [
+              129,
+              62
+            ],
+            [
+              129,
+              78
+            ],
+            [
+              47,
+              78
+            ]
+          ]
+        },
+        {
+          "text": "(Sole Proprietorship)",
+          "confidence": 0.99126,
+          "bounding_box": [
+            [
+              368,
+              66
+            ],
+            [
+              479,
+              68
+            ],
+            [
+              479,
+              80
+            ],
+            [
+              368,
+              79
+            ]
+          ]
+        },
+        {
+          "text": "2025",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              699,
+              64
+            ],
+            [
+              778,
+              64
+            ],
+            [
+              778,
+              92
+            ],
+            [
+              699,
+              92
+            ]
+          ]
+        },
+        {
+          "text": "Department of the Treasury",
+          "confidence": 0.99196,
+          "bounding_box": [
+            [
+              47,
+              88
+            ],
+            [
+              166,
+              88
+            ],
+            [
+              166,
+              101
+            ],
+            [
+              47,
+              101
+            ]
+          ]
+        },
+        {
+          "text": "Attach to Form 1040, 1040-SR, 1040-SS, 1040-NR, or 1041; partnerships must generally file Form 1065.",
+          "confidence": 0.99126,
+          "bounding_box": [
+            [
+              172,
+              83
+            ],
+            [
+              676,
+              83
+            ],
+            [
+              676,
+              95
+            ],
+            [
+              172,
+              95
+            ]
+          ]
+        },
+        {
+          "text": "Attachment",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              694,
+              91
+            ],
+            [
+              750,
+              91
+            ],
+            [
+              750,
+              103
+            ],
+            [
+              694,
+              103
+            ]
+          ]
+        },
+        {
+          "text": "Internal Revenue Service",
+          "confidence": 0.99955,
+          "bounding_box": [
+            [
+              47,
+              101
+            ],
+            [
+              157,
+              101
+            ],
+            [
+              157,
+              113
+            ],
+            [
+              47,
+              113
+            ]
+          ]
+        },
+        {
+          "text": "Go to www.irs.gov/ScheduleC for instructions and the latest information.",
+          "confidence": 0.99454,
+          "bounding_box": [
+            [
+              230,
+              100
+            ],
+            [
+              618,
+              100
+            ],
+            [
+              618,
+              112
+            ],
+            [
+              230,
+              112
+            ]
+          ]
+        },
+        {
+          "text": "Sequence No. 09",
+          "confidence": 0.98496,
+          "bounding_box": [
+            [
+              694,
+              102
+            ],
+            [
+              777,
+              100
+            ],
+            [
+              777,
+              113
+            ],
+            [
+              694,
+              117
+            ]
+          ]
+        },
+        {
+          "text": "Name of proprietor",
+          "confidence": 0.99995,
+          "bounding_box": [
+            [
+              47,
+              117
+            ],
+            [
+              146,
+              117
+            ],
+            [
+              146,
+              129
+            ],
+            [
+              47,
+              129
+            ]
+          ]
+        },
+        {
+          "text": "Social security number (SSN)",
+          "confidence": 0.98169,
+          "bounding_box": [
+            [
+              622,
+              117
+            ],
+            [
+              780,
+              117
+            ],
+            [
+              780,
+              129
+            ],
+            [
+              622,
+              129
+            ]
+          ]
+        },
+        {
+          "text": "A",
+          "confidence": 0.99805,
+          "bounding_box": [
+            [
+              49,
+              151
+            ],
+            [
+              59,
+              151
+            ],
+            [
+              59,
+              163
+            ],
+            [
+              49,
+              163
+            ]
+          ]
+        },
+        {
+          "text": "Principal business or profession, including product or service (see instructions)",
+          "confidence": 0.99532,
+          "bounding_box": [
+            [
+              87,
+              151
+            ],
+            [
+              479,
+              151
+            ],
+            [
+              479,
+              164
+            ],
+            [
+              87,
+              164
+            ]
+          ]
+        },
+        {
+          "text": "B Enter code from instructions",
+          "confidence": 0.98809,
+          "bounding_box": [
+            [
+              624,
+              152
+            ],
+            [
+              773,
+              152
+            ],
+            [
+              773,
+              163
+            ],
+            [
+              624,
+              163
+            ]
+          ]
+        },
+        {
+          "text": "c",
+          "confidence": 0.94629,
+          "bounding_box": [
+            [
+              49,
+              184
+            ],
+            [
+              60,
+              184
+            ],
+            [
+              60,
+              196
+            ],
+            [
+              49,
+              196
+            ]
+          ]
+        },
+        {
+          "text": "Business name. If no separate business name, leave blank.",
+          "confidence": 0.98333,
+          "bounding_box": [
+            [
+              88,
+              186
+            ],
+            [
+              380,
+              186
+            ],
+            [
+              380,
+              196
+            ],
+            [
+              88,
+              196
+            ]
+          ]
+        },
+        {
+          "text": "D Employer ID number (EIN) (see instr.)",
+          "confidence": 0.95936,
+          "bounding_box": [
+            [
+              622,
+              184
+            ],
+            [
+              799,
+              184
+            ],
+            [
+              799,
+              197
+            ],
+            [
+              622,
+              197
+            ]
+          ]
+        },
+        {
+          "text": "E",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              49,
+              219
+            ],
+            [
+              59,
+              219
+            ],
+            [
+              59,
+              230
+            ],
+            [
+              49,
+              230
+            ]
+          ]
+        },
+        {
+          "text": "Business address (including suite or room no.)",
+          "confidence": 0.99627,
+          "bounding_box": [
+            [
+              89,
+              219
+            ],
+            [
+              318,
+              219
+            ],
+            [
+              318,
+              231
+            ],
+            [
+              89,
+              231
+            ]
+          ]
+        },
+        {
+          "text": "City, town or post office, state, and ZIP code",
+          "confidence": 0.99117,
+          "bounding_box": [
+            [
+              89,
+              236
+            ],
+            [
+              314,
+              236
+            ],
+            [
+              314,
+              249
+            ],
+            [
+              89,
+              249
+            ]
+          ]
+        },
+        {
+          "text": "F",
+          "confidence": 0.90234,
+          "bounding_box": [
+            [
+              50,
+              254
+            ],
+            [
+              57,
+              254
+            ],
+            [
+              57,
+              261
+            ],
+            [
+              50,
+              261
+            ]
+          ]
+        },
+        {
+          "text": "Accounting method:",
+          "confidence": 0.99335,
+          "bounding_box": [
+            [
+              89,
+              252
+            ],
+            [
+              210,
+              252
+            ],
+            [
+              210,
+              265
+            ],
+            [
+              89,
+              265
+            ]
+          ]
+        },
+        {
+          "text": "(1) Cash",
+          "confidence": 0.84613,
+          "bounding_box": [
+            [
+              206,
+              252
+            ],
+            [
+              278,
+              252
+            ],
+            [
+              278,
+              265
+            ],
+            [
+              206,
+              265
+            ]
+          ]
+        },
+        {
+          "text": "(2) Accrual",
+          "confidence": 0.90558,
+          "bounding_box": [
+            [
+              297,
+              252
+            ],
+            [
+              380,
+              252
+            ],
+            [
+              380,
+              266
+            ],
+            [
+              297,
+              266
+            ]
+          ]
+        },
+        {
+          "text": "  Other (specify)",
+          "confidence": 0.95206,
+          "bounding_box": [
+            [
+              396,
+              252
+            ],
+            [
+              513,
+              252
+            ],
+            [
+              513,
+              265
+            ],
+            [
+              396,
+              265
+            ]
+          ]
+        },
+        {
+          "text": "G",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              49,
+              269
+            ],
+            [
+              59,
+              269
+            ],
+            [
+              59,
+              281
+            ],
+            [
+              49,
+              281
+            ]
+          ]
+        },
+        {
+          "text": "Did you \u00e2\u0080\u009cmaterially participate\" in the operation of this business during 2025? If \"No,\" see instructions for limit on losses",
+          "confidence": 0.98891,
+          "bounding_box": [
+            [
+              88,
+              269
+            ],
+            [
+              686,
+              269
+            ],
+            [
+              686,
+              282
+            ],
+            [
+              88,
+              282
+            ]
+          ]
+        },
+        {
+          "text": "Yes",
+          "confidence": 0.99837,
+          "bounding_box": [
+            [
+              725,
+              268
+            ],
+            [
+              754,
+              268
+            ],
+            [
+              754,
+              281
+            ],
+            [
+              725,
+              281
+            ]
+          ]
+        },
+        {
+          "text": " No",
+          "confidence": 0.84505,
+          "bounding_box": [
+            [
+              763,
+              268
+            ],
+            [
+              797,
+              268
+            ],
+            [
+              797,
+              281
+            ],
+            [
+              763,
+              281
+            ]
+          ]
+        },
+        {
+          "text": "H",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              49,
+              286
+            ],
+            [
+              59,
+              286
+            ],
+            [
+              59,
+              298
+            ],
+            [
+              49,
+              298
+            ]
+          ]
+        },
+        {
+          "text": "If you started or acquired this business during 2025, check here .",
+          "confidence": 0.98756,
+          "bounding_box": [
+            [
+              88,
+              285
+            ],
+            [
+              420,
+              286
+            ],
+            [
+              420,
+              300
+            ],
+            [
+              88,
+              299
+            ]
+          ]
+        },
+        {
+          "text": "\u00e2\u0088\u0092",
+          "confidence": 0.68311,
+          "bounding_box": [
+            [
+              715,
+              288
+            ],
+            [
+              723,
+              285
+            ],
+            [
+              724,
+              293
+            ],
+            [
+              716,
+              294
+            ]
+          ]
+        },
+        {
+          "text": "Yes",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              713,
+              299
+            ],
+            [
+              755,
+              301
+            ],
+            [
+              755,
+              316
+            ],
+            [
+              713,
+              314
+            ]
+          ]
+        },
+        {
+          "text": "No",
+          "confidence": 0.99951,
+          "bounding_box": [
+            [
+              760,
+              297
+            ],
+            [
+              799,
+              299
+            ],
+            [
+              798,
+              317
+            ],
+            [
+              759,
+              315
+            ]
+          ]
+        },
+        {
+          "text": "Did you make any payments in 2025 that would require you to file Form(s) 1099? See instructions",
+          "confidence": 0.98881,
+          "bounding_box": [
+            [
+              89,
+              301
+            ],
+            [
+              573,
+              303
+            ],
+            [
+              573,
+              316
+            ],
+            [
+              89,
+              315
+            ]
+          ]
+        },
+        {
+          "text": "If \"Yes,\" did you or will you file required Form(s) 1099?",
+          "confidence": 0.99086,
+          "bounding_box": [
+            [
+              88,
+              317
+            ],
+            [
+              360,
+              317
+            ],
+            [
+              360,
+              331
+            ],
+            [
+              88,
+              331
+            ]
+          ]
+        },
+        {
+          "text": " Yes",
+          "confidence": 0.90759,
+          "bounding_box": [
+            [
+              719,
+              317
+            ],
+            [
+              753,
+              317
+            ],
+            [
+              753,
+              331
+            ],
+            [
+              719,
+              331
+            ]
+          ]
+        },
+        {
+          "text": "No",
+          "confidence": 0.99805,
+          "bounding_box": [
+            [
+              762,
+              317
+            ],
+            [
+              797,
+              317
+            ],
+            [
+              797,
+              331
+            ],
+            [
+              762,
+              331
+            ]
+          ]
+        },
+        {
+          "text": "Part I",
+          "confidence": 0.97534,
+          "bounding_box": [
+            [
+              55,
+              333
+            ],
+            [
+              98,
+              333
+            ],
+            [
+              98,
+              347
+            ],
+            [
+              55,
+              347
+            ]
+          ]
+        },
+        {
+          "text": "Income",
+          "confidence": 0.99984,
+          "bounding_box": [
+            [
+              117,
+              335
+            ],
+            [
+              170,
+              335
+            ],
+            [
+              170,
+              347
+            ],
+            [
+              117,
+              347
+            ]
+          ]
+        },
+        {
+          "text": "Gross receipts or sales. See instructions for line 1 and check the box if this income was reported to you on",
+          "confidence": 0.99946,
+          "bounding_box": [
+            [
+              89,
+              355
+            ],
+            [
+              620,
+              355
+            ],
+            [
+              620,
+              368
+            ],
+            [
+              89,
+              368
+            ]
+          ]
+        },
+        {
+          "text": "Form W-2 and the \"Statutory employee\" box on that form was checked",
+          "confidence": 0.9875,
+          "bounding_box": [
+            [
+              88,
+              369
+            ],
+            [
+              448,
+              369
+            ],
+            [
+              448,
+              382
+            ],
+            [
+              88,
+              382
+            ]
+          ]
+        },
+        {
+          "text": "1",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              641,
+              371
+            ],
+            [
+              647,
+              371
+            ],
+            [
+              647,
+              378
+            ],
+            [
+              641,
+              378
+            ]
+          ]
+        },
+        {
+          "text": "2",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              61,
+              386
+            ],
+            [
+              73,
+              386
+            ],
+            [
+              73,
+              398
+            ],
+            [
+              61,
+              398
+            ]
+          ]
+        },
+        {
+          "text": "Returns and allowances",
+          "confidence": 0.9464,
+          "bounding_box": [
+            [
+              87,
+              386
+            ],
+            [
+              214,
+              386
+            ],
+            [
+              214,
+              399
+            ],
+            [
+              87,
+              399
+            ]
+          ]
+        },
+        {
+          "text": "2",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              640,
+              386
+            ],
+            [
+              649,
+              386
+            ],
+            [
+              649,
+              398
+            ],
+            [
+              640,
+              398
+            ]
+          ]
+        },
+        {
+          "text": "3",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              61,
+              402
+            ],
+            [
+              73,
+              402
+            ],
+            [
+              73,
+              414
+            ],
+            [
+              61,
+              414
+            ]
+          ]
+        },
+        {
+          "text": "Subtract line 2 from line 1",
+          "confidence": 0.97864,
+          "bounding_box": [
+            [
+              88,
+              401
+            ],
+            [
+              218,
+              402
+            ],
+            [
+              218,
+              416
+            ],
+            [
+              88,
+              415
+            ]
+          ]
+        },
+        {
+          "text": "3",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              640,
+              402
+            ],
+            [
+              650,
+              402
+            ],
+            [
+              650,
+              414
+            ],
+            [
+              640,
+              414
+            ]
+          ]
+        },
+        {
+          "text": "4",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              61,
+              419
+            ],
+            [
+              73,
+              419
+            ],
+            [
+              73,
+              431
+            ],
+            [
+              61,
+              431
+            ]
+          ]
+        },
+        {
+          "text": "Cost of goods sold (from line 42)",
+          "confidence": 0.962,
+          "bounding_box": [
+            [
+              88,
+              419
+            ],
+            [
+              253,
+              419
+            ],
+            [
+              253,
+              432
+            ],
+            [
+              88,
+              432
+            ]
+          ]
+        },
+        {
+          "text": "4",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              640,
+              419
+            ],
+            [
+              650,
+              419
+            ],
+            [
+              650,
+              430
+            ],
+            [
+              640,
+              430
+            ]
+          ]
+        },
+        {
+          "text": "5",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              62,
+              437
+            ],
+            [
+              73,
+              437
+            ],
+            [
+              73,
+              448
+            ],
+            [
+              62,
+              448
+            ]
+          ]
+        },
+        {
+          "text": "Gross profit. Subtract line 4 from line 3",
+          "confidence": 0.99252,
+          "bounding_box": [
+            [
+              88,
+              435
+            ],
+            [
+              289,
+              435
+            ],
+            [
+              289,
+              448
+            ],
+            [
+              88,
+              448
+            ]
+          ]
+        },
+        {
+          "text": "5",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              640,
+              437
+            ],
+            [
+              650,
+              437
+            ],
+            [
+              650,
+              447
+            ],
+            [
+              640,
+              447
+            ]
+          ]
+        },
+        {
+          "text": "6",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              62,
+              453
+            ],
+            [
+              73,
+              453
+            ],
+            [
+              73,
+              464
+            ],
+            [
+              62,
+              464
+            ]
+          ]
+        },
+        {
+          "text": "Other income, including federal and state gasoline or fuel tax credit or refund (see instructions)",
+          "confidence": 0.98745,
+          "bounding_box": [
+            [
+              88,
+              451
+            ],
+            [
+              558,
+              453
+            ],
+            [
+              558,
+              466
+            ],
+            [
+              88,
+              465
+            ]
+          ]
+        },
+        {
+          "text": "6",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              640,
+              453
+            ],
+            [
+              650,
+              453
+            ],
+            [
+              650,
+              464
+            ],
+            [
+              640,
+              464
+            ]
+          ]
+        },
+        {
+          "text": "Gross income. Add lines 5 and 6",
+          "confidence": 0.98604,
+          "bounding_box": [
+            [
+              88,
+              469
+            ],
+            [
+              259,
+              469
+            ],
+            [
+              259,
+              481
+            ],
+            [
+              88,
+              481
+            ]
+          ]
+        },
+        {
+          "text": "Part II",
+          "confidence": 0.98096,
+          "bounding_box": [
+            [
+              51,
+              482
+            ],
+            [
+              103,
+              482
+            ],
+            [
+              103,
+              497
+            ],
+            [
+              51,
+              497
+            ]
+          ]
+        },
+        {
+          "text": "Expenses. Enter expenses for business use of your home only on line 30.",
+          "confidence": 0.98455,
+          "bounding_box": [
+            [
+              117,
+              485
+            ],
+            [
+              553,
+              484
+            ],
+            [
+              553,
+              497
+            ],
+            [
+              117,
+              498
+            ]
+          ]
+        },
+        {
+          "text": "8",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              60,
+              503
+            ],
+            [
+              74,
+              503
+            ],
+            [
+              74,
+              514
+            ],
+            [
+              60,
+              514
+            ]
+          ]
+        },
+        {
+          "text": "Advertising .",
+          "confidence": 0.95966,
+          "bounding_box": [
+            [
+              87,
+              501
+            ],
+            [
+              164,
+              503
+            ],
+            [
+              164,
+              517
+            ],
+            [
+              87,
+              514
+            ]
+          ]
+        },
+        {
+          "text": "8",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              247,
+              501
+            ],
+            [
+              261,
+              501
+            ],
+            [
+              261,
+              516
+            ],
+            [
+              247,
+              516
+            ]
+          ]
+        },
+        {
+          "text": "18",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              413,
+              501
+            ],
+            [
+              433,
+              501
+            ],
+            [
+              433,
+              516
+            ],
+            [
+              413,
+              516
+            ]
+          ]
+        },
+        {
+          "text": "Office expense (see instructions)",
+          "confidence": 0.99991,
+          "bounding_box": [
+            [
+              447,
+              502
+            ],
+            [
+              613,
+              502
+            ],
+            [
+              613,
+              514
+            ],
+            [
+              447,
+              514
+            ]
+          ]
+        },
+        {
+          "text": "18",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              636,
+              501
+            ],
+            [
+              654,
+              501
+            ],
+            [
+              654,
+              514
+            ],
+            [
+              636,
+              514
+            ]
+          ]
+        },
+        {
+          "text": "19",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              415,
+              517
+            ],
+            [
+              433,
+              517
+            ],
+            [
+              433,
+              533
+            ],
+            [
+              415,
+              533
+            ]
+          ]
+        },
+        {
+          "text": "Pension and profit-sharing plans",
+          "confidence": 0.98434,
+          "bounding_box": [
+            [
+              447,
+              519
+            ],
+            [
+              614,
+              519
+            ],
+            [
+              614,
+              532
+            ],
+            [
+              447,
+              532
+            ]
+          ]
+        },
+        {
+          "text": "19",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              634,
+              518
+            ],
+            [
+              654,
+              518
+            ],
+            [
+              654,
+              532
+            ],
+            [
+              634,
+              532
+            ]
+          ]
+        },
+        {
+          "text": "9",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              60,
+              523
+            ],
+            [
+              73,
+              523
+            ],
+            [
+              73,
+              534
+            ],
+            [
+              60,
+              534
+            ]
+          ]
+        },
+        {
+          "text": "Car and truck expenses",
+          "confidence": 0.97914,
+          "bounding_box": [
+            [
+              88,
+              520
+            ],
+            [
+              231,
+              523
+            ],
+            [
+              231,
+              535
+            ],
+            [
+              88,
+              534
+            ]
+          ]
+        },
+        {
+          "text": "(see instructions)",
+          "confidence": 0.99873,
+          "bounding_box": [
+            [
+              88,
+              536
+            ],
+            [
+              177,
+              536
+            ],
+            [
+              177,
+              549
+            ],
+            [
+              88,
+              549
+            ]
+          ]
+        },
+        {
+          "text": "9",
+          "confidence": 0.99805,
+          "bounding_box": [
+            [
+              246,
+              534
+            ],
+            [
+              262,
+              534
+            ],
+            [
+              262,
+              549
+            ],
+            [
+              246,
+              549
+            ]
+          ]
+        },
+        {
+          "text": "20",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              413,
+              534
+            ],
+            [
+              434,
+              534
+            ],
+            [
+              434,
+              549
+            ],
+            [
+              413,
+              549
+            ]
+          ]
+        },
+        {
+          "text": "Rent or lease (see instructions):",
+          "confidence": 0.98387,
+          "bounding_box": [
+            [
+              447,
+              536
+            ],
+            [
+              606,
+              536
+            ],
+            [
+              606,
+              549
+            ],
+            [
+              447,
+              549
+            ]
+          ]
+        },
+        {
+          "text": "10",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              54,
+              551
+            ],
+            [
+              74,
+              551
+            ],
+            [
+              74,
+              565
+            ],
+            [
+              54,
+              565
+            ]
+          ]
+        },
+        {
+          "text": "Commissions and fees",
+          "confidence": 0.99995,
+          "bounding_box": [
+            [
+              88,
+              552
+            ],
+            [
+              204,
+              552
+            ],
+            [
+              204,
+              565
+            ],
+            [
+              88,
+              565
+            ]
+          ]
+        },
+        {
+          "text": "10",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              245,
+              551
+            ],
+            [
+              263,
+              551
+            ],
+            [
+              263,
+              566
+            ],
+            [
+              245,
+              566
+            ]
+          ]
+        },
+        {
+          "text": "a",
+          "confidence": 0.99707,
+          "bounding_box": [
+            [
+              427,
+              555
+            ],
+            [
+              440,
+              555
+            ],
+            [
+              440,
+              565
+            ],
+            [
+              427,
+              565
+            ]
+          ]
+        },
+        {
+          "text": "Vehicles, machinery, and equipment",
+          "confidence": 0.99994,
+          "bounding_box": [
+            [
+              447,
+              552
+            ],
+            [
+              621,
+              552
+            ],
+            [
+              621,
+              565
+            ],
+            [
+              447,
+              565
+            ]
+          ]
+        },
+        {
+          "text": "20a",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              633,
+              551
+            ],
+            [
+              655,
+              551
+            ],
+            [
+              655,
+              565
+            ],
+            [
+              633,
+              565
+            ]
+          ]
+        },
+        {
+          "text": "11",
+          "confidence": 0.99854,
+          "bounding_box": [
+            [
+              54,
+              567
+            ],
+            [
+              72,
+              567
+            ],
+            [
+              72,
+              582
+            ],
+            [
+              54,
+              582
+            ]
+          ]
+        },
+        {
+          "text": "Contract labor (see instructions)",
+          "confidence": 0.99982,
+          "bounding_box": [
+            [
+              88,
+              568
+            ],
+            [
+              230,
+              569
+            ],
+            [
+              230,
+              583
+            ],
+            [
+              88,
+              581
+            ]
+          ]
+        },
+        {
+          "text": "11",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              245,
+              567
+            ],
+            [
+              263,
+              567
+            ],
+            [
+              263,
+              583
+            ],
+            [
+              245,
+              583
+            ]
+          ]
+        },
+        {
+          "text": "Other business property",
+          "confidence": 0.99962,
+          "bounding_box": [
+            [
+              447,
+              568
+            ],
+            [
+              572,
+              571
+            ],
+            [
+              572,
+              583
+            ],
+            [
+              447,
+              581
+            ]
+          ]
+        },
+        {
+          "text": "20b",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              632,
+              568
+            ],
+            [
+              656,
+              568
+            ],
+            [
+              656,
+              582
+            ],
+            [
+              632,
+              582
+            ]
+          ]
+        },
+        {
+          "text": "b",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              428,
+              571
+            ],
+            [
+              439,
+              571
+            ],
+            [
+              439,
+              580
+            ],
+            [
+              428,
+              580
+            ]
+          ]
+        },
+        {
+          "text": "12",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              54,
+              584
+            ],
+            [
+              73,
+              584
+            ],
+            [
+              73,
+              599
+            ],
+            [
+              54,
+              599
+            ]
+          ]
+        },
+        {
+          "text": "Depletion",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              88,
+              586
+            ],
+            [
+              141,
+              586
+            ],
+            [
+              141,
+              598
+            ],
+            [
+              88,
+              598
+            ]
+          ]
+        },
+        {
+          "text": "12",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              245,
+              583
+            ],
+            [
+              264,
+              583
+            ],
+            [
+              264,
+              599
+            ],
+            [
+              245,
+              599
+            ]
+          ]
+        },
+        {
+          "text": "21",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              416,
+              587
+            ],
+            [
+              431,
+              587
+            ],
+            [
+              431,
+              597
+            ],
+            [
+              416,
+              597
+            ]
+          ]
+        },
+        {
+          "text": "Repairs and maintenance",
+          "confidence": 0.99879,
+          "bounding_box": [
+            [
+              447,
+              586
+            ],
+            [
+              577,
+              586
+            ],
+            [
+              577,
+              598
+            ],
+            [
+              447,
+              598
+            ]
+          ]
+        },
+        {
+          "text": "21",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              634,
+              584
+            ],
+            [
+              654,
+              584
+            ],
+            [
+              654,
+              598
+            ],
+            [
+              634,
+              598
+            ]
+          ]
+        },
+        {
+          "text": "13",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              54,
+              598
+            ],
+            [
+              73,
+              598
+            ],
+            [
+              73,
+              612
+            ],
+            [
+              54,
+              612
+            ]
+          ]
+        },
+        {
+          "text": "Depreciation and section 179",
+          "confidence": 0.99993,
+          "bounding_box": [
+            [
+              88,
+              599
+            ],
+            [
+              231,
+              598
+            ],
+            [
+              231,
+              611
+            ],
+            [
+              88,
+              612
+            ]
+          ]
+        },
+        {
+          "text": "22",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              415,
+              600
+            ],
+            [
+              433,
+              600
+            ],
+            [
+              433,
+              615
+            ],
+            [
+              415,
+              615
+            ]
+          ]
+        },
+        {
+          "text": "Supplies (not included in Part III)",
+          "confidence": 0.96537,
+          "bounding_box": [
+            [
+              447,
+              602
+            ],
+            [
+              612,
+              603
+            ],
+            [
+              612,
+              616
+            ],
+            [
+              447,
+              615
+            ]
+          ]
+        },
+        {
+          "text": "22",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              634,
+              600
+            ],
+            [
+              654,
+              600
+            ],
+            [
+              654,
+              615
+            ],
+            [
+              634,
+              615
+            ]
+          ]
+        },
+        {
+          "text": "expense deduction",
+          "confidence": 0.97561,
+          "bounding_box": [
+            [
+              88,
+              613
+            ],
+            [
+              210,
+              613
+            ],
+            [
+              210,
+              626
+            ],
+            [
+              88,
+              626
+            ]
+          ]
+        },
+        {
+          "text": "(not",
+          "confidence": 0.99878,
+          "bounding_box": [
+            [
+              206,
+              612
+            ],
+            [
+              232,
+              612
+            ],
+            [
+              232,
+              626
+            ],
+            [
+              206,
+              626
+            ]
+          ]
+        },
+        {
+          "text": "23",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              415,
+              618
+            ],
+            [
+              433,
+              618
+            ],
+            [
+              433,
+              633
+            ],
+            [
+              415,
+              633
+            ]
+          ]
+        },
+        {
+          "text": "Taxes and licenses .",
+          "confidence": 0.97429,
+          "bounding_box": [
+            [
+              447,
+              619
+            ],
+            [
+              558,
+              619
+            ],
+            [
+              558,
+              631
+            ],
+            [
+              447,
+              631
+            ]
+          ]
+        },
+        {
+          "text": "23",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              634,
+              618
+            ],
+            [
+              654,
+              618
+            ],
+            [
+              654,
+              633
+            ],
+            [
+              634,
+              633
+            ]
+          ]
+        },
+        {
+          "text": "included in Part III)",
+          "confidence": 0.98782,
+          "bounding_box": [
+            [
+              88,
+              624
+            ],
+            [
+              204,
+              624
+            ],
+            [
+              204,
+              637
+            ],
+            [
+              88,
+              637
+            ]
+          ]
+        },
+        {
+          "text": "(see",
+          "confidence": 0.9928,
+          "bounding_box": [
+            [
+              203,
+              624
+            ],
+            [
+              232,
+              624
+            ],
+            [
+              232,
+              637
+            ],
+            [
+              203,
+              637
+            ]
+          ]
+        },
+        {
+          "text": "instructions)",
+          "confidence": 0.96514,
+          "bounding_box": [
+            [
+              88,
+              636
+            ],
+            [
+              150,
+              637
+            ],
+            [
+              150,
+              651
+            ],
+            [
+              88,
+              650
+            ]
+          ]
+        },
+        {
+          "text": "13",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              246,
+              634
+            ],
+            [
+              264,
+              634
+            ],
+            [
+              264,
+              650
+            ],
+            [
+              246,
+              650
+            ]
+          ]
+        },
+        {
+          "text": "24",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              415,
+              635
+            ],
+            [
+              433,
+              635
+            ],
+            [
+              433,
+              649
+            ],
+            [
+              415,
+              649
+            ]
+          ]
+        },
+        {
+          "text": "Travel and meals:",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              448,
+              635
+            ],
+            [
+              538,
+              635
+            ],
+            [
+              538,
+              649
+            ],
+            [
+              448,
+              649
+            ]
+          ]
+        },
+        {
+          "text": "14",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              54,
+              654
+            ],
+            [
+              73,
+              654
+            ],
+            [
+              73,
+              668
+            ],
+            [
+              54,
+              668
+            ]
+          ]
+        },
+        {
+          "text": "Employee benefit programs",
+          "confidence": 0.98318,
+          "bounding_box": [
+            [
+              88,
+              654
+            ],
+            [
+              231,
+              657
+            ],
+            [
+              231,
+              669
+            ],
+            [
+              88,
+              667
+            ]
+          ]
+        },
+        {
+          "text": "a",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              427,
+              653
+            ],
+            [
+              439,
+              653
+            ],
+            [
+              439,
+              665
+            ],
+            [
+              427,
+              665
+            ]
+          ]
+        },
+        {
+          "text": "Travel .. .",
+          "confidence": 0.85898,
+          "bounding_box": [
+            [
+              448,
+              653
+            ],
+            [
+              523,
+              653
+            ],
+            [
+              523,
+              663
+            ],
+            [
+              448,
+              663
+            ]
+          ]
+        },
+        {
+          "text": "24a",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              633,
+              650
+            ],
+            [
+              657,
+              652
+            ],
+            [
+              655,
+              667
+            ],
+            [
+              631,
+              663
+            ]
+          ]
+        },
+        {
+          "text": "(other than on line 19)",
+          "confidence": 0.98448,
+          "bounding_box": [
+            [
+              88,
+              669
+            ],
+            [
+              200,
+              669
+            ],
+            [
+              200,
+              682
+            ],
+            [
+              88,
+              682
+            ]
+          ]
+        },
+        {
+          "text": "14",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              244,
+              667
+            ],
+            [
+              264,
+              667
+            ],
+            [
+              264,
+              683
+            ],
+            [
+              244,
+              683
+            ]
+          ]
+        },
+        {
+          "text": "b",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              427,
+              669
+            ],
+            [
+              440,
+              669
+            ],
+            [
+              440,
+              681
+            ],
+            [
+              427,
+              681
+            ]
+          ]
+        },
+        {
+          "text": "Deductible meals (see instructions)",
+          "confidence": 0.99855,
+          "bounding_box": [
+            [
+              447,
+              669
+            ],
+            [
+              619,
+              669
+            ],
+            [
+              619,
+              682
+            ],
+            [
+              447,
+              682
+            ]
+          ]
+        },
+        {
+          "text": "24b",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              632,
+              667
+            ],
+            [
+              656,
+              667
+            ],
+            [
+              656,
+              682
+            ],
+            [
+              632,
+              682
+            ]
+          ]
+        },
+        {
+          "text": "15",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              54,
+              685
+            ],
+            [
+              74,
+              685
+            ],
+            [
+              74,
+              699
+            ],
+            [
+              54,
+              699
+            ]
+          ]
+        },
+        {
+          "text": "Insurance (other than health)",
+          "confidence": 0.98687,
+          "bounding_box": [
+            [
+              88,
+              686
+            ],
+            [
+              231,
+              686
+            ],
+            [
+              231,
+              699
+            ],
+            [
+              88,
+              699
+            ]
+          ]
+        },
+        {
+          "text": "15",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              245,
+              684
+            ],
+            [
+              264,
+              684
+            ],
+            [
+              264,
+              699
+            ],
+            [
+              245,
+              699
+            ]
+          ]
+        },
+        {
+          "text": "25",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              415,
+              685
+            ],
+            [
+              434,
+              685
+            ],
+            [
+              434,
+              699
+            ],
+            [
+              415,
+              699
+            ]
+          ]
+        },
+        {
+          "text": "Utilities",
+          "confidence": 0.99571,
+          "bounding_box": [
+            [
+              447,
+              684
+            ],
+            [
+              490,
+              686
+            ],
+            [
+              490,
+              700
+            ],
+            [
+              447,
+              698
+            ]
+          ]
+        },
+        {
+          "text": "25",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              634,
+              684
+            ],
+            [
+              654,
+              684
+            ],
+            [
+              654,
+              699
+            ],
+            [
+              634,
+              699
+            ]
+          ]
+        },
+        {
+          "text": "16",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              54,
+              701
+            ],
+            [
+              74,
+              701
+            ],
+            [
+              74,
+              715
+            ],
+            [
+              54,
+              715
+            ]
+          ]
+        },
+        {
+          "text": "Interest (see instructions):",
+          "confidence": 0.99993,
+          "bounding_box": [
+            [
+              87,
+              702
+            ],
+            [
+              218,
+              702
+            ],
+            [
+              218,
+              715
+            ],
+            [
+              87,
+              715
+            ]
+          ]
+        },
+        {
+          "text": "26",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              413,
+              700
+            ],
+            [
+              433,
+              700
+            ],
+            [
+              433,
+              715
+            ],
+            [
+              413,
+              715
+            ]
+          ]
+        },
+        {
+          "text": "Wages (less employment credits)",
+          "confidence": 0.99991,
+          "bounding_box": [
+            [
+              447,
+              702
+            ],
+            [
+              614,
+              702
+            ],
+            [
+              614,
+              715
+            ],
+            [
+              447,
+              715
+            ]
+          ]
+        },
+        {
+          "text": "26",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              634,
+              700
+            ],
+            [
+              654,
+              700
+            ],
+            [
+              654,
+              715
+            ],
+            [
+              634,
+              715
+            ]
+          ]
+        },
+        {
+          "text": "Mortgage (paid to banks, etc.)",
+          "confidence": 0.9922,
+          "bounding_box": [
+            [
+              87,
+              718
+            ],
+            [
+              230,
+              720
+            ],
+            [
+              230,
+              733
+            ],
+            [
+              87,
+              732
+            ]
+          ]
+        },
+        {
+          "text": "16a",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              240,
+              716
+            ],
+            [
+              268,
+              716
+            ],
+            [
+              268,
+              733
+            ],
+            [
+              240,
+              733
+            ]
+          ]
+        },
+        {
+          "text": "a",
+          "confidence": 0.99805,
+          "bounding_box": [
+            [
+              67,
+              722
+            ],
+            [
+              79,
+              722
+            ],
+            [
+              79,
+              731
+            ],
+            [
+              67,
+              731
+            ]
+          ]
+        },
+        {
+          "text": "27a",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              415,
+              721
+            ],
+            [
+              442,
+              721
+            ],
+            [
+              442,
+              734
+            ],
+            [
+              415,
+              734
+            ]
+          ]
+        },
+        {
+          "text": "Energy efficient commercial bldgs",
+          "confidence": 0.99645,
+          "bounding_box": [
+            [
+              447,
+              722
+            ],
+            [
+              620,
+              722
+            ],
+            [
+              620,
+              736
+            ],
+            [
+              447,
+              736
+            ]
+          ]
+        },
+        {
+          "text": "b",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              67,
+              737
+            ],
+            [
+              80,
+              737
+            ],
+            [
+              80,
+              748
+            ],
+            [
+              67,
+              748
+            ]
+          ]
+        },
+        {
+          "text": "Other",
+          "confidence": 0.9998,
+          "bounding_box": [
+            [
+              87,
+              736
+            ],
+            [
+              121,
+              736
+            ],
+            [
+              121,
+              748
+            ],
+            [
+              87,
+              748
+            ]
+          ]
+        },
+        {
+          "text": "16b",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              240,
+              733
+            ],
+            [
+              268,
+              733
+            ],
+            [
+              268,
+              751
+            ],
+            [
+              240,
+              751
+            ]
+          ]
+        },
+        {
+          "text": "deduction (attach Form 7205) .",
+          "confidence": 0.99736,
+          "bounding_box": [
+            [
+              447,
+              737
+            ],
+            [
+              602,
+              737
+            ],
+            [
+              602,
+              748
+            ],
+            [
+              447,
+              748
+            ]
+          ]
+        },
+        {
+          "text": "27a",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              633,
+              734
+            ],
+            [
+              656,
+              734
+            ],
+            [
+              656,
+              749
+            ],
+            [
+              633,
+              749
+            ]
+          ]
+        },
+        {
+          "text": "17",
+          "confidence": 0.99805,
+          "bounding_box": [
+            [
+              55,
+              753
+            ],
+            [
+              74,
+              753
+            ],
+            [
+              74,
+              763
+            ],
+            [
+              55,
+              763
+            ]
+          ]
+        },
+        {
+          "text": "Legal and professional services",
+          "confidence": 0.99064,
+          "bounding_box": [
+            [
+              88,
+              752
+            ],
+            [
+              232,
+              752
+            ],
+            [
+              232,
+              764
+            ],
+            [
+              88,
+              764
+            ]
+          ]
+        },
+        {
+          "text": "17",
+          "confidence": 0.99902,
+          "bounding_box": [
+            [
+              244,
+              751
+            ],
+            [
+              264,
+              751
+            ],
+            [
+              264,
+              764
+            ],
+            [
+              244,
+              764
+            ]
+          ]
+        },
+        {
+          "text": "b",
+          "confidence": 0.97705,
+          "bounding_box": [
+            [
+              426,
+              753
+            ],
+            [
+              449,
+              753
+            ],
+            [
+              449,
+              763
+            ],
+            [
+              426,
+              763
+            ]
+          ]
+        },
+        {
+          "text": "Other expenses (from line 48)",
+          "confidence": 0.99949,
+          "bounding_box": [
+            [
+              446,
+              752
+            ],
+            [
+              597,
+              752
+            ],
+            [
+              597,
+              764
+            ],
+            [
+              446,
+              764
+            ]
+          ]
+        },
+        {
+          "text": "27b",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              632,
+              751
+            ],
+            [
+              656,
+              751
+            ],
+            [
+              656,
+              765
+            ],
+            [
+              632,
+              765
+            ]
+          ]
+        },
+        {
+          "text": "28",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              768
+            ],
+            [
+              74,
+              768
+            ],
+            [
+              74,
+              781
+            ],
+            [
+              53,
+              781
+            ]
+          ]
+        },
+        {
+          "text": "Total expenses before expenses for business use of home. Add lines 8 through 27b",
+          "confidence": 0.99584,
+          "bounding_box": [
+            [
+              88,
+              769
+            ],
+            [
+              510,
+              769
+            ],
+            [
+              510,
+              781
+            ],
+            [
+              88,
+              781
+            ]
+          ]
+        },
+        {
+          "text": "28",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              634,
+              767
+            ],
+            [
+              654,
+              767
+            ],
+            [
+              654,
+              781
+            ],
+            [
+              634,
+              781
+            ]
+          ]
+        },
+        {
+          "text": "29",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              785
+            ],
+            [
+              74,
+              785
+            ],
+            [
+              74,
+              800
+            ],
+            [
+              53,
+              800
+            ]
+          ]
+        },
+        {
+          "text": "Tentative profit or (loss). Subtract line 28 from line 7 .",
+          "confidence": 0.98864,
+          "bounding_box": [
+            [
+              88,
+              786
+            ],
+            [
+              355,
+              786
+            ],
+            [
+              355,
+              799
+            ],
+            [
+              88,
+              799
+            ]
+          ]
+        },
+        {
+          "text": "29",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              634,
+              784
+            ],
+            [
+              654,
+              784
+            ],
+            [
+              654,
+              799
+            ],
+            [
+              634,
+              799
+            ]
+          ]
+        },
+        {
+          "text": "30",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              803
+            ],
+            [
+              74,
+              803
+            ],
+            [
+              74,
+              818
+            ],
+            [
+              53,
+              818
+            ]
+          ]
+        },
+        {
+          "text": "Expenses for business use of your home. Do not report these expenses elsewhere. Attach Form 8829",
+          "confidence": 0.98315,
+          "bounding_box": [
+            [
+              88,
+              804
+            ],
+            [
+              621,
+              804
+            ],
+            [
+              621,
+              818
+            ],
+            [
+              88,
+              818
+            ]
+          ]
+        },
+        {
+          "text": "unless using the simplified method. See instructions.",
+          "confidence": 0.99125,
+          "bounding_box": [
+            [
+              88,
+              819
+            ],
+            [
+              351,
+              819
+            ],
+            [
+              351,
+              832
+            ],
+            [
+              88,
+              832
+            ]
+          ]
+        },
+        {
+          "text": "Simplified method filers only: Enter the total square footage of (a) your home:",
+          "confidence": 0.99955,
+          "bounding_box": [
+            [
+              89,
+              834
+            ],
+            [
+              482,
+              834
+            ],
+            [
+              482,
+              847
+            ],
+            [
+              89,
+              847
+            ]
+          ]
+        },
+        {
+          "text": "and (b) the part of your home used for business:",
+          "confidence": 0.99855,
+          "bounding_box": [
+            [
+              88,
+              854
+            ],
+            [
+              329,
+              854
+            ],
+            [
+              329,
+              865
+            ],
+            [
+              88,
+              865
+            ]
+          ]
+        },
+        {
+          "text": ". Use the Simplified",
+          "confidence": 0.98123,
+          "bounding_box": [
+            [
+              513,
+              853
+            ],
+            [
+              611,
+              853
+            ],
+            [
+              611,
+              864
+            ],
+            [
+              513,
+              864
+            ]
+          ]
+        },
+        {
+          "text": "Method Worksheet in the instructions to figure the amount to enter on line 30",
+          "confidence": 0.99686,
+          "bounding_box": [
+            [
+              88,
+              869
+            ],
+            [
+              474,
+              869
+            ],
+            [
+              474,
+              881
+            ],
+            [
+              88,
+              881
+            ]
+          ]
+        },
+        {
+          "text": "30",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              634,
+              867
+            ],
+            [
+              654,
+              867
+            ],
+            [
+              654,
+              882
+            ],
+            [
+              634,
+              882
+            ]
+          ]
+        },
+        {
+          "text": "31",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              54,
+              887
+            ],
+            [
+              70,
+              887
+            ],
+            [
+              70,
+              897
+            ],
+            [
+              54,
+              897
+            ]
+          ]
+        },
+        {
+          "text": "Net profit or (loss). Subtract line 30 from line 29.",
+          "confidence": 0.99273,
+          "bounding_box": [
+            [
+              88,
+              886
+            ],
+            [
+              334,
+              886
+            ],
+            [
+              334,
+              898
+            ],
+            [
+              88,
+              898
+            ]
+          ]
+        },
+        {
+          "text": "\u00e2\u0080\u00a2 If a profit, enter on both Schedule 1 (Form 1040), line 3, and on Schedule SE, line 2. (If you",
+          "confidence": 0.9974,
+          "bounding_box": [
+            [
+              88,
+              905
+            ],
+            [
+              558,
+              905
+            ],
+            [
+              558,
+              918
+            ],
+            [
+              88,
+              918
+            ]
+          ]
+        },
+        {
+          "text": "checked the box on line 1, see instructions.) Estates and trusts, enter on Form 1041, line 3.",
+          "confidence": 0.9799,
+          "bounding_box": [
+            [
+              89,
+              919
+            ],
+            [
+              544,
+              919
+            ],
+            [
+              544,
+              932
+            ],
+            [
+              89,
+              932
+            ]
+          ]
+        },
+        {
+          "text": "31",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              634,
+              918
+            ],
+            [
+              654,
+              918
+            ],
+            [
+              654,
+              933
+            ],
+            [
+              634,
+              933
+            ]
+          ]
+        },
+        {
+          "text": "\u00e2\u0080\u00a2 If a loss, you must go to line 32.",
+          "confidence": 0.98928,
+          "bounding_box": [
+            [
+              88,
+              936
+            ],
+            [
+              261,
+              936
+            ],
+            [
+              261,
+              949
+            ],
+            [
+              88,
+              949
+            ]
+          ]
+        },
+        {
+          "text": "32",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              54,
+              951
+            ],
+            [
+              74,
+              951
+            ],
+            [
+              74,
+              965
+            ],
+            [
+              54,
+              965
+            ]
+          ]
+        },
+        {
+          "text": "If you have a loss, check the box that describes your investment in this activity. See instructions.",
+          "confidence": 0.99307,
+          "bounding_box": [
+            [
+              87,
+              952
+            ],
+            [
+              568,
+              952
+            ],
+            [
+              568,
+              965
+            ],
+            [
+              87,
+              965
+            ]
+          ]
+        },
+        {
+          "text": "\u00e2\u0080\u00a2 If you checked 32a, enter the loss on both Schedule 1 (Form 1040), line 3, and on Schedule",
+          "confidence": 0.98526,
+          "bounding_box": [
+            [
+              88,
+              975
+            ],
+            [
+              562,
+              975
+            ],
+            [
+              562,
+              988
+            ],
+            [
+              88,
+              988
+            ]
+          ]
+        },
+        {
+          "text": "SE, line 2. (If you checked the box on line 1, see the line 31 instructions.) Estates and trusts, enter on",
+          "confidence": 0.98664,
+          "bounding_box": [
+            [
+              89,
+              989
+            ],
+            [
+              580,
+              989
+            ],
+            [
+              580,
+              1001
+            ],
+            [
+              89,
+              1001
+            ]
+          ]
+        },
+        {
+          "text": "32a All investment is at risk.",
+          "confidence": 0.99619,
+          "bounding_box": [
+            [
+              633,
+              983
+            ],
+            [
+              793,
+              983
+            ],
+            [
+              793,
+              998
+            ],
+            [
+              633,
+              998
+            ]
+          ]
+        },
+        {
+          "text": "Form 1041, line 3.",
+          "confidence": 0.9965,
+          "bounding_box": [
+            [
+              89,
+              1003
+            ],
+            [
+              185,
+              1003
+            ],
+            [
+              185,
+              1014
+            ],
+            [
+              89,
+              1014
+            ]
+          ]
+        },
+        {
+          "text": "32b Some investment is not",
+          "confidence": 0.99388,
+          "bounding_box": [
+            [
+              633,
+              1001
+            ],
+            [
+              795,
+              1001
+            ],
+            [
+              795,
+              1015
+            ],
+            [
+              633,
+              1015
+            ]
+          ]
+        },
+        {
+          "text": "\u00e2\u0080\u00a2 If you checked 32b, you must attach Form 6198. Your loss may be limited.",
+          "confidence": 0.99147,
+          "bounding_box": [
+            [
+              88,
+              1019
+            ],
+            [
+              471,
+              1019
+            ],
+            [
+              471,
+              1031
+            ],
+            [
+              88,
+              1031
+            ]
+          ]
+        },
+        {
+          "text": "at risk.",
+          "confidence": 0.99976,
+          "bounding_box": [
+            [
+              674,
+              1016
+            ],
+            [
+              710,
+              1016
+            ],
+            [
+              710,
+              1029
+            ],
+            [
+              674,
+              1029
+            ]
+          ]
+        },
+        {
+          "text": "For Paperwork Reduction Act Notice, see the separate instructions.",
+          "confidence": 0.99564,
+          "bounding_box": [
+            [
+              49,
+              1036
+            ],
+            [
+              408,
+              1036
+            ],
+            [
+              408,
+              1048
+            ],
+            [
+              49,
+              1048
+            ]
+          ]
+        },
+        {
+          "text": "Cat. No. 11334P",
+          "confidence": 0.99915,
+          "bounding_box": [
+            [
+              461,
+              1036
+            ],
+            [
+              537,
+              1036
+            ],
+            [
+              537,
+              1048
+            ],
+            [
+              461,
+              1048
+            ]
+          ]
+        },
+        {
+          "text": "Schedule C (Form 1040) 2025 Created 4/3/25",
+          "confidence": 0.97371,
+          "bounding_box": [
+            [
+              595,
+              1036
+            ],
+            [
+              800,
+              1036
+            ],
+            [
+              800,
+              1048
+            ],
+            [
+              595,
+              1048
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "page": 2,
+      "results": [
+        {
+          "text": "Schedule C (Form 1040) 2025",
+          "confidence": 0.98622,
+          "bounding_box": [
+            [
+              47,
+              49
+            ],
+            [
+              180,
+              49
+            ],
+            [
+              180,
+              62
+            ],
+            [
+              47,
+              62
+            ]
+          ]
+        },
+        {
+          "text": "Page 2",
+          "confidence": 0.98201,
+          "bounding_box": [
+            [
+              763,
+              46
+            ],
+            [
+              803,
+              46
+            ],
+            [
+              803,
+              65
+            ],
+            [
+              763,
+              65
+            ]
+          ]
+        },
+        {
+          "text": "Part III",
+          "confidence": 0.8887,
+          "bounding_box": [
+            [
+              50,
+              65
+            ],
+            [
+              103,
+              65
+            ],
+            [
+              103,
+              81
+            ],
+            [
+              50,
+              81
+            ]
+          ]
+        },
+        {
+          "text": "Cost of Goods Sold (see instructions)",
+          "confidence": 0.99919,
+          "bounding_box": [
+            [
+              118,
+              68
+            ],
+            [
+              357,
+              68
+            ],
+            [
+              357,
+              80
+            ],
+            [
+              118,
+              80
+            ]
+          ]
+        },
+        {
+          "text": "33",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              104
+            ],
+            [
+              74,
+              104
+            ],
+            [
+              74,
+              118
+            ],
+            [
+              53,
+              118
+            ]
+          ]
+        },
+        {
+          "text": "Method(s) used to",
+          "confidence": 0.99345,
+          "bounding_box": [
+            [
+              87,
+              104
+            ],
+            [
+              181,
+              104
+            ],
+            [
+              181,
+              117
+            ],
+            [
+              87,
+              117
+            ]
+          ]
+        },
+        {
+          "text": "value closing inventory:",
+          "confidence": 0.9939,
+          "bounding_box": [
+            [
+              87,
+              118
+            ],
+            [
+              209,
+              118
+            ],
+            [
+              209,
+              133
+            ],
+            [
+              87,
+              133
+            ]
+          ]
+        },
+        {
+          "text": "a Cost",
+          "confidence": 0.98885,
+          "bounding_box": [
+            [
+              233,
+              116
+            ],
+            [
+              305,
+              116
+            ],
+            [
+              305,
+              133
+            ],
+            [
+              233,
+              133
+            ]
+          ]
+        },
+        {
+          "text": "b  Lower of cost or market",
+          "confidence": 0.96496,
+          "bounding_box": [
+            [
+              335,
+              116
+            ],
+            [
+              499,
+              116
+            ],
+            [
+              499,
+              132
+            ],
+            [
+              335,
+              132
+            ]
+          ]
+        },
+        {
+          "text": "cOther (attach explanation)",
+          "confidence": 0.99904,
+          "bounding_box": [
+            [
+              523,
+              117
+            ],
+            [
+              698,
+              117
+            ],
+            [
+              698,
+              133
+            ],
+            [
+              523,
+              133
+            ]
+          ]
+        },
+        {
+          "text": "34",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              138
+            ],
+            [
+              74,
+              138
+            ],
+            [
+              74,
+              152
+            ],
+            [
+              53,
+              152
+            ]
+          ]
+        },
+        {
+          "text": "Was there any change in determining quantities, costs, or valuations between opening and closing inventory?",
+          "confidence": 0.99159,
+          "bounding_box": [
+            [
+              87,
+              139
+            ],
+            [
+              633,
+              139
+            ],
+            [
+              633,
+              152
+            ],
+            [
+              87,
+              152
+            ]
+          ]
+        },
+        {
+          "text": "Yes",
+          "confidence": 0.9987,
+          "bounding_box": [
+            [
+              664,
+              147
+            ],
+            [
+              711,
+              147
+            ],
+            [
+              711,
+              165
+            ],
+            [
+              664,
+              165
+            ]
+          ]
+        },
+        {
+          "text": "No",
+          "confidence": 0.99951,
+          "bounding_box": [
+            [
+              746,
+              148
+            ],
+            [
+              786,
+              148
+            ],
+            [
+              786,
+              165
+            ],
+            [
+              746,
+              165
+            ]
+          ]
+        },
+        {
+          "text": "If \"Yes,\" attach explanation.",
+          "confidence": 0.98986,
+          "bounding_box": [
+            [
+              88,
+              151
+            ],
+            [
+              247,
+              151
+            ],
+            [
+              247,
+              164
+            ],
+            [
+              88,
+              164
+            ]
+          ]
+        },
+        {
+          "text": "35",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              54,
+              186
+            ],
+            [
+              74,
+              186
+            ],
+            [
+              74,
+              199
+            ],
+            [
+              54,
+              199
+            ]
+          ]
+        },
+        {
+          "text": "Inventory at beginning of year. If different from last year's closing inventory, attach explanation",
+          "confidence": 0.99486,
+          "bounding_box": [
+            [
+              87,
+              186
+            ],
+            [
+              561,
+              186
+            ],
+            [
+              561,
+              198
+            ],
+            [
+              87,
+              198
+            ]
+          ]
+        },
+        {
+          "text": "35",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              621,
+              181
+            ],
+            [
+              647,
+              181
+            ],
+            [
+              647,
+              201
+            ],
+            [
+              621,
+              201
+            ]
+          ]
+        },
+        {
+          "text": "36",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              218
+            ],
+            [
+              74,
+              218
+            ],
+            [
+              74,
+              231
+            ],
+            [
+              53,
+              231
+            ]
+          ]
+        },
+        {
+          "text": "Purchases less cost of items withdrawn for personal use",
+          "confidence": 0.99174,
+          "bounding_box": [
+            [
+              87,
+              219
+            ],
+            [
+              371,
+              219
+            ],
+            [
+              371,
+              231
+            ],
+            [
+              87,
+              231
+            ]
+          ]
+        },
+        {
+          "text": "36",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              624,
+              217
+            ],
+            [
+              644,
+              217
+            ],
+            [
+              644,
+              233
+            ],
+            [
+              624,
+              233
+            ]
+          ]
+        },
+        {
+          "text": "37",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              622,
+              248
+            ],
+            [
+              646,
+              248
+            ],
+            [
+              646,
+              267
+            ],
+            [
+              622,
+              267
+            ]
+          ]
+        },
+        {
+          "text": "37",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              251
+            ],
+            [
+              73,
+              251
+            ],
+            [
+              73,
+              266
+            ],
+            [
+              53,
+              266
+            ]
+          ]
+        },
+        {
+          "text": "Cost of labor. Do not include any amounts paid to yourself",
+          "confidence": 0.99904,
+          "bounding_box": [
+            [
+              88,
+              252
+            ],
+            [
+              383,
+              252
+            ],
+            [
+              383,
+              265
+            ],
+            [
+              88,
+              265
+            ]
+          ]
+        },
+        {
+          "text": "38",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              285
+            ],
+            [
+              74,
+              285
+            ],
+            [
+              74,
+              299
+            ],
+            [
+              53,
+              299
+            ]
+          ]
+        },
+        {
+          "text": "Materials and supplies",
+          "confidence": 0.99978,
+          "bounding_box": [
+            [
+              87,
+              286
+            ],
+            [
+              203,
+              286
+            ],
+            [
+              203,
+              299
+            ],
+            [
+              87,
+              299
+            ]
+          ]
+        },
+        {
+          "text": "38",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              624,
+              283
+            ],
+            [
+              644,
+              283
+            ],
+            [
+              644,
+              299
+            ],
+            [
+              624,
+              299
+            ]
+          ]
+        },
+        {
+          "text": "39",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              317
+            ],
+            [
+              74,
+              317
+            ],
+            [
+              74,
+              332
+            ],
+            [
+              53,
+              332
+            ]
+          ]
+        },
+        {
+          "text": "Other costs .",
+          "confidence": 0.97311,
+          "bounding_box": [
+            [
+              88,
+              319
+            ],
+            [
+              154,
+              319
+            ],
+            [
+              154,
+              331
+            ],
+            [
+              88,
+              331
+            ]
+          ]
+        },
+        {
+          "text": "39",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              624,
+              316
+            ],
+            [
+              644,
+              316
+            ],
+            [
+              644,
+              332
+            ],
+            [
+              624,
+              332
+            ]
+          ]
+        },
+        {
+          "text": "40",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              625,
+              349
+            ],
+            [
+              644,
+              349
+            ],
+            [
+              644,
+              366
+            ],
+            [
+              625,
+              366
+            ]
+          ]
+        },
+        {
+          "text": "40",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              54,
+              351
+            ],
+            [
+              73,
+              351
+            ],
+            [
+              73,
+              366
+            ],
+            [
+              54,
+              366
+            ]
+          ]
+        },
+        {
+          "text": "Add lines 35 through 39",
+          "confidence": 0.99958,
+          "bounding_box": [
+            [
+              88,
+              352
+            ],
+            [
+              210,
+              352
+            ],
+            [
+              210,
+              364
+            ],
+            [
+              88,
+              364
+            ]
+          ]
+        },
+        {
+          "text": "41",
+          "confidence": 0.99951,
+          "bounding_box": [
+            [
+              53,
+              385
+            ],
+            [
+              73,
+              385
+            ],
+            [
+              73,
+              399
+            ],
+            [
+              53,
+              399
+            ]
+          ]
+        },
+        {
+          "text": "Inventory at end of year",
+          "confidence": 0.99294,
+          "bounding_box": [
+            [
+              87,
+              386
+            ],
+            [
+              209,
+              386
+            ],
+            [
+              209,
+              399
+            ],
+            [
+              87,
+              399
+            ]
+          ]
+        },
+        {
+          "text": "41",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              624,
+              384
+            ],
+            [
+              643,
+              384
+            ],
+            [
+              643,
+              400
+            ],
+            [
+              624,
+              400
+            ]
+          ]
+        },
+        {
+          "text": "42",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              53,
+              417
+            ],
+            [
+              75,
+              417
+            ],
+            [
+              75,
+              431
+            ],
+            [
+              53,
+              431
+            ]
+          ]
+        },
+        {
+          "text": "Cost of goods sold. Subtract line 41 from line 40. Enter the result here and on line 4",
+          "confidence": 0.98947,
+          "bounding_box": [
+            [
+              87,
+              418
+            ],
+            [
+              513,
+              418
+            ],
+            [
+              513,
+              431
+            ],
+            [
+              87,
+              431
+            ]
+          ]
+        },
+        {
+          "text": "42",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              624,
+              417
+            ],
+            [
+              644,
+              417
+            ],
+            [
+              644,
+              432
+            ],
+            [
+              624,
+              432
+            ]
+          ]
+        },
+        {
+          "text": "Part IV",
+          "confidence": 0.9993,
+          "bounding_box": [
+            [
+              49,
+              432
+            ],
+            [
+              100,
+              432
+            ],
+            [
+              100,
+              449
+            ],
+            [
+              49,
+              449
+            ]
+          ]
+        },
+        {
+          "text": "Information on Your Vehicle. Complete this part only if you are claiming car or truck expenses on line 9 and",
+          "confidence": 0.99328,
+          "bounding_box": [
+            [
+              119,
+              435
+            ],
+            [
+              797,
+              435
+            ],
+            [
+              797,
+              448
+            ],
+            [
+              119,
+              448
+            ]
+          ]
+        },
+        {
+          "text": "are not required to file Form 4562 for this business. See the instructions for line 13 to find out if you must file",
+          "confidence": 0.98778,
+          "bounding_box": [
+            [
+              119,
+              450
+            ],
+            [
+              790,
+              450
+            ],
+            [
+              790,
+              464
+            ],
+            [
+              119,
+              464
+            ]
+          ]
+        },
+        {
+          "text": "Form 4562.",
+          "confidence": 0.99971,
+          "bounding_box": [
+            [
+              118,
+              464
+            ],
+            [
+              191,
+              464
+            ],
+            [
+              191,
+              480
+            ],
+            [
+              118,
+              480
+            ]
+          ]
+        },
+        {
+          "text": "43",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              54,
+              502
+            ],
+            [
+              75,
+              502
+            ],
+            [
+              75,
+              514
+            ],
+            [
+              54,
+              514
+            ]
+          ]
+        },
+        {
+          "text": "When did you place your vehicle in service for business purposes? (month/day/year)",
+          "confidence": 0.99154,
+          "bounding_box": [
+            [
+              87,
+              502
+            ],
+            [
+              509,
+              502
+            ],
+            [
+              509,
+              514
+            ],
+            [
+              87,
+              514
+            ]
+          ]
+        },
+        {
+          "text": "44",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              54,
+              535
+            ],
+            [
+              74,
+              535
+            ],
+            [
+              74,
+              549
+            ],
+            [
+              54,
+              549
+            ]
+          ]
+        },
+        {
+          "text": "Of the total number of miles you drove your vehicle during 2025, enter the number of miles you used your vehicle for:",
+          "confidence": 0.98537,
+          "bounding_box": [
+            [
+              87,
+              535
+            ],
+            [
+              669,
+              536
+            ],
+            [
+              669,
+              550
+            ],
+            [
+              87,
+              549
+            ]
+          ]
+        },
+        {
+          "text": "Business",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              85,
+              568
+            ],
+            [
+              137,
+              569
+            ],
+            [
+              137,
+              583
+            ],
+            [
+              85,
+              581
+            ]
+          ]
+        },
+        {
+          "text": "b Commuting (see instructions)",
+          "confidence": 0.98143,
+          "bounding_box": [
+            [
+              285,
+              568
+            ],
+            [
+              449,
+              568
+            ],
+            [
+              449,
+              583
+            ],
+            [
+              285,
+              583
+            ]
+          ]
+        },
+        {
+          "text": "c Other",
+          "confidence": 0.97147,
+          "bounding_box": [
+            [
+              596,
+              567
+            ],
+            [
+              643,
+              567
+            ],
+            [
+              643,
+              583
+            ],
+            [
+              596,
+              583
+            ]
+          ]
+        },
+        {
+          "text": "a",
+          "confidence": 0.99512,
+          "bounding_box": [
+            [
+              67,
+              571
+            ],
+            [
+              89,
+              571
+            ],
+            [
+              89,
+              581
+            ],
+            [
+              67,
+              581
+            ]
+          ]
+        },
+        {
+          "text": "45",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              54,
+              602
+            ],
+            [
+              75,
+              602
+            ],
+            [
+              75,
+              615
+            ],
+            [
+              54,
+              615
+            ]
+          ]
+        },
+        {
+          "text": "Was your vehicle available for personal use during off-duty hours?",
+          "confidence": 0.99109,
+          "bounding_box": [
+            [
+              85,
+              602
+            ],
+            [
+              418,
+              603
+            ],
+            [
+              418,
+              615
+            ],
+            [
+              85,
+              614
+            ]
+          ]
+        },
+        {
+          "text": "Yes",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              694,
+              602
+            ],
+            [
+              721,
+              602
+            ],
+            [
+              721,
+              615
+            ],
+            [
+              694,
+              615
+            ]
+          ]
+        },
+        {
+          "text": " No",
+          "confidence": 0.87321,
+          "bounding_box": [
+            [
+              748,
+              600
+            ],
+            [
+              785,
+              600
+            ],
+            [
+              785,
+              615
+            ],
+            [
+              748,
+              615
+            ]
+          ]
+        },
+        {
+          "text": "46",
+          "confidence": 0.99951,
+          "bounding_box": [
+            [
+              55,
+              636
+            ],
+            [
+              80,
+              636
+            ],
+            [
+              80,
+              647
+            ],
+            [
+              55,
+              647
+            ]
+          ]
+        },
+        {
+          "text": "Do you (or your spouse) have another vehicle available for personal use?.",
+          "confidence": 0.99456,
+          "bounding_box": [
+            [
+              87,
+              636
+            ],
+            [
+              453,
+              636
+            ],
+            [
+              453,
+              649
+            ],
+            [
+              87,
+              649
+            ]
+          ]
+        },
+        {
+          "text": "Yes",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              694,
+              635
+            ],
+            [
+              719,
+              635
+            ],
+            [
+              719,
+              649
+            ],
+            [
+              694,
+              649
+            ]
+          ]
+        },
+        {
+          "text": "]No",
+          "confidence": 0.93115,
+          "bounding_box": [
+            [
+              759,
+              635
+            ],
+            [
+              785,
+              635
+            ],
+            [
+              785,
+              649
+            ],
+            [
+              759,
+              649
+            ]
+          ]
+        },
+        {
+          "text": "47a Do you have evidence to support your deduction?",
+          "confidence": 0.99785,
+          "bounding_box": [
+            [
+              54,
+              669
+            ],
+            [
+              340,
+              669
+            ],
+            [
+              340,
+              682
+            ],
+            [
+              54,
+              682
+            ]
+          ]
+        },
+        {
+          "text": "Yes",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              693,
+              668
+            ],
+            [
+              719,
+              668
+            ],
+            [
+              719,
+              682
+            ],
+            [
+              693,
+              682
+            ]
+          ]
+        },
+        {
+          "text": "No",
+          "confidence": 0.99951,
+          "bounding_box": [
+            [
+              751,
+              666
+            ],
+            [
+              786,
+              668
+            ],
+            [
+              785,
+              684
+            ],
+            [
+              748,
+              681
+            ]
+          ]
+        },
+        {
+          "text": "Yes",
+          "confidence": 0.99967,
+          "bounding_box": [
+            [
+              680,
+              698
+            ],
+            [
+              722,
+              701
+            ],
+            [
+              721,
+              716
+            ],
+            [
+              679,
+              713
+            ]
+          ]
+        },
+        {
+          "text": "No",
+          "confidence": 0.99951,
+          "bounding_box": [
+            [
+              747,
+              698
+            ],
+            [
+              788,
+              701
+            ],
+            [
+              785,
+              716
+            ],
+            [
+              746,
+              713
+            ]
+          ]
+        },
+        {
+          "text": "b If \"Yes,\" is the evidence written?",
+          "confidence": 0.9699,
+          "bounding_box": [
+            [
+              66,
+              701
+            ],
+            [
+              252,
+              701
+            ],
+            [
+              252,
+              714
+            ],
+            [
+              66,
+              714
+            ]
+          ]
+        },
+        {
+          "text": "Part V",
+          "confidence": 0.99772,
+          "bounding_box": [
+            [
+              51,
+              716
+            ],
+            [
+              100,
+              716
+            ],
+            [
+              100,
+              732
+            ],
+            [
+              51,
+              732
+            ]
+          ]
+        },
+        {
+          "text": "Other Expenses. List below business expenses not included on lines 8-27a, or line 30.",
+          "confidence": 0.99407,
+          "bounding_box": [
+            [
+              118,
+              717
+            ],
+            [
+              658,
+              717
+            ],
+            [
+              658,
+              730
+            ],
+            [
+              118,
+              730
+            ]
+          ]
+        },
+        {
+          "text": "48",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              55,
+              1037
+            ],
+            [
+              73,
+              1037
+            ],
+            [
+              73,
+              1047
+            ],
+            [
+              55,
+              1047
+            ]
+          ]
+        },
+        {
+          "text": "Total other expenses. Enter here and on line 27b",
+          "confidence": 0.98602,
+          "bounding_box": [
+            [
+              87,
+              1036
+            ],
+            [
+              338,
+              1037
+            ],
+            [
+              338,
+              1050
+            ],
+            [
+              87,
+              1048
+            ]
+          ]
+        },
+        {
+          "text": "48",
+          "confidence": 1,
+          "bounding_box": [
+            [
+              625,
+              1035
+            ],
+            [
+              643,
+              1035
+            ],
+            [
+              643,
+              1048
+            ],
+            [
+              625,
+              1048
+            ]
+          ]
+        },
+        {
+          "text": "Schedule C (Form 1040) 2025",
+          "confidence": 0.99354,
+          "bounding_box": [
+            [
+              664,
+              1053
+            ],
+            [
+              800,
+              1053
+            ],
+            [
+              800,
+              1066
+            ],
+            [
+              664,
+              1066
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

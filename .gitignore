@@ -1,0 +1,22 @@
+build/
+build_cpu/
+__pycache__/
+.pytest_cache/
+.venv*/
+.claude/
+*.trt
+*.engine
+*.pyc
+*.log
+timing.cache
+.DS_Store
+models/ch_PP-OCRv4_det_server_infer/
+models/PP-OCRv5_server_det_infer/
+
+# fastpdf2png binaries — auto-installed by scripts/install_fastpdf2png.sh
+bin/fastpdf2png
+bin/libpdfium.so
+quantization/PaddleOCR/
+quantization/pretrained/
+quantization/output*/
+quantization/.venv*/
