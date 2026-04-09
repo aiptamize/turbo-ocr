@@ -1,7 +1,10 @@
 #include "turbo_ocr/engine/onnx_to_trt.h"
+#include "turbo_ocr/common/cuda_check.h"
 
 #include <NvInfer.h>
 #include <NvOnnxParser.h>
+
+#include <cuda_runtime.h>
 
 #include <cstdlib>
 #include <filesystem>
@@ -57,11 +60,21 @@ std::string get_cached_engine_path(const std::string &onnx_path,
   trt_patch = NV_TENSORRT_PATCH;
 #endif
 
-  // Simple hash
-  auto hash = std::hash<std::string>{}(
+  // GPU compute capability (engines are GPU-architecture specific)
+  int gpu_major = 0, gpu_minor = 0;
+  CUDA_CHECK(cudaDeviceGetAttribute(&gpu_major, cudaDevAttrComputeCapabilityMajor, 0));
+  CUDA_CHECK(cudaDeviceGetAttribute(&gpu_minor, cudaDevAttrComputeCapabilityMinor, 0));
+
+  // Cache key includes: onnx identity, TRT version, GPU arch, and profile version.
+  // Bump kProfileVersion when optimization profiles change.
+  static constexpr int kProfileVersion = 20250411;
+
+  auto key = "v" + std::to_string(kProfileVersion) + ":" + type + ":" +
       onnx_path + ":" + std::to_string(onnx_size) + ":" +
       std::to_string(onnx_mtime) + ":" + std::to_string(trt_major) + "." +
-      std::to_string(trt_minor) + "." + std::to_string(trt_patch));
+      std::to_string(trt_minor) + "." + std::to_string(trt_patch) + ":sm" +
+      std::to_string(gpu_major) + "." + std::to_string(gpu_minor);
+  auto hash = std::hash<std::string>{}(key);
 
   return cache_dir + "/" + type + "_" + std::to_string(hash) + ".trt";
 }
@@ -97,13 +110,12 @@ static bool build_engine(const std::string &onnx_path,
   auto input = network->getInput(0);
 
   if (type == "det") {
-    // Batch dim dynamic for run_batch() support
     profile->setDimensions(input->getName(), nvinfer1::OptProfileSelector::kMIN,
         nvinfer1::Dims4{1, 3, 32, 32});
     profile->setDimensions(input->getName(), nvinfer1::OptProfileSelector::kOPT,
-        nvinfer1::Dims4{4, 3, 640, 640});
+        nvinfer1::Dims4{1, 3, 640, 640});
     profile->setDimensions(input->getName(), nvinfer1::OptProfileSelector::kMAX,
-        nvinfer1::Dims4{8, 3, 960, 960});
+        nvinfer1::Dims4{1, 3, 960, 960});
   } else if (type == "rec") {
     profile->setDimensions(input->getName(), nvinfer1::OptProfileSelector::kMIN,
         nvinfer1::Dims4{1, 3, 48, 48});
