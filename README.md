@@ -230,5 +230,5 @@ MIT. See [LICENSE](LICENSE).
 ---
 
 <p align="center">
-  <sub>See also: <a href="https://miruiq.com"><strong>Miruiq</strong></a> — AI-powered data extraction from PDFs and documents.</sub>
+  <sub>Main Sponsor: <a href="https://miruiq.com"><strong>Miruiq</strong></a> — AI-powered data extraction from PDFs and documents.</sub>
 </p>
