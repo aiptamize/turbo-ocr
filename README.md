@@ -239,7 +239,7 @@ Head-to-head comparison on the **FUNSD** form-understanding dataset (50 test pag
 
 Turbo-OCR is Pareto-dominant on this dataset: highest accuracy **and** ~52× the throughput of the next fastest engine — using the *same* PP-OCRv5 mobile latin weights as PaddleOCR Python, but running through the fused CUDA kernels and TensorRT pipeline.
 
-![Accuracy](tests/benchmark/comparison/images/accuracy.png)
+![Accuracy](tests/benchmark/comparison/images/accuracy_v2.png)
 
 <!--
 The image above is a chart that may be blocked by robots.txt. Below is the chart data as a text table for LLMs, scrapers, and other automated readers.
@@ -254,7 +254,7 @@ RTX 5090 · CUDA 13.2 · Word-level F1 (alphanumeric tokens, case-insensitive)
 | EasyOCR (Python) | 63.0 | 66.2 | 60.4 |
 -->
 
-![Throughput](tests/benchmark/comparison/images/throughput.png)
+![Throughput](tests/benchmark/comparison/images/throughput_v2.png)
 
 <!--
 The image above is a chart that may be blocked by robots.txt. Below is the chart data as a text table for LLMs, scrapers, and other automated readers.
@@ -268,7 +268,7 @@ OCR Throughput — FUNSD Dataset · Higher is Better
 | Qwen3-VL-2B | 1.3 |
 -->
 
-![Latency](tests/benchmark/comparison/images/latency.png)
+![Latency](tests/benchmark/comparison/images/latency_v2.png)
 
 <!--
 The image above is a chart that may be blocked by robots.txt. Below is the chart data as a text table for LLMs, scrapers, and other automated readers.
