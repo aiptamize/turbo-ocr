@@ -20,16 +20,19 @@ URL = "http://localhost:8000"
 N_PAGES = 5
 
 
-def tokens(text: str) -> set:
-    return {t.lower() for t in re.split(r"[^A-Za-z0-9]+", text) if len(t) >= 2}
+def tokens(text):
+    return re.compile(r"[a-z0-9]+").findall(text.lower()) if text else []
 
 
-def f1(pred: set, gt: set) -> float:
-    if not gt:
+def f1(pred_tokens, gt_tokens) -> float:
+    if not gt_tokens or not pred_tokens:
         return 0.0
-    tp = len(pred & gt)
-    r = tp / len(gt)
-    p = tp / len(pred) if pred else 0.0
+    from collections import Counter
+    gt_bag = Counter(gt_tokens)
+    pred_bag = Counter(pred_tokens)
+    tp = sum((gt_bag & pred_bag).values())
+    r = tp / sum(gt_bag.values())
+    p = tp / sum(pred_bag.values())
     return 2 * r * p / (r + p) if (r + p) > 0 else 0.0
 
 

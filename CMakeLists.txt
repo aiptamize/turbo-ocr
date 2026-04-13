@@ -70,6 +70,41 @@ if(USE_CPU_ONLY)
         message(FATAL_ERROR "ONNX Runtime not found")
     endif()
 
+    # Protobuf + gRPC (same discovery logic as GPU build)
+    find_package(Protobuf REQUIRED)
+    find_package(gRPC CONFIG QUIET)
+    if(NOT gRPC_FOUND)
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(GRPC REQUIRED grpc++ grpc)
+        set(GRPC_LIBRARIES ${GRPC_LINK_LIBRARIES})
+        find_program(GRPC_CPP_PLUGIN grpc_cpp_plugin)
+    else()
+        set(GRPC_LIBRARIES gRPC::grpc++)
+        get_target_property(GRPC_CPP_PLUGIN gRPC::grpc_cpp_plugin LOCATION)
+    endif()
+
+    # Proto codegen
+    set(PROTO_SRC_DIR "${CMAKE_SOURCE_DIR}/proto")
+    set(PROTO_GEN_DIR "${CMAKE_BINARY_DIR}/proto_gen")
+    file(MAKE_DIRECTORY ${PROTO_GEN_DIR})
+    set(PROTO_FILE "${PROTO_SRC_DIR}/ocr.proto")
+    set(PROTO_GEN_CC "${PROTO_GEN_DIR}/ocr.pb.cc")
+    set(PROTO_GEN_H "${PROTO_GEN_DIR}/ocr.pb.h")
+    set(GRPC_GEN_CC "${PROTO_GEN_DIR}/ocr.grpc.pb.cc")
+    set(GRPC_GEN_H "${PROTO_GEN_DIR}/ocr.grpc.pb.h")
+
+    add_custom_command(
+        OUTPUT ${PROTO_GEN_CC} ${PROTO_GEN_H} ${GRPC_GEN_CC} ${GRPC_GEN_H}
+        COMMAND protobuf::protoc
+            --proto_path=${PROTO_SRC_DIR}
+            --cpp_out=${PROTO_GEN_DIR}
+            --grpc_out=${PROTO_GEN_DIR}
+            --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN}
+            ${PROTO_FILE}
+        DEPENDS ${PROTO_FILE}
+        COMMENT "Generating protobuf/gRPC sources (CPU)"
+    )
+
     # --- CPU library ---
     add_library(turbo_ocr_cpu STATIC
         src/engine/cpu_engine.cpp
@@ -77,14 +112,33 @@ if(USE_CPU_ONLY)
         src/recognition/cpu_paddle_rec.cpp
         src/classification/cpu_paddle_cls.cpp
         src/pipeline/cpu_ocr_pipeline.cpp
+        src/layout/cpu_paddle_layout.cpp
+        src/render/pdf_renderer.cpp
+        src/pdf/pdf_text_layer.cpp
     )
-    target_link_libraries(turbo_ocr_cpu PUBLIC turbo_ocr_common ${ONNXRUNTIME_LIB} pthread)
+    target_include_directories(turbo_ocr_cpu PUBLIC
+        ${CMAKE_SOURCE_DIR}/third_party/pdfium/include
+    )
+    target_link_libraries(turbo_ocr_cpu PUBLIC turbo_ocr_common ${ONNXRUNTIME_LIB}
+        ${CMAKE_SOURCE_DIR}/third_party/pdfium/lib/libpdfium.so pthread)
     target_compile_options(turbo_ocr_cpu PRIVATE ${TURBO_OCR_CXX_FLAGS})
+    target_compile_definitions(turbo_ocr_cpu PUBLIC USE_CPU_ONLY)
     add_library(turbo_ocr::cpu ALIAS turbo_ocr_cpu)
 
-    # CPU HTTP server
-    add_executable(paddle_cpu_server src/server/cpu_main.cpp)
-    target_link_libraries(paddle_cpu_server PRIVATE turbo_ocr_cpu)
+    # CPU HTTP + gRPC server
+    add_executable(paddle_cpu_server
+        src/server/cpu_main.cpp
+        src/routes/common_routes.cpp
+        src/routes/pdf_routes.cpp
+        ${PROTO_GEN_CC}
+        ${GRPC_GEN_CC}
+    )
+    target_include_directories(paddle_cpu_server PRIVATE ${PROTO_GEN_DIR})
+    target_link_libraries(paddle_cpu_server PRIVATE
+        turbo_ocr_cpu
+        ${GRPC_LIBRARIES}
+        protobuf::libprotobuf
+    )
 
 else()
     message(STATUS "Building GPU mode (CUDA + TensorRT)")
@@ -142,16 +196,24 @@ else()
         src/detection/paddle_det.cpp
         src/recognition/paddle_rec.cpp
         src/classification/paddle_cls.cpp
+        src/layout/paddle_layout.cpp
         src/pipeline/ocr_pipeline.cpp
         src/kernels/kernels.cu
         src/render/pdf_renderer.cpp
+        src/pdf/pdf_text_layer.cpp
     )
     target_include_directories(turbo_ocr_gpu PUBLIC
         ${CUDAToolkit_INCLUDE_DIRS}
         ${TENSORRT_DIR}/include
         ${PROTO_GEN_DIR}
+        ${CMAKE_SOURCE_DIR}/third_party/pdfium/include
     )
     target_link_directories(turbo_ocr_gpu PUBLIC ${TENSORRT_DIR}/lib)
+    # Link libpdfium.so directly for in-process text-layer extraction.
+    # The shared lib is vendored in third_party/pdfium/lib and also placed
+    # in bin/ by scripts/install_fastpdf2png.sh (so native dev + Docker
+    # builds both resolve it at runtime). Docker additionally copies it to
+    # /usr/lib via ldconfig in Dockerfile.gpu:49.
     target_link_libraries(turbo_ocr_gpu PUBLIC
         turbo_ocr_common
         nvinfer
@@ -159,6 +221,7 @@ else()
         nvonnxparser
         nvjpeg
         cudart
+        ${CMAKE_SOURCE_DIR}/third_party/pdfium/lib/libpdfium.so
     )
     target_compile_options(turbo_ocr_gpu PRIVATE ${TURBO_OCR_CXX_FLAGS})
     add_library(turbo_ocr::gpu ALIAS turbo_ocr_gpu)
@@ -166,6 +229,9 @@ else()
     # GPU HTTP + gRPC server (shared pipeline pool)
     add_executable(paddle_highspeed_cpp
         src/server/main.cpp
+        src/routes/common_routes.cpp
+        src/routes/image_routes.cpp
+        src/routes/pdf_routes.cpp
         ${PROTO_GEN_CC}
         ${GRPC_GEN_CC}
     )
@@ -176,18 +242,8 @@ else()
         protobuf::libprotobuf
     )
 
-    # gRPC server
-    add_executable(paddle_grpc_server
-        src/server/grpc_server.cpp
-        ${PROTO_GEN_CC}
-        ${GRPC_GEN_CC}
-    )
-    target_include_directories(paddle_grpc_server PRIVATE ${PROTO_GEN_DIR})
-    target_link_libraries(paddle_grpc_server PRIVATE
-        turbo_ocr_gpu
-        ${GRPC_LIBRARIES}
-        protobuf::libprotobuf
-    )
+    # Legacy standalone gRPC server removed — gRPC now runs from the main
+    # binary via start_grpc_server() in grpc_service.h.
 
     # Benchmark tools
     add_executable(grpc_bench

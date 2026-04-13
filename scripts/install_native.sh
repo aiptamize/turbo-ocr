@@ -141,7 +141,7 @@ cmake -B build -DTENSORRT_DIR="$TENSORRT_LINK"
 cmake --build build -j"$(nproc)"
 
 info "Build complete:"
-ls -lh build/paddle_highspeed_cpp build/paddle_grpc_server 2>/dev/null
+ls -lh build/paddle_highspeed_cpp 2>/dev/null
 
 # ─── Step 4: Verify ─────────────────────────────────────────────────────────
 

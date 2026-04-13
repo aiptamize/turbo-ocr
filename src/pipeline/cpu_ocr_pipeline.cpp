@@ -2,20 +2,21 @@
 
 #include <algorithm>
 #include <format>
+#include <iostream>
 #include <ranges>
 
-using namespace turbo_ocr::pipeline;
-using turbo_ocr::Box;
-using turbo_ocr::OCRResultItem;
-using turbo_ocr::sorted_boxes;
-using turbo_ocr::is_vertical_box;
-using turbo_ocr::detection::CpuPaddleDet;
-using turbo_ocr::classification::CpuPaddleCls;
-using turbo_ocr::recognition::CpuPaddleRec;
+#include <opencv2/imgproc.hpp>
+
+namespace turbo_ocr::pipeline {
+
+using ::turbo_ocr::Box;
+using ::turbo_ocr::OCRResultItem;
+using ::turbo_ocr::sorted_boxes;
+using ::turbo_ocr::is_vertical_box;
 
 CpuOcrPipeline::CpuOcrPipeline() {
-  det_ = std::make_unique<CpuPaddleDet>();
-  rec_ = std::make_unique<CpuPaddleRec>();
+  det_ = std::make_unique<detection::CpuPaddleDet>();
+  rec_ = std::make_unique<recognition::CpuPaddleRec>();
 }
 
 bool CpuOcrPipeline::init(const std::string &det_model,
@@ -30,7 +31,7 @@ bool CpuOcrPipeline::init(const std::string &det_model,
     return false;
 
   if (!cls_model.empty()) {
-    cls_ = std::make_unique<CpuPaddleCls>();
+    cls_ = std::make_unique<classification::CpuPaddleCls>();
     if (!cls_->load_model(cls_model)) {
       std::cerr << std::format("[Pipeline] Failed to load CPU cls model: {}", cls_model) << '\n';
       return false;
@@ -85,3 +86,23 @@ std::vector<OCRResultItem> CpuOcrPipeline::run(const cv::Mat &img) {
 
   return final_results;
 }
+
+bool CpuOcrPipeline::load_layout_model(const std::string &onnx_path) {
+  layout_ = std::make_unique<layout::CpuPaddleLayout>();
+  if (!layout_->load_model(onnx_path)) {
+    layout_.reset();
+    return false;
+  }
+  return true;
+}
+
+OcrPipelineResult CpuOcrPipeline::run_with_layout(const cv::Mat &img,
+                                                    bool want_layout) {
+  OcrPipelineResult out;
+  out.results = run(img);
+  if (want_layout && layout_)
+    out.layout = layout_->run(img);
+  return out;
+}
+
+} // namespace turbo_ocr::pipeline

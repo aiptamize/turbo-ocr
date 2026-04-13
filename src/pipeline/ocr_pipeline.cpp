@@ -19,6 +19,8 @@ using turbo_ocr::sorted_boxes;
 using turbo_ocr::detection::PaddleDet;
 using turbo_ocr::classification::PaddleCls;
 using turbo_ocr::recognition::PaddleRec;
+using turbo_ocr::layout::PaddleLayout;
+using turbo_ocr::pipeline::OcrPipelineResult;
 
 OcrPipeline::OcrPipeline() {
   det_ = std::make_unique<PaddleDet>();
@@ -28,10 +30,14 @@ OcrPipeline::OcrPipeline() {
 OcrPipeline::~OcrPipeline() noexcept {
   if (rec_stream_)
     cudaStreamDestroy(rec_stream_);
+  if (layout_stream_)
+    cudaStreamDestroy(layout_stream_);
   if (rec_event_)
     cudaEventDestroy(rec_event_);
   if (det_event_)
     cudaEventDestroy(det_event_);
+  if (det_only_event_)
+    cudaEventDestroy(det_only_event_);
   for (auto &buf : img_bufs_) {
     if (buf.d_buf)
       cudaFree(buf.d_buf);
@@ -91,8 +97,30 @@ bool OcrPipeline::init(const std::string &det_model,
   return true;
 }
 
+bool OcrPipeline::load_layout_model(const std::string &layout_trt_path) {
+  if (layout_trt_path.empty()) return false;
+  auto layout = std::make_unique<PaddleLayout>();
+  if (!layout->load_model(layout_trt_path)) {
+    std::cerr << std::format("[Pipeline] Failed to load layout model: {}",
+                             layout_trt_path)
+              << '\n';
+    return false;
+  }
+  layout_ = std::move(layout);
+  use_layout_ = true;
+  // Dedicated layout stream — allows layout TRT execute to overlap with
+  // cls/rec on their own streams. Only allocated here because non-layout
+  // pipelines don't need this stream or its event.
+  CUDA_CHECK(cudaStreamCreateWithFlags(&layout_stream_, cudaStreamNonBlocking));
+  CUDA_CHECK(cudaEventCreateWithFlags(&det_only_event_, cudaEventDisableTiming));
+  std::cout << "[Pipeline] Layout detection enabled" << '\n';
+  return true;
+}
+
 void OcrPipeline::warmup_gpu(cudaStream_t stream) {
-  // Run full pipeline with a dummy image to trigger TRT JIT and lazy GPU allocations
+  // Run full pipeline with a dummy image to trigger TRT JIT and lazy GPU allocations.
+  // If layout is enabled, the first run(...) call below will already hit the
+  // layout TRT engine via the run() body — no separate layout warmup needed.
   cv::Mat dummy(100, 100, CV_8UC3, cv::Scalar(255, 255, 255));
   cv::rectangle(dummy, cv::Point(10, 30), cv::Point(90, 70), cv::Scalar(0, 0, 0), 2);
   (void)run(dummy, stream);
@@ -145,38 +173,20 @@ void OcrPipeline::warmup_gpu(cudaStream_t stream) {
   }
 }
 
-std::vector<OCRResultItem> OcrPipeline::run(const cv::Mat &img,
-                                            cudaStream_t stream) {
-  PipelineTimer timer;
-  timer.init(stream);
-  timer.reset();
-
-  // --- Pipeline overlap: wait for previous recognition to finish -------------
-  // rec_event_ was recorded on rec_stream_ at the end of the previous run().
-  // This only blocks if the previous recognition hasn't finished yet — when it
-  // HAS finished (common case), cudaEventSynchronize returns immediately.
-  // Meanwhile, the previous rec was reading from img_bufs_[prev], so we must
-  // wait before we can safely reuse that buffer (which is now cur_img_buf_
-  // after the toggle below).
+GpuImage OcrPipeline::upload_image(const cv::Mat &img, cudaStream_t stream,
+                                   PipelineTimer &timer) {
   CUDA_CHECK(cudaEventSynchronize(rec_event_));
-
-  // Toggle to the other image buffer so recognition on rec_stream_ (previous
-  // call) can safely finish reading the old buffer while we write the new
-  // image to the current buffer.
   cur_img_buf_ ^= 1;
   auto &buf = img_bufs_[cur_img_buf_];
 
-  // Grow-only realloc (typically allocates once for fixed camera resolution)
   if (img.rows > buf.cap_rows || img.cols > buf.cap_cols) [[unlikely]] {
     cudaFree(buf.d_buf);
     buf.d_buf = nullptr;
-    CUDA_CHECK(cudaMallocPitch(&buf.d_buf, &buf.pitch, img.cols * 3,
-                               img.rows));
+    CUDA_CHECK(cudaMallocPitch(&buf.d_buf, &buf.pitch, img.cols * 3, img.rows));
     buf.cap_rows = img.rows;
     buf.cap_cols = img.cols;
   }
 
-  // Grow-only pinned staging buffer for truly async upload
   timer.gpu_start("image_upload");
   auto needed = static_cast<size_t>(img.rows) * img.step;
   if (needed > h_pinned_size_) [[unlikely]] {
@@ -185,15 +195,29 @@ std::vector<OCRResultItem> OcrPipeline::run(const cv::Mat &img,
     CUDA_CHECK(cudaMallocHost(&h_pinned_buf_, needed));
     h_pinned_size_ = needed;
   }
-
-  // Copy pageable cv::Mat data into pinned buffer, then async upload to GPU
   std::memcpy(h_pinned_buf_, img.data, needed);
   CUDA_CHECK(cudaMemcpy2DAsync(buf.d_buf, buf.pitch, h_pinned_buf_, img.step,
                                 img.cols * 3, img.rows,
                                 cudaMemcpyHostToDevice, stream));
   timer.gpu_stop();
 
-  GpuImage gpu_img{buf.d_buf, buf.pitch, img.rows, img.cols};
+  return GpuImage{buf.d_buf, buf.pitch, img.rows, img.cols};
+}
+
+std::vector<OCRResultItem> OcrPipeline::run(const cv::Mat &img,
+                                            cudaStream_t stream) {
+  return run_with_layout(img, stream).results;
+}
+
+OcrPipelineResult OcrPipeline::run_with_layout(const cv::Mat &img,
+                                               cudaStream_t stream,
+                                               bool want_layout) {
+  const bool layout_active = use_layout_ && want_layout;
+  PipelineTimer timer;
+  timer.init(stream);
+  timer.reset();
+
+  auto gpu_img = upload_image(img, stream, timer);
 
   // Detection
   timer.gpu_start("detection_inference");
@@ -204,6 +228,18 @@ std::vector<OCRResultItem> OcrPipeline::run(const cv::Mat &img,
   timer.cpu_start("box_postprocessing");
   sorted_boxes(boxes);
   timer.cpu_stop();
+
+  // Optional layout detection — dispatched on a dedicated layout_stream_
+  // that waits only on det (via det_only_event_), so layout TRT execute
+  // overlaps with cls on `stream` AND with rec on `rec_stream_`. The
+  // host-side decode happens in collect() at the very end of run().
+  if (layout_active) {
+    CUDA_CHECK(cudaEventRecord(det_only_event_, stream));
+    CUDA_CHECK(cudaStreamWaitEvent(layout_stream_, det_only_event_, 0));
+    timer.gpu_start("layout_enqueue");
+    (void)layout_->enqueue(gpu_img, img.rows, img.cols, layout_stream_);
+    timer.gpu_stop();
+  }
 
   // Optional angle classification — only classify boxes that look vertical.
   // Saves time by not classifying horizontal text (majority of boxes).
@@ -251,15 +287,15 @@ std::vector<OCRResultItem> OcrPipeline::run(const cv::Mat &img,
 
   // Combine (filter by drop_score, matching Python's behavior)
   constexpr float kDropScore = turbo_ocr::kDropScore;
-  std::vector<OCRResultItem> final_results;
-  final_results.reserve(boxes.size());
+  OcrPipelineResult out;
+  out.results.reserve(boxes.size());
   for (size_t i = 0; i < boxes.size(); ++i) {
     if (i < rec_results.size()) {
       if (rec_results[i].second < kDropScore)
         continue;
       if (rec_results[i].first.empty())
         continue;
-      final_results.push_back({
+      out.results.push_back({
         .text = std::move(rec_results[i].first),
         .confidence = rec_results[i].second,
         .box = boxes[i],
@@ -267,9 +303,54 @@ std::vector<OCRResultItem> OcrPipeline::run(const cv::Mat &img,
     }
   }
 
+  // Layout collect waits on d2h_event_ recorded on layout_stream_. Because
+  // layout and rec run on separate streams, total wall-clock is bounded by
+  // max(layout, cls+rec); on typical pages rec dominates so the wait is a
+  // no-op.
+  if (layout_active) {
+    out.layout = layout_->collect();
+  }
+
   timer.print_total();
 
-  return final_results;
+  return out;
+}
+
+OcrPipelineResult OcrPipeline::run_layout_only(const cv::Mat &img,
+                                                cudaStream_t stream) {
+  OcrPipelineResult out;
+  // Fast no-op if layout isn't loaded: skip the upload entirely. Callers
+  // in /ocr/pdf geometric/auto modes never need OCR text here — they fill
+  // results from the PDFium text layer — so returning empty is correct.
+  if (!use_layout_ || !layout_) return out;
+
+  PipelineTimer timer;
+  timer.init(stream);
+  timer.reset();
+
+  auto gpu_img = upload_image(img, stream, timer);
+
+  // Layout runs on layout_stream_ for the same reason run_with_layout
+  // does: overlap with whatever else the caller has in flight. We still
+  // record det_only_event_ on `stream` so layout_stream_ waits for the
+  // upload before reading the image buffer.
+  CUDA_CHECK(cudaEventRecord(det_only_event_, stream));
+  CUDA_CHECK(cudaStreamWaitEvent(layout_stream_, det_only_event_, 0));
+
+  timer.gpu_start("layout_only");
+  (void)layout_->enqueue(gpu_img, img.rows, img.cols, layout_stream_);
+  out.layout = layout_->collect();
+  timer.gpu_stop();
+
+  // Mirror the event bookkeeping of run_with_layout so the next
+  // run_with_layout()/run_layout_only() call can sync correctly on its
+  // turn. rec_event_ is recorded on rec_stream_ — we didn't touch
+  // rec_stream_ at all, so record an already-completed event by pushing
+  // a no-op into rec_stream_ after layout_stream_ is known to be done.
+  CUDA_CHECK(cudaEventRecord(rec_event_, rec_stream_));
+
+  timer.print_total();
+  return out;
 }
 
 std::pair<void *, size_t> OcrPipeline::ensure_gpu_buf(int rows, int cols) {
@@ -286,6 +367,13 @@ std::pair<void *, size_t> OcrPipeline::ensure_gpu_buf(int rows, int cols) {
 
 std::vector<OCRResultItem> OcrPipeline::run(GpuImage gpu_img,
                                             cudaStream_t stream) {
+  return run_with_layout(gpu_img, stream).results;
+}
+
+OcrPipelineResult OcrPipeline::run_with_layout(GpuImage gpu_img,
+                                               cudaStream_t stream,
+                                               bool want_layout) {
+  const bool layout_active = use_layout_ && want_layout;
   PipelineTimer timer;
   timer.init(stream);
   timer.reset();
@@ -304,6 +392,15 @@ std::vector<OCRResultItem> OcrPipeline::run(GpuImage gpu_img,
   timer.cpu_start("box_postprocessing");
   sorted_boxes(boxes);
   timer.cpu_stop();
+
+  // Optional layout detection (see run(cv::Mat, stream) for rationale).
+  if (layout_active) {
+    CUDA_CHECK(cudaEventRecord(det_only_event_, stream));
+    CUDA_CHECK(cudaStreamWaitEvent(layout_stream_, det_only_event_, 0));
+    timer.gpu_start("layout_enqueue");
+    (void)layout_->enqueue(gpu_img, gpu_img.rows, gpu_img.cols, layout_stream_);
+    timer.gpu_stop();
+  }
 
   // Optional angle classification — only classify boxes that look vertical.
   if (use_cls_) {
@@ -340,15 +437,15 @@ std::vector<OCRResultItem> OcrPipeline::run(GpuImage gpu_img,
 
   // Combine (filter by drop_score)
   constexpr float kDropScore = turbo_ocr::kDropScore;
-  std::vector<OCRResultItem> final_results;
-  final_results.reserve(boxes.size());
+  OcrPipelineResult out;
+  out.results.reserve(boxes.size());
   for (size_t i = 0; i < boxes.size(); ++i) {
     if (i < rec_results.size()) {
       if (rec_results[i].second < kDropScore)
         continue;
       if (rec_results[i].first.empty())
         continue;
-      final_results.push_back({
+      out.results.push_back({
         .text = std::move(rec_results[i].first),
         .confidence = rec_results[i].second,
         .box = boxes[i],
@@ -356,13 +453,19 @@ std::vector<OCRResultItem> OcrPipeline::run(GpuImage gpu_img,
     }
   }
 
+  // Layout collect — see run(cv::Mat, stream) above.
+  if (layout_active) {
+    out.layout = layout_->collect();
+  }
+
   timer.print_total();
 
-  return final_results;
+  return out;
 }
 
 std::vector<std::vector<OCRResultItem>> OcrPipeline::run_batch(
     const std::vector<cv::Mat> &imgs, cudaStream_t stream) {
+  // Layout is not supported on the batch path in v1.
   if (imgs.empty())
     return {};
 

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <NvInfer.h>
 
@@ -46,14 +47,52 @@ public:
   void probe_output_dims(const nvinfer1::Dims &input_dims,
                          int &out_seq_len, int &out_num_classes);
 
+  // ── Multi-IO API (for models with more than one input/output) ──────────
+  //
+  // PaddleLayout needs this: PP-DocLayoutV3 has 3 inputs (image, im_shape,
+  // scale_factor) and 3 outputs. Existing det/rec/cls models are single-IO
+  // and keep using bind_io() / infer_dynamic() above — nothing changes for
+  // them.
+
+  [[nodiscard]] const std::vector<std::string> &input_names() const noexcept {
+    return input_names_;
+  }
+  [[nodiscard]] const std::vector<std::string> &output_names() const noexcept {
+    return output_names_;
+  }
+
+  // Bind a single tensor address by name. Call once per tensor after load(),
+  // or again after select_profile() to restore addresses TRT cleared.
+  void set_tensor_address(const std::string &name, void *ptr);
+
+  // Set the shape of one dynamic-shape input. Idempotent: the first call
+  // caches the dims and subsequent calls with the same dims are no-ops.
+  // Use this instead of infer_dynamic() for multi-input models.
+  [[nodiscard]] bool set_input_shape(const std::string &name,
+                                     const nvinfer1::Dims &dims);
+
+  // Execute the context on the given stream. All inputs must have addresses
+  // and shapes set. No-op if context is null.
+  [[nodiscard]] bool execute(cudaStream_t stream = 0);
+
+  // Query a tensor's current shape (reflects last set_input_shape() calls).
+  [[nodiscard]] nvinfer1::Dims tensor_shape(const std::string &name) const;
+
 private:
   std::string model_path_;
   Logger logger_;
   std::unique_ptr<nvinfer1::IRuntime> runtime_;
   std::unique_ptr<nvinfer1::ICudaEngine> engine_;
 
+  // Single-IO legacy (points at input_names_[0] / output_names_[0] when those
+  // vectors are non-empty — kept for backward compat with det/rec/cls).
   std::string input_name_;
   std::string output_name_;
+
+  // Multi-IO discovery — populated for all models.
+  std::vector<std::string> input_names_;
+  std::vector<std::string> output_names_;
+
   std::unique_ptr<nvinfer1::IExecutionContext> context_;
 
   nvinfer1::Dims last_input_dims_{};

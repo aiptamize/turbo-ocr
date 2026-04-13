@@ -91,6 +91,31 @@ void cuda_fused_resize_normalize_det(const GpuImage &src, float *dst_chw,
   CUDA_CHECK(cudaGetLastError());
 }
 
+// --- Fused Resize + Normalize for PP-DocLayoutV3 ---
+// Same kernel as det, but with mean=[0,0,0] and std=[1,1,1]. The model's
+// inference.yml specifies `NormalizeImage {mean: [0,0,0], std: [1,1,1],
+// norm_type: none}` + `Permute`, which is exactly `pixel / 255` in CHW order.
+// Input channel order follows the det fix on develop: BGR (matching OpenCV
+// cv::Mat default). The smoke test confirmed correct predictions with this
+// ordering.
+void cuda_fused_resize_normalize_layout(const GpuImage &src, float *dst_chw,
+                                         int dst_w, int dst_h,
+                                         cudaStream_t stream) {
+  float scale_x = (float)src.cols / dst_w;
+  float scale_y = (float)src.rows / dst_h;
+
+  dim3 block(32, 8);
+  dim3 grid((dst_w + block.x - 1) / block.x, (dst_h + block.y - 1) / block.y);
+
+  fused_resize_normalize_chw_kernel<<<grid, block, 0, stream>>>(
+      (const uchar3 *)src.data, src.rows, src.cols, (int)src.step,
+      dst_chw, dst_h, dst_w, scale_x, scale_y,
+      0.0f, 0.0f, 0.0f,       // mean
+      1.0f, 1.0f, 1.0f,       // inv_std (== 1)
+      1.0f / 255.0f);         // inv_255 → pixel/255
+  CUDA_CHECK(cudaGetLastError());
+}
+
 // --- Batched Fused Resize + Normalize + CHW for Detection ---
 // Each image in the batch may have different source dimensions but all map
 // to the same dst_h x dst_w output plane. The batch index is blockIdx.z.

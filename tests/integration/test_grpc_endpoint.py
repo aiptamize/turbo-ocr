@@ -104,7 +104,7 @@ class TestGrpcEndpoint:
             assert e.code() in (grpc.StatusCode.INVALID_ARGUMENT, grpc.StatusCode.INTERNAL)
 
     def test_batch_recognize(self, grpc_stub, hello_image, numbers_image):
-        """Test RecognizeBatch gRPC endpoint."""
+        """RecognizeBatch should process multiple images."""
         images = [pil_to_png_bytes(hello_image), pil_to_png_bytes(numbers_image)]
         request = ocr_pb2.OCRBatchRequest(images=images)
         response = grpc_stub.RecognizeBatch(request, timeout=15)

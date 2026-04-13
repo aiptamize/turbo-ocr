@@ -29,6 +29,14 @@ void cuda_fused_resize_normalize_det(const GpuImage &src, float *dst_chw,
                                       int dst_w, int dst_h,
                                       cudaStream_t stream = 0);
 
+// Fused resize + normalize + CHW for PP-DocLayoutV3. Identical kernel to the
+// det variant, but applies `pixel / 255` normalization (mean=0, std=1) to
+// match the model's inference.yml NormalizeImage(norm_type=none) step.
+// Input is expected as BGR uint8; output is float CHW at dst_h x dst_w.
+void cuda_fused_resize_normalize_layout(const GpuImage &src, float *dst_chw,
+                                         int dst_w, int dst_h,
+                                         cudaStream_t stream = 0);
+
 // Batched fused resize + normalize + CHW for detection
 // Processes N images (each with different src dimensions) into a single
 // batched CHW tensor [N, 3, dst_h, dst_w].

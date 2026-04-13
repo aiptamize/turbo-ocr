@@ -11,7 +11,7 @@ import pytest
 import requests
 from PIL import Image, ImageDraw, ImageFont
 
-from conftest import pil_to_base64, load_expected, TEST_DATA_DIR
+from conftest import pil_to_base64, load_expected, IMAGES_DIR
 
 
 def _get_font(size=36):
@@ -231,9 +231,9 @@ class TestRealDocumentOrdering:
 
     def test_business_letter_ordering(self, server_url):
         """business_letter.png should return results in top-to-bottom reading order."""
-        letter_path = TEST_DATA_DIR / "png" / "business_letter.png"
+        letter_path = IMAGES_DIR / "png" /"business_letter.png"
         if not letter_path.exists():
-            pytest.skip("business_letter.png not found in test_data/png/")
+            pytest.skip("business_letter.png not found in fixtures/images/png/")
 
         actual = _ocr_raw_file(server_url, letter_path)
         results = actual["results"]
@@ -256,9 +256,9 @@ class TestRealDocumentOrdering:
 
     def test_dense_text_ordering(self, server_url):
         """dense_text.png should return results in top-to-bottom reading order."""
-        dense_path = TEST_DATA_DIR / "png" / "dense_text.png"
+        dense_path = IMAGES_DIR / "png" /"dense_text.png"
         if not dense_path.exists():
-            pytest.skip("dense_text.png not found in test_data/png/")
+            pytest.skip("dense_text.png not found in fixtures/images/png/")
 
         actual = _ocr_raw_file(server_url, dense_path)
         results = actual["results"]
@@ -279,9 +279,9 @@ class TestRealDocumentOrdering:
 
     def test_real_document_row_consistency(self, server_url):
         """For business_letter.png, verify within-row items are left-to-right ordered."""
-        letter_path = TEST_DATA_DIR / "png" / "business_letter.png"
+        letter_path = IMAGES_DIR / "png" /"business_letter.png"
         if not letter_path.exists():
-            pytest.skip("business_letter.png not found in test_data/png/")
+            pytest.skip("business_letter.png not found in fixtures/images/png/")
 
         actual = _ocr_raw_file(server_url, letter_path)
         results = actual["results"]

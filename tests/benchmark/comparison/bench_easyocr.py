@@ -4,6 +4,7 @@ import io
 import json
 import os
 import re
+from collections import Counter
 import tempfile
 import time
 
@@ -11,16 +12,20 @@ import numpy as np
 from datasets import load_dataset
 
 
-def tokens(text: str) -> set:
-    return {t.lower() for t in re.split(r"[^A-Za-z0-9]+", text) if len(t) >= 2}
+def tokens(text):
+    return re.compile(r"[a-z0-9]+").findall(text.lower()) if text else []
 
 
-def metrics(pred: set, gt: set) -> dict:
-    if not gt:
+def metrics(pred_tokens, gt_tokens) -> dict:
+    if not gt_tokens:
         return {"recall": 0.0, "precision": 0.0, "f1": 0.0}
-    tp = len(pred & gt)
-    r = tp / len(gt)
-    p = tp / len(pred) if pred else 0.0
+    if not pred_tokens:
+        return {"recall": 0.0, "precision": 0.0, "f1": 0.0}
+    gt_bag = Counter(gt_tokens)
+    pred_bag = Counter(pred_tokens)
+    tp = sum((gt_bag & pred_bag).values())
+    r = tp / sum(gt_bag.values())
+    p = tp / sum(pred_bag.values())
     f1 = 2 * r * p / (r + p) if (r + p) > 0 else 0.0
     return {"recall": r, "precision": p, "f1": f1}
 

@@ -8,7 +8,7 @@
 # The -v mount persists them so subsequent starts are instant.
 # ============================================================
 
-FROM nvcr.io/nvidia/tensorrt:26.01-py3
+FROM nvcr.io/nvidia/tensorrt:26.03-py3
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \

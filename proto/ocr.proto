@@ -5,15 +5,23 @@ package ocr;
 service OCRService {
   rpc Recognize (OCRRequest) returns (OCRResponse);
   rpc RecognizeBatch (OCRBatchRequest) returns (OCRBatchResponse);
+  rpc RecognizePDF (OCRPDFRequest) returns (OCRPDFResponse);
+  rpc Health (HealthRequest) returns (HealthResponse);
 }
 
 message OCRRequest {
   bytes image = 1;
+  bool layout = 5;           // enable layout analysis (same as ?layout=1 on HTTP)
+  bytes pixels = 6;          // raw BGR pixel data (alternative to image field)
+  int32 width = 7;           // pixel width  (required with pixels field)
+  int32 height = 8;          // pixel height (required with pixels field)
+  int32 channels = 9;        // pixel channels (required with pixels field, typically 3)
 }
 
 message OCRBatchRequest {
   repeated bytes images = 1;
   int32 det_batch_num = 2;
+  bool layout = 3;           // enable layout analysis for all images in batch
 }
 
 message BoundingBox {
@@ -39,4 +47,32 @@ message OCRResponse {
 message OCRBatchResponse {
   repeated OCRResponse batch_results = 1;
   int32 total_images = 2;
+}
+
+message OCRPDFRequest {
+  bytes pdf_data = 1;
+  string mode = 2;        // "ocr", "geometric", "auto", "auto_verified" (default "ocr")
+  int32 dpi = 3;          // render DPI (default 100)
+  bool layout = 4;
+}
+
+message OCRPDFResponse {
+  repeated OCRPageResult pages = 1;
+}
+
+message OCRPageResult {
+  int32 page_number = 1;
+  repeated OCRResult results = 2;
+  int32 width = 3;
+  int32 height = 4;
+  int32 dpi = 5;
+  string mode = 6;                 // resolved mode for this page
+  string text_layer_quality = 7;   // "absent", "rejected", or "trusted"
+  bytes json_response = 8;         // pre-serialized JSON for this page
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  string status = 1;
 }

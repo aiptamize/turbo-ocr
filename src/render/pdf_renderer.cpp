@@ -12,8 +12,11 @@
 #include <thread>
 
 #include <opencv2/imgproc.hpp>
+#include <fcntl.h>
 #include <poll.h>
 #include <sys/inotify.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -58,7 +61,10 @@ static std::string write_temp_pdf(const uint8_t *data, size_t len) {
 }
 
 static std::string make_temp_dir() {
-  const char *templates[] = {"/dev/shm/ocr_out_XXXXXX", "/tmp/ocr_out_XXXXXX"};
+  // /tmp first: PPM files for large PDFs can exhaust Docker's default 64 MB
+  // /dev/shm. The mmap in decode_ppm still benefits from page cache warmth
+  // on /tmp, and the GPU inference dominates wall time regardless.
+  const char *templates[] = {"/tmp/ocr_out_XXXXXX", "/dev/shm/ocr_out_XXXXXX"};
   for (auto *tmpl : templates) {
     char path[64];
     std::strncpy(path, tmpl, sizeof(path) - 1);
@@ -85,49 +91,92 @@ struct TempGuard {
   TempGuard &operator=(const TempGuard &) = delete;
 };
 
-// Fast PPM/PGM reader — directly to BGR cv::Mat, no OpenCV imread overhead.
-cv::Mat PdfRenderer::read_ppm(const std::string &path) {
-  struct FileCloser { void operator()(FILE *fp) const noexcept { fclose(fp); } };
-  std::unique_ptr<FILE, FileCloser> f(fopen(path.c_str(), "rb"));
-  if (!f) return {};
+// PPM → BGR decoder. mmap the file, copy pixels into a cv::Mat with a
+// single-pass RGB→BGR swap, then unlink the file. Unlinking immediately
+// after mmap keeps /dev/shm usage bounded by the number of in-flight
+// workers rather than the total page count — critical for large PDFs
+// where N × ~3 MB/page would exhaust the default 64 MB Docker shm.
+cv::Mat PdfRenderer::decode_ppm(const std::string &path) {
+  int fd = ::open(path.c_str(), O_RDONLY | O_CLOEXEC);
+  if (fd < 0) return {};
+  struct stat st{};
+  if (::fstat(fd, &st) < 0 || st.st_size < 3) {
+    ::close(fd);
+    return {};
+  }
+  const size_t file_size = static_cast<size_t>(st.st_size);
+  void *map = ::mmap(nullptr, file_size, PROT_READ, MAP_PRIVATE, fd, 0);
+  ::close(fd);
+  if (map == MAP_FAILED) return {};
+  // Unlink now: MAP_PRIVATE made a CoW snapshot so the mapping survives.
+  // This frees /dev/shm space immediately instead of after StreamHandle cleanup.
+  std::remove(path.c_str());
 
-  char magic[3] = {};
-  if (fread(magic, 1, 2, f.get()) != 2) return {};
-  bool gray = (magic[0] == 'P' && magic[1] == '5');
-  bool color = (magic[0] == 'P' && magic[1] == '6');
-  if (!gray && !color) return {};
+  struct Unmap {
+    void *p;
+    size_t n;
+    ~Unmap() noexcept { if (p && p != MAP_FAILED) ::munmap(p, n); }
+  } guard{map, file_size};
 
-  auto skip = [&]() {
-    int c;
-    while ((c = fgetc(f.get())) != EOF) {
-      if (c == '#') { while ((c = fgetc(f.get())) != EOF && c != '\n'); }
-      else if (c > ' ') { ungetc(c, f.get()); return; }
+  const unsigned char *base = static_cast<const unsigned char *>(map);
+  const unsigned char *end  = base + file_size;
+  const unsigned char *p    = base;
+
+  // Magic: "P5" (gray) or "P6" (color RGB).
+  if (p[0] != 'P' || (p[1] != '5' && p[1] != '6')) return {};
+  const bool gray = (p[1] == '5');
+  p += 2;
+
+  // Consume one header token (int), skipping whitespace and '#'-comments.
+  auto next_int = [&](int &out) -> bool {
+    while (p < end) {
+      unsigned char c = *p;
+      if (c == '#') { while (p < end && *p != '\n') ++p; continue; }
+      if (c == ' ' || c == '\t' || c == '\n' || c == '\r') { ++p; continue; }
+      break;
     }
+    if (p >= end || *p < '0' || *p > '9') return false;
+    int v = 0;
+    while (p < end && *p >= '0' && *p <= '9') {
+      v = v * 10 + (*p - '0');
+      if (v > 100000) return false;
+      ++p;
+    }
+    out = v;
+    return true;
   };
 
   int w = 0, h = 0, maxval = 0;
-  skip(); if (fscanf(f.get(), "%d", &w) != 1) return {};
-  skip(); if (fscanf(f.get(), "%d", &h) != 1) return {};
-  skip(); if (fscanf(f.get(), "%d", &maxval) != 1) return {};
-  fgetc(f.get());
-
+  if (!next_int(w) || !next_int(h) || !next_int(maxval)) return {};
   if (w <= 0 || h <= 0 || w > 16384 || h > 16384 || maxval != 255) return {};
+  // After maxval there's exactly one whitespace byte before the payload.
+  if (p >= end) return {};
+  ++p;
+
+  const size_t expected = static_cast<size_t>(w) * h * (gray ? 1 : 3);
+  if (static_cast<size_t>(end - p) < expected) return {};
 
   if (gray) {
     cv::Mat g(h, w, CV_8UC1);
-    size_t expected = static_cast<size_t>(w) * h;
-    if (fread(g.data, 1, expected, f.get()) != expected) return {};
+    std::memcpy(g.data, p, expected);
     cv::Mat bgr;
     cv::cvtColor(g, bgr, cv::COLOR_GRAY2BGR);
     return bgr;
-  } else {
-    cv::Mat rgb(h, w, CV_8UC3);
-    size_t expected = static_cast<size_t>(w) * h * 3;
-    if (fread(rgb.data, 1, expected, f.get()) != expected) return {};
-    cv::Mat bgr;
-    cv::cvtColor(rgb, bgr, cv::COLOR_RGB2BGR);
-    return bgr;
   }
+
+  // Color: single-pass RGB→BGR copy, one write-back over the pixels.
+  cv::Mat bgr(h, w, CV_8UC3);
+  const unsigned char *src = p;
+  unsigned char *dst = bgr.data;
+  const size_t n_px = static_cast<size_t>(w) * h;
+  for (size_t i = 0; i < n_px; ++i) {
+    dst[0] = src[2];
+    dst[1] = src[1];
+    dst[2] = src[0];
+    src += 3;
+    dst += 3;
+  }
+  return bgr;
 }
 
 PdfRenderer::PdfRenderer(int pool_size, int workers_per_render)
@@ -260,24 +309,43 @@ std::vector<cv::Mat> PdfRenderer::render(const uint8_t *data, size_t len,
   return pages;
 }
 
+// StreamHandle cleanup: unlink the tmpfile and remove the tmpdir (and
+// any remaining PPMs inside it). Called from the destructor when the
+// caller finally drops the handle — which MUST be after all OCR workers
+// finish decoding, otherwise workers will try to open a file that's been
+// unlinked under them.
+void PdfRenderer::StreamHandle::cleanup() noexcept {
+  try {
+    if (!pdf_tmpfile.empty()) ::unlink(pdf_tmpfile.c_str());
+    if (!ppm_tmpdir.empty())  std::filesystem::remove_all(ppm_tmpdir);
+  } catch (...) {}
+  pdf_tmpfile.clear();
+  ppm_tmpdir.clear();
+  num_pages = 0;
+}
+
 // ---------------------------------------------------------------------------
 // render_streamed: overlap rendering with OCR using inotify
 // ---------------------------------------------------------------------------
 // The daemon's RenderMulti forks worker processes that write PPM files
-// independently. By watching the output directory with inotify, we can
-// detect each PPM file the moment it's closed and invoke the callback
-// (typically: read PPM + run OCR) immediately — while the daemon is still
-// rendering later pages.
+// independently. inotify CLOSE_WRITE events tell us the moment each PPM
+// lands, so we can hand the path to an OCR worker while later pages are
+// still rendering.
+//
+// The decode step (mmap + RGB→BGR swap, ~3-5 ms/page on A4) now runs in
+// the CALLER's thread — OCR workers pop ppm_path strings from their
+// queue and call decode_ppm() themselves. Parallelizing decode across
+// `num_workers` lifts the single-threaded poll-loop ceiling (~90 p/s)
+// close to the GPU OCR ceiling.
 //
 // Timeline comparison (20-page PDF, pool_size=5):
-//   Sequential:  [render 70ms][read 20ms][OCR 32ms] = 122ms total
-//   Streamed:    [render 70ms                      ]
-//                     [OCR p1][OCR p2]...[OCR p20]   = ~85ms total
-//
-// For single-page PDFs, the overhead is negligible (~0.1ms for inotify setup).
+//   Old streamed: [render     ][poll thread: serial read_ppm + dispatch] → ~90 p/s
+//   New streamed: [render     ][poll: dispatch path      ]
+//                                [worker: decode + OCR  ] × pool → GPU-bound
 
-int PdfRenderer::render_streamed(const uint8_t *data, size_t len, int dpi,
-                                 PageCallback on_page) {
+PdfRenderer::StreamHandle
+PdfRenderer::render_streamed(const uint8_t *data, size_t len, int dpi,
+                             PageCallback on_page) {
   TempGuard tmpfile(write_temp_pdf(data, len), false);
   TempGuard tmpdir(make_temp_dir(), true);
   std::string pattern = std::format("{}/p_%04d.ppm", tmpdir.path);
@@ -351,11 +419,10 @@ int PdfRenderer::render_streamed(const uint8_t *data, size_t len, int dpi,
         delivered[page_idx] = true;
 
         std::string ppm_path = std::format("{}/{}", tmpdir.path, static_cast<const char*>(event->name));
-        cv::Mat img = read_ppm(ppm_path);
-        if (!img.empty()) {
-          on_page(page_idx, std::move(img));
-          ++pages_delivered;
-        }
+        // Hand the path to the caller; decode + OCR happens in their
+        // worker thread, off the critical poll loop.
+        on_page(page_idx, std::move(ppm_path));
+        ++pages_delivered;
       }
     }
   };
@@ -388,20 +455,33 @@ int PdfRenderer::render_streamed(const uint8_t *data, size_t len, int dpi,
     num_pages = std::stoi(render_resp.substr(3));
 
   // Safety net: deliver any pages missed by inotify (race, coalesced events).
+  // The daemon may respond "OK N" before its forked workers finish writing
+  // the last PPM files, so retry briefly if expected files are missing.
   if (pages_delivered < num_pages) {
     if (num_pages > static_cast<int>(delivered.size()))
       delivered.resize(num_pages, false);
-    for (int i = 0; i < num_pages; ++i) {
-      if (delivered[i]) continue;
-      std::string ppm_path = std::format("{}/p_{:04d}.ppm", tmpdir.path, i + 1);
-      if (!std::filesystem::exists(ppm_path)) continue;
-      cv::Mat img = read_ppm(ppm_path);
-      if (!img.empty()) {
-        on_page(i, std::move(img));
+    for (int retry = 0; retry < 50 && pages_delivered < num_pages; ++retry) {
+      for (int i = 0; i < num_pages; ++i) {
+        if (delivered[i]) continue;
+        std::string ppm_path = std::format("{}/p_{:04d}.ppm", tmpdir.path, i + 1);
+        if (!std::filesystem::exists(ppm_path)) continue;
+        delivered[i] = true;
+        on_page(i, std::move(ppm_path));
         ++pages_delivered;
       }
+      if (pages_delivered < num_pages)
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
   }
 
-  return num_pages;
+  // Transfer tmpfile/tmpdir ownership into the StreamHandle so they
+  // outlive this stack frame — OCR workers in the caller are still
+  // decoding PPM files from the tmpdir and must not race the cleanup.
+  StreamHandle handle;
+  handle.pdf_tmpfile = tmpfile.path;
+  handle.ppm_tmpdir  = tmpdir.path;
+  handle.num_pages   = num_pages;
+  tmpfile.release();
+  tmpdir.release();
+  return handle;
 }

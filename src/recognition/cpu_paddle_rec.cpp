@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstring>
 #include <format>
+#include <iostream>
 #include <opencv2/imgproc.hpp>
 
 using namespace turbo_ocr::recognition;
@@ -19,9 +20,9 @@ bool CpuPaddleRec::load_model(const std::string &model_path) {
   if (!engine_->load())
     return false;
 
-  // Probe output dims with a small input
+  // Probe output dims at max width to get the true seq_len
   std::vector<int64_t> probe_shape = {1, 3, static_cast<int64_t>(rec_image_h_),
-                                       static_cast<int64_t>(rec_image_w_)};
+                                       static_cast<int64_t>(kMaxRecWidth)};
   engine_->probe_output_dims(probe_shape, actual_seq_len_, actual_num_classes_);
   std::cout << std::format("[CpuPaddleRec] Output dims: seq_len={} num_classes={}",
                           actual_seq_len_, actual_num_classes_) << '\n';

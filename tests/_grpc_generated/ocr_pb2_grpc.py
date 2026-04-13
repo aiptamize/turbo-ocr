@@ -44,6 +44,16 @@ class OCRServiceStub(object):
                 request_serializer=ocr__pb2.OCRBatchRequest.SerializeToString,
                 response_deserializer=ocr__pb2.OCRBatchResponse.FromString,
                 _registered_method=True)
+        self.RecognizePDF = channel.unary_unary(
+                '/ocr.OCRService/RecognizePDF',
+                request_serializer=ocr__pb2.OCRPDFRequest.SerializeToString,
+                response_deserializer=ocr__pb2.OCRPDFResponse.FromString,
+                _registered_method=True)
+        self.Health = channel.unary_unary(
+                '/ocr.OCRService/Health',
+                request_serializer=ocr__pb2.HealthRequest.SerializeToString,
+                response_deserializer=ocr__pb2.HealthResponse.FromString,
+                _registered_method=True)
 
 
 class OCRServiceServicer(object):
@@ -61,6 +71,18 @@ class OCRServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RecognizePDF(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Health(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_OCRServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -73,6 +95,16 @@ def add_OCRServiceServicer_to_server(servicer, server):
                     servicer.RecognizeBatch,
                     request_deserializer=ocr__pb2.OCRBatchRequest.FromString,
                     response_serializer=ocr__pb2.OCRBatchResponse.SerializeToString,
+            ),
+            'RecognizePDF': grpc.unary_unary_rpc_method_handler(
+                    servicer.RecognizePDF,
+                    request_deserializer=ocr__pb2.OCRPDFRequest.FromString,
+                    response_serializer=ocr__pb2.OCRPDFResponse.SerializeToString,
+            ),
+            'Health': grpc.unary_unary_rpc_method_handler(
+                    servicer.Health,
+                    request_deserializer=ocr__pb2.HealthRequest.FromString,
+                    response_serializer=ocr__pb2.HealthResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -129,6 +161,60 @@ class OCRService(object):
             '/ocr.OCRService/RecognizeBatch',
             ocr__pb2.OCRBatchRequest.SerializeToString,
             ocr__pb2.OCRBatchResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RecognizePDF(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ocr.OCRService/RecognizePDF',
+            ocr__pb2.OCRPDFRequest.SerializeToString,
+            ocr__pb2.OCRPDFResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def Health(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ocr.OCRService/Health',
+            ocr__pb2.HealthRequest.SerializeToString,
+            ocr__pb2.HealthResponse.FromString,
             options,
             channel_credentials,
             insecure,

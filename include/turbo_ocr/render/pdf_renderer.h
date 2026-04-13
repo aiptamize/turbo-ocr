@@ -29,16 +29,59 @@ public:
   /// Render all pages of a PDF document to cv::Mat images.
   [[nodiscard]] std::vector<cv::Mat> render(const uint8_t *data, size_t len, int dpi = 100);
 
-  /// Callback type: (page_index, page_image) -> void.
-  /// Called as soon as each page is rendered, enabling overlap with OCR.
-  using PageCallback = std::function<void(int page_idx, cv::Mat img)>;
+  /// Opaque handle returned by render_streamed_begin. Owns the scratch
+  /// tmpfile + tmpdir and must outlive any OCR worker that still holds a
+  /// PPM path from the callback — otherwise the file is unlinked from
+  /// under the worker. Move-only RAII; destruction cleans both paths.
+  struct StreamHandle {
+    std::string pdf_tmpfile;
+    std::string ppm_tmpdir;
+    int num_pages = 0;
 
-  /// Render pages and invoke callback for each page as soon as it's ready.
-  /// Uses inotify to detect PPM files appearing in the output directory,
-  /// enabling OCR to start on page 1 while later pages are still rendering.
-  /// Returns the total number of pages.
-  int render_streamed(const uint8_t *data, size_t len, int dpi,
-                      PageCallback on_page);
+    StreamHandle() = default;
+    StreamHandle(StreamHandle &&o) noexcept
+        : pdf_tmpfile(std::move(o.pdf_tmpfile)),
+          ppm_tmpdir(std::move(o.ppm_tmpdir)), num_pages(o.num_pages) {
+      o.num_pages = 0;
+    }
+    StreamHandle &operator=(StreamHandle &&o) noexcept {
+      if (this != &o) {
+        cleanup();
+        pdf_tmpfile = std::move(o.pdf_tmpfile);
+        ppm_tmpdir  = std::move(o.ppm_tmpdir);
+        num_pages   = o.num_pages;
+        o.num_pages = 0;
+      }
+      return *this;
+    }
+    StreamHandle(const StreamHandle &) = delete;
+    StreamHandle &operator=(const StreamHandle &) = delete;
+    ~StreamHandle() noexcept { cleanup(); }
+
+   private:
+    void cleanup() noexcept;
+  };
+
+  /// Callback type: (page_index, ppm_path) -> void.
+  /// `ppm_path` is an absolute path to a PPM file on /dev/shm. The worker
+  /// decodes it via decode_ppm() at the point of use — this keeps the
+  /// decode cost parallel across OCR workers instead of funnelling it
+  /// through the single inotify poll thread.
+  using PageCallback = std::function<void(int page_idx, std::string ppm_path)>;
+
+  /// Render pages and invoke `on_page` for each PPM file as soon as it
+  /// lands in the tmpdir. Returns a StreamHandle that owns the tmpdir;
+  /// callers MUST keep the handle alive until every OCR worker has
+  /// finished decoding its page, otherwise the tmpdir is removed early.
+  StreamHandle render_streamed(const uint8_t *data, size_t len, int dpi,
+                                PageCallback on_page);
+
+  /// Zero-copy PPM → BGR decoder. mmap()s the file, parses the P5/P6
+  /// header in-place, allocates one cv::Mat, and does a single-pass
+  /// RGB→BGR swap (or GRAY→BGR copy). Safe to call concurrently from
+  /// multiple worker threads on different paths; pure function, no
+  /// shared state. Returns an empty cv::Mat on malformed/missing file.
+  [[nodiscard]] static cv::Mat decode_ppm(const std::string &path);
 
 private:
   struct Daemon {
@@ -55,7 +98,11 @@ private:
 
   [[nodiscard]] int acquire_daemon();
   [[nodiscard]] std::string send_cmd(Daemon &d, const std::string &cmd);
-  [[nodiscard]] static cv::Mat read_ppm(const std::string &path);
+  // Back-compat: forwards to decode_ppm(). Used only by the legacy
+  // non-streamed render() code path.
+  [[nodiscard]] static cv::Mat read_ppm(const std::string &path) {
+    return decode_ppm(path);
+  }
 };
 
 } // namespace turbo_ocr::render

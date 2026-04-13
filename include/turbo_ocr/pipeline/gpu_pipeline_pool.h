@@ -50,9 +50,12 @@ struct GpuPipelineEntry {
 using GpuPipelinePool = PipelinePool<GpuPipelineEntry>;
 
 /// Factory: create, init, warmup GPU pipelines and return a pool.
+/// `layout_model` is an optional TRT engine path — pass "" to disable the
+/// layout stage entirely (zero added cost at runtime).
 [[nodiscard]] inline std::unique_ptr<GpuPipelinePool> make_gpu_pipeline_pool(
     int pool_size, const std::string &det_model, const std::string &rec_model,
-    const std::string &rec_dict, const std::string &cls_model = "") {
+    const std::string &rec_dict, const std::string &cls_model = "",
+    const std::string &layout_model = "") {
 
   if (pool_size <= 0) [[unlikely]]
     throw std::invalid_argument(
@@ -64,6 +67,16 @@ using GpuPipelinePool = PipelinePool<GpuPipelineEntry>;
     if (!pipeline->init(det_model, rec_model, rec_dict, cls_model)) {
       std::cerr << std::format("[Pool] Failed to init GPU pipeline {} of {}", i, pool_size) << '\n';
       continue;
+    }
+    if (!layout_model.empty()) {
+      if (!pipeline->load_layout_model(layout_model)) {
+        // Fail hard: mixing layout-on / layout-off pipelines in the same
+        // pool would make response shape non-deterministic depending on
+        // which handle the request happened to acquire.
+        throw turbo_ocr::ModelLoadError(std::format(
+            "[Pool] Failed to load layout model for pipeline {} of {}",
+            i, pool_size));
+      }
     }
     cudaStream_t stream;
     CUDA_CHECK(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));

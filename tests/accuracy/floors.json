@@ -1,0 +1,44 @@
+{
+  "_comment": "Minimum acceptable F1 per fixture per endpoint/mode. Conservative initial values; tighten after first capture run.",
+  "image": {
+    "default_f1": 0.55,
+    "per_fixture": {
+      "01_restaurant_menu":   0.50,
+      "02_road_sign":         0.40,
+      "03_book_page":         0.60,
+      "04_product_label":     0.45,
+      "05_handwritten_note":  0.15,
+      "06_whiteboard":        0.22,
+      "07_low_quality":       0.25,
+      "08_document_scan":     0.60,
+      "09_complex_background":0.30,
+      "10_newspaper":         0.50,
+      "business_letter":      0.60,
+      "dense_text":           0.20,
+      "form_fields":          0.50,
+      "mixed_fonts":          0.50,
+      "multi_language":       0.30,
+      "receipt":              0.50,
+      "rotated_text":         0.20,
+      "small_text":           0.45,
+      "street_sign":          0.40,
+      "table":                0.55
+    }
+  },
+  "pdf": {
+    "default_f1": {
+      "ocr":           0.60,
+      "geometric":     0.70,
+      "auto":          0.65,
+      "auto_verified": 0.60
+    },
+    "per_fixture": {
+      "scanned_document": {
+        "ocr":           0.50,
+        "geometric":     0.00,
+        "auto":          0.50,
+        "auto_verified": 0.50
+      }
+    }
+  }
+}

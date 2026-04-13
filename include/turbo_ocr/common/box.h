@@ -28,6 +28,19 @@ struct Box {
 /// Used consistently by box detection, classification, and recognition.
 inline constexpr float kVerticalAspectRatio = 1.5f;
 
+// Axis-aligned bounding rect over all 4 corners of a Box, as
+// [x0, y0, x1, y1] with x0 ≤ x1 and y0 ≤ y1. Correct for rotated /
+// slanted quads where corner[0] and corner[2] are NOT a diagonal.
+[[nodiscard]] inline std::array<int, 4> aabb(const Box &b) noexcept {
+  int x0 = b[0][0], x1 = b[0][0];
+  int y0 = b[0][1], y1 = b[0][1];
+  for (int k = 1; k < 4; ++k) {
+    x0 = std::min(x0, b[k][0]); x1 = std::max(x1, b[k][0]);
+    y0 = std::min(y0, b[k][1]); y1 = std::max(y1, b[k][1]);
+  }
+  return {x0, y0, x1, y1};
+}
+
 // Check if a box is vertically oriented (height >= width * 1.5).
 // Uses integer arithmetic to avoid floating-point precision issues.
 [[nodiscard]] inline bool is_vertical_box(const Box &b) noexcept {

@@ -66,7 +66,9 @@ std::string get_cached_engine_path(const std::string &onnx_path,
   CUDA_CHECK(cudaDeviceGetAttribute(&gpu_minor, cudaDevAttrComputeCapabilityMinor, 0));
 
   // Cache key includes: onnx identity, TRT version, GPU arch, and profile version.
-  // Bump kProfileVersion when optimization profiles change.
+  // Bump kProfileVersion when optimization profiles change for det/rec/cls.
+  // Adding a NEW model type (e.g. "layout") does NOT require a bump because
+  // the cache key includes `type` — new types live in their own hash space.
   static constexpr int kProfileVersion = 20250411;
 
   auto key = "v" + std::to_string(kProfileVersion) + ":" + type + ":" +
@@ -101,7 +103,11 @@ static bool build_engine(const std::string &onnx_path,
 
   auto config = std::unique_ptr<nvinfer1::IBuilderConfig>(
       builder->createBuilderConfig());
-  config->setMemoryPoolLimit(nvinfer1::MemoryPoolType::kWORKSPACE, 1ULL << 30);
+  // Layout needs more workspace than det/rec/cls because PP-DocLayoutV3 is a
+  // DETR-family model with large attention matmuls; 1 GB is fine for the
+  // others.
+  size_t workspace_bytes = (type == "layout") ? (4ULL << 30) : (1ULL << 30);
+  config->setMemoryPoolLimit(nvinfer1::MemoryPoolType::kWORKSPACE, workspace_bytes);
   config->setFlag(nvinfer1::BuilderFlag::kFP16);
   config->setFlag(nvinfer1::BuilderFlag::kSPARSE_WEIGHTS);
   config->setBuilderOptimizationLevel(5);
@@ -123,6 +129,33 @@ static bool build_engine(const std::string &onnx_path,
         nvinfer1::Dims4{32, 3, 48, 320});
     profile->setDimensions(input->getName(), nvinfer1::OptProfileSelector::kMAX,
         nvinfer1::Dims4{32, 3, 48, 4000});
+  } else if (type == "layout") {
+    // PP-DocLayoutV3 has 3 inputs: image [B,3,800,800], im_shape [B,2],
+    // scale_factor [B,2]. paddle2onnx does not guarantee input ordering, so
+    // dispatch by name. Batch profile: min=1, opt=4, max=8 (measured sweet
+    // spot on RTX 5090: 1.18 ms / image at B=4).
+    for (int i = 0; i < network->getNbInputs(); ++i) {
+      auto *in = network->getInput(i);
+      std::string name = in->getName();
+      if (name == "image") {
+        profile->setDimensions(name.c_str(), nvinfer1::OptProfileSelector::kMIN,
+            nvinfer1::Dims4{1, 3, 800, 800});
+        profile->setDimensions(name.c_str(), nvinfer1::OptProfileSelector::kOPT,
+            nvinfer1::Dims4{4, 3, 800, 800});
+        profile->setDimensions(name.c_str(), nvinfer1::OptProfileSelector::kMAX,
+            nvinfer1::Dims4{8, 3, 800, 800});
+      } else if (name == "im_shape" || name == "scale_factor") {
+        profile->setDimensions(name.c_str(), nvinfer1::OptProfileSelector::kMIN,
+            nvinfer1::Dims2{1, 2});
+        profile->setDimensions(name.c_str(), nvinfer1::OptProfileSelector::kOPT,
+            nvinfer1::Dims2{4, 2});
+        profile->setDimensions(name.c_str(), nvinfer1::OptProfileSelector::kMAX,
+            nvinfer1::Dims2{8, 2});
+      } else {
+        std::cerr << "[TRT] Unexpected input for layout model: " << name << '\n';
+        return false;
+      }
+    }
   } else {
     profile->setDimensions(input->getName(), nvinfer1::OptProfileSelector::kMIN,
         nvinfer1::Dims4{1, 3, 48, 192});

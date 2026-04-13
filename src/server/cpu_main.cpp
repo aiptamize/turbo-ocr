@@ -5,9 +5,15 @@
 #include <thread>
 #include <vector>
 
+#include "turbo_ocr/pdf/pdf_extraction_mode.h"
+#include "turbo_ocr/pdf/pdf_text_layer.h"
 #include "turbo_ocr/pipeline/cpu_pipeline_pool.h"
+#include "turbo_ocr/render/pdf_renderer.h"
 #include "turbo_ocr/server/env_utils.h"
-#include "turbo_ocr/server/http_routes.h"
+#include "turbo_ocr/server/grpc_service.h"
+#include "turbo_ocr/server/server_types.h"
+#include "turbo_ocr/routes/common_routes.h"
+#include "turbo_ocr/routes/pdf_routes.h"
 
 using turbo_ocr::Box;
 using turbo_ocr::OCRResultItem;
@@ -28,6 +34,11 @@ int main() {
               << '\n';
   }
 
+  // Layout model (CPU via ONNX Runtime) — on by default
+  std::string layout_model = env_or("LAYOUT_ONNX", "models/layout/layout.onnx");
+  bool layout_disabled = turbo_ocr::server::env_enabled("DISABLE_LAYOUT");
+  bool layout_available = false;
+
   int pool_size = 4;
   if (const char *env = std::getenv("PIPELINE_POOL_SIZE"))
     pool_size = std::max(1, std::atoi(env));
@@ -36,19 +47,129 @@ int main() {
   auto pool = turbo_ocr::pipeline::make_cpu_pipeline_pool(
       pool_size, det_model, rec_model, rec_dict, cls_model);
 
-  // Inference function for shared routes
-  turbo_ocr::server::InferFunc infer = [&pool](const cv::Mat &img) {
+  // Load layout model into each pipeline if enabled
+  if (!layout_disabled && !layout_model.empty()) {
+    bool all_ok = true;
+    for (size_t i = 0; i < pool_size; ++i) {
+      auto handle = pool->acquire();
+      if (!handle->load_layout_model(layout_model)) {
+        std::cerr << "Layout model not found; layout disabled.\n";
+        all_ok = false;
+        break;
+      }
+    }
+    if (all_ok) {
+      layout_available = true;
+      std::cout << "Layout detection enabled (CPU/ONNX Runtime)\n";
+    }
+  } else if (layout_disabled) {
+    std::cout << "Layout detection disabled\n";
+  }
+
+  turbo_ocr::server::InferFunc infer =
+      [&pool](const cv::Mat &img, bool want_layout) -> turbo_ocr::server::InferResult {
     auto handle = pool->acquire();
-    return handle->run(img);
+    auto out = handle->run_with_layout(img, want_layout);
+    return turbo_ocr::server::InferResult{
+        .results = std::move(out.results),
+        .layout  = std::move(out.layout),
+    };
   };
 
-  // Image decoder (CPU only: Wuffs for PNG, OpenCV for everything else)
   turbo_ocr::server::ImageDecoder decode = turbo_ocr::server::cpu_decode_image;
 
   crow::SimpleApp app;
 
-  // Register shared routes: /health, /ocr, /ocr/raw
-  turbo_ocr::server::register_common_routes(app, infer, decode);
+  turbo_ocr::routes::register_common_routes(app, infer, decode, layout_available);
+
+  // --- /ocr/pixels endpoint (raw BGR pixel data, zero decode overhead) ---
+  CROW_ROUTE(app, "/ocr/pixels")
+      .methods(crow::HTTPMethod::Post)(
+          [&infer](const crow::request &req) {
+            bool want_layout = false;
+            if (auto err = turbo_ocr::server::parse_layout_query(
+                    req, /*layout_available=*/false, &want_layout);
+                !err.empty())
+              return crow::response(400, err);
+
+            auto w_str = req.get_header_value("X-Width");
+            auto h_str = req.get_header_value("X-Height");
+            auto c_str = req.get_header_value("X-Channels");
+
+            if (w_str.empty() || h_str.empty())
+              return crow::response(400,
+                                    "Missing X-Width or X-Height headers");
+
+            int width, height, channels;
+            try {
+              width = std::stoi(w_str);
+              height = std::stoi(h_str);
+              channels = c_str.empty() ? 3 : std::stoi(c_str);
+            } catch (const std::exception &) {
+              return crow::response(
+                  400,
+                  "Invalid X-Width, X-Height, or X-Channels header value");
+            }
+
+            if (width <= 0 || height <= 0 || (channels != 1 && channels != 3))
+              return crow::response(400, "Invalid dimensions or channels");
+
+            constexpr int kMaxPixelDim = 16384;
+            if (width > kMaxPixelDim || height > kMaxPixelDim)
+              return crow::response(
+                  400,
+                  std::format("Dimensions {}x{} exceed maximum of {}x{}",
+                              width, height, kMaxPixelDim, kMaxPixelDim));
+
+            size_t expected =
+                static_cast<size_t>(width) * height * channels;
+            if (req.body.size() != expected)
+              return crow::response(
+                  400,
+                  std::format(
+                      "Body size mismatch: expected {} bytes ({}x{}x{}), got {}",
+                      expected, width, height, channels, req.body.size()));
+
+            cv::Mat img(height, width,
+                        channels == 3 ? CV_8UC3 : CV_8UC1,
+                        const_cast<char *>(req.body.data()));
+
+            try {
+              auto inf = infer(img, want_layout);
+              auto json_str =
+                  turbo_ocr::results_to_json(inf.results, inf.layout);
+              auto resp = crow::response(200, std::move(json_str));
+              resp.set_header("Content-Type", "application/json");
+              return resp;
+            } catch (const turbo_ocr::PoolExhaustedError &) {
+              return crow::response(503,
+                                    "Service overloaded, try again later");
+            } catch (const std::exception &e) {
+              std::cerr << std::format("[/ocr/pixels] Inference error: {}\n",
+                                       e.what());
+              return crow::response(500, "Inference error");
+            } catch (...) {
+              std::cerr
+                  << "[/ocr/pixels] Inference error: unknown exception\n";
+              return crow::response(500, "Inference error");
+            }
+          });
+
+  // --- /ocr/pdf endpoint (CPU: sequential page OCR) ---
+  int pdf_daemons = 4, pdf_workers = 2;
+  if (const char *env = std::getenv("PDF_DAEMONS"))
+    pdf_daemons = std::max(1, std::atoi(env));
+  if (const char *env = std::getenv("PDF_WORKERS"))
+    pdf_workers = std::max(1, std::atoi(env));
+  turbo_ocr::render::PdfRenderer pdf_renderer(pdf_daemons, pdf_workers);
+  std::cout << std::format("PDF renderer: {} daemons x {} workers\n", pdf_daemons, pdf_workers);
+  turbo_ocr::pdf::ensure_pdfium_initialized();
+
+  turbo_ocr::pdf::PdfMode default_pdf_mode = turbo_ocr::pdf::PdfMode::Ocr;
+  if (auto *m = std::getenv("ENABLE_PDF_MODE"); m && *m)
+    default_pdf_mode = turbo_ocr::pdf::parse_pdf_mode(m);
+
+  turbo_ocr::routes::register_pdf_route(app, infer, pdf_renderer, default_pdf_mode, layout_available);
 
   // --- /ocr/batch endpoint (CPU version: simple sequential decode) ---
   CROW_ROUTE(app, "/ocr/batch")
@@ -126,13 +247,23 @@ int main() {
             return resp;
           });
 
+  // gRPC server
+  int grpc_port = 50051;
+  if (const char *env = std::getenv("GRPC_PORT"))
+    grpc_port = std::max(1, std::atoi(env));
+  auto grpc_handle = turbo_ocr::server::start_grpc_server(
+      infer, grpc_port, &pdf_renderer, default_pdf_mode, layout_available);
+
+  // HTTP server
   int port = 8000;
   if (const char *env = std::getenv("PORT"))
     port = std::max(1, std::atoi(env));
 
-  std::cout << "Starting CPU-Only OCR Server on port " << port << "..."
-            << '\n';
+  std::cout << std::format("Starting CPU-Only OCR Server on port {} (gRPC on {})\n", port, grpc_port)
+            << "  Endpoints: /health, /ocr, /ocr/raw, /ocr/pixels, /ocr/batch, /ocr/pdf\n"
+            << "  gRPC: OCRService.Recognize, RecognizeBatch, RecognizePDF, Health\n";
   app.port(port).multithreaded().run();
 
+  grpc_handle.server->Shutdown();
   return 0;
 }

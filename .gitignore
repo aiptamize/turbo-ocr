@@ -13,6 +13,10 @@ timing.cache
 models/ch_PP-OCRv4_det_server_infer/
 models/PP-OCRv5_server_det_infer/
 
+# Layout detection model (~124 MB) — fetched on demand via
+# scripts/export_pp_doclayoutv3.py
+models/layout/
+
 # fastpdf2png binaries — auto-installed by scripts/install_fastpdf2png.sh
 bin/fastpdf2png
 bin/libpdfium.so
@@ -20,3 +24,17 @@ quantization/PaddleOCR/
 quantization/pretrained/
 quantization/output*/
 quantization/.venv*/
+
+# Benchmark outputs (overwritten on every run)
+tests/benchmark/LATEST.md
+tests/benchmark/LATEST.json
+tests/benchmark/stress_*.json
+tests/benchmark/PER_DOCUMENT.md
+tests/benchmark/PER_DOCUMENT.json
+
+# WIP — Python bindings and CLI (separate branch)
+python/
+src/cli/
+
+# Benchmark outputs
+vlm_result_*.json

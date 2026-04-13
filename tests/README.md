@@ -18,13 +18,37 @@ The OCR server must be running before tests can execute. Default: `http://localh
 python tests/run_all.py
 ```
 
-### Individual suites
+### Suites
+
+Default run (`python tests/run_all.py`) covers fast-to-slow correctness:
+`unit -> integration -> regression -> accuracy`. Stress and benchmark are
+opt-in.
 
 ```bash
+python tests/run_all.py                          # default correctness
 python tests/run_all.py --suite unit
 python tests/run_all.py --suite integration
-python tests/run_all.py --suite regression
-python tests/run_all.py --suite benchmark
+python tests/run_all.py --suite accuracy         # ground-truth F1/CER
+python tests/run_all.py --suite stress           # 60s soak (opt-in)
+python tests/run_all.py --suite benchmark        # perf matrix (opt-in)
+python tests/run_all.py --suite all              # everything
+```
+
+### Layout-enabled runs
+
+```bash
+ENABLE_LAYOUT=1 python tests/run_all.py --suite integration --suite accuracy
+```
+
+### Benchmark orchestrator
+
+Single canonical entry point writes `tests/benchmark/LATEST.md` and
+`LATEST.json` (gitignored):
+
+```bash
+python tests/benchmark/bench_matrix.py --quick             # ~2 min smoke
+python tests/benchmark/bench_matrix.py                     # full 3-phase
+python tests/benchmark/bench_matrix.py --phases stress --duration 120
 ```
 
 ### Direct pytest

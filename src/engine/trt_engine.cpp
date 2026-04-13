@@ -49,10 +49,14 @@ bool TrtEngine::load() {
   for (int i = 0; i < nbIO; ++i) {
     const char *name = engine_->getIOTensorName(i);
     if (engine_->getTensorIOMode(name) == nvinfer1::TensorIOMode::kINPUT)
-      input_name_ = name;
+      input_names_.emplace_back(name);
     else
-      output_name_ = name;
+      output_names_.emplace_back(name);
   }
+  // Single-IO convenience pointers (first of each). Multi-IO callers use
+  // input_names() / output_names() directly.
+  if (!input_names_.empty())  input_name_  = input_names_[0];
+  if (!output_names_.empty()) output_name_ = output_names_[0];
 
   return true;
 }
@@ -120,6 +124,36 @@ nvinfer1::Dims TrtEngine::get_output_dims() const noexcept {
   if (!context_) [[unlikely]]
     return {};
   return context_->getTensorShape(output_name_.c_str());
+}
+
+void TrtEngine::set_tensor_address(const std::string &name, void *ptr) {
+  if (!context_) [[unlikely]]
+    return;
+  context_->setTensorAddress(name.c_str(), ptr);
+}
+
+bool TrtEngine::set_input_shape(const std::string &name,
+                                const nvinfer1::Dims &dims) {
+  if (!context_) [[unlikely]]
+    return false;
+  if (!context_->setInputShape(name.c_str(), dims)) [[unlikely]] {
+    std::cerr << std::format("[TRT] setInputShape FAILED for input={} on {}",
+                             name, model_path_) << '\n';
+    return false;
+  }
+  return true;
+}
+
+bool TrtEngine::execute(cudaStream_t stream) {
+  if (!context_) [[unlikely]]
+    return false;
+  return context_->enqueueV3(stream);
+}
+
+nvinfer1::Dims TrtEngine::tensor_shape(const std::string &name) const {
+  if (!context_) [[unlikely]]
+    return {};
+  return context_->getTensorShape(name.c_str());
 }
 
 void TrtEngine::probe_output_dims(const nvinfer1::Dims &input_dims,

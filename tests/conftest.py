@@ -199,85 +199,75 @@ def unique_images():
 # Real test data fixtures
 # ---------------------------------------------------------------------------
 
-TEST_DATA_DIR = Path(__file__).resolve().parent / "test_data"
+FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
+IMAGES_DIR = FIXTURES_DIR / "images"
+PDF_DIR = FIXTURES_DIR / "pdf"
+# Back-compat alias: TEST_DATA_DIR used to be tests/test_data; callers now use fixtures/
+TEST_DATA_DIR = FIXTURES_DIR
+EDGE_CASES_DIR = FIXTURES_DIR / "edge_cases"
+IMAGE_EXPECTED_DIR = IMAGES_DIR / "expected"
+PDF_EXPECTED_DIR = PDF_DIR / "expected"
+
+
+def _load_image_expected(stem):
+    path = IMAGE_EXPECTED_DIR / f"{stem}.json"
+    return json.loads(path.read_text()) if path.exists() else None
+
+
+def _load_pdf_expected(stem):
+    path = PDF_EXPECTED_DIR / f"{stem}.json"
+    return json.loads(path.read_text()) if path.exists() else None
 
 
 @pytest.fixture(scope="session")
-def test_data_dir():
-    """Root path of tests/test_data/."""
-    return TEST_DATA_DIR
+def fixtures_dir():
+    return FIXTURES_DIR
+
+
+@pytest.fixture(scope="session")
+def edge_cases_dir():
+    return EDGE_CASES_DIR
 
 
 @pytest.fixture(scope="session")
 def png_test_files():
-    """List of (path, expected_json) tuples for all PNG test images."""
-    png_dir = TEST_DATA_DIR / "png"
-    expected_dir = png_dir / "expected"
-    files = sorted(png_dir.glob("*.png"))
-    result = []
-    for f in files:
-        exp_path = expected_dir / f"{f.stem}.json"
-        expected = json.loads(exp_path.read_text()) if exp_path.exists() else None
-        result.append((f, expected))
-    return result
+    files = sorted((IMAGES_DIR / "png").glob("*.png"))
+    return [(f, _load_image_expected(f.stem)) for f in files]
 
 
 @pytest.fixture(scope="session")
 def jpeg_test_files():
-    """List of (path, expected_json) tuples for all JPEG test images."""
-    jpeg_dir = TEST_DATA_DIR / "jpeg"
-    expected_dir = jpeg_dir / "expected"
-    files = sorted(jpeg_dir.glob("*.jpg"))
-    result = []
-    for f in files:
-        exp_path = expected_dir / f"{f.stem}.json"
-        expected = json.loads(exp_path.read_text()) if exp_path.exists() else None
-        result.append((f, expected))
-    return result
+    files = sorted((IMAGES_DIR / "jpeg").glob("*.jpg"))
+    return [(f, _load_image_expected(f.stem)) for f in files]
 
 
 @pytest.fixture(scope="session")
 def pdf_test_files():
-    """List of (path, expected_json) tuples for all PDF test files."""
-    pdf_dir = TEST_DATA_DIR / "pdf"
-    expected_dir = pdf_dir / "expected"
-    files = sorted(pdf_dir.glob("*.pdf"))
-    result = []
-    for f in files:
-        exp_path = expected_dir / f"{f.stem}.json"
-        expected = json.loads(exp_path.read_text()) if exp_path.exists() else None
-        result.append((f, expected))
-    return result
+    files = sorted(PDF_DIR.glob("*.pdf"))
+    return [(f, _load_pdf_expected(f.stem)) for f in files]
 
 
 @pytest.fixture(scope="session")
 def all_png_paths():
-    """Sorted list of all PNG file paths."""
-    return sorted((TEST_DATA_DIR / "png").glob("*.png"))
+    return sorted((IMAGES_DIR / "png").glob("*.png"))
 
 
 @pytest.fixture(scope="session")
 def all_jpeg_paths():
-    """Sorted list of all JPEG file paths."""
-    return sorted((TEST_DATA_DIR / "jpeg").glob("*.jpg"))
+    return sorted((IMAGES_DIR / "jpeg").glob("*.jpg"))
 
 
 @pytest.fixture(scope="session")
 def all_pdf_paths():
-    """Sorted list of all PDF file paths."""
-    return sorted((TEST_DATA_DIR / "pdf").glob("*.pdf"))
+    return sorted(PDF_DIR.glob("*.pdf"))
 
 
-def load_expected(image_path):
-    """Load expected JSON for a test image/PDF file.
-
-    Looks for expected/<stem>.json next to the file's directory.
-    Returns parsed dict or None if not found.
-    """
-    exp_path = image_path.parent / "expected" / f"{image_path.stem}.json"
-    if exp_path.exists():
-        return json.loads(exp_path.read_text())
-    return None
+def load_expected(path):
+    """Load expected JSON for a fixture image/PDF by path."""
+    p = Path(path)
+    if p.suffix.lower() == ".pdf":
+        return _load_pdf_expected(p.stem)
+    return _load_image_expected(p.stem)
 
 
 # ---------------------------------------------------------------------------

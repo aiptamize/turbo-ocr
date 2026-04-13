@@ -13,9 +13,9 @@
 
 namespace turbo_ocr::pipeline {
 
-/// A poolable pipeline must be destructible and movable (we transfer ownership).
+/// A poolable pipeline must be destructible (we store unique_ptr<T>).
 template <typename T>
-concept Poolable = std::destructible<T> && std::move_constructible<T>;
+concept Poolable = std::destructible<T>;
 
 // ============================================================================
 // PipelinePool<Pipeline> — thread-safe object pool with RAII scoped handles.

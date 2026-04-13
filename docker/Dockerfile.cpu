@@ -18,7 +18,7 @@ FROM ubuntu:24.04
 # Avoid interactive prompts during apt install
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install build dependencies
+# Install build dependencies (including gRPC + protobuf for gRPC server)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     g++ \
@@ -26,6 +26,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config \
     libopencv-dev \
     libboost-all-dev \
+    libasio-dev \
+    libgrpc++-dev \
+    libprotobuf-dev \
+    protobuf-compiler \
+    protobuf-compiler-grpc \
     wget \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
@@ -44,13 +49,18 @@ RUN cd /tmp && \
 WORKDIR /app
 COPY . .
 
+# Install PDFium (vendored) and fastpdf2png for PDF rendering
+RUN cp third_party/pdfium/lib/libpdfium.so /usr/lib/ && ldconfig && \
+    bash scripts/install_fastpdf2png.sh || true
+
 # Build CPU-only mode
 RUN mkdir -p build_cpu && cd build_cpu && \
     cmake .. -DUSE_CPU_ONLY=ON && \
     make -j$(nproc)
 
-# HTTP server port
+# HTTP + gRPC server ports
 EXPOSE 8000
+EXPOSE 50051
 
 # Default: CPU HTTP server
 CMD ["./build_cpu/paddle_cpu_server"]
