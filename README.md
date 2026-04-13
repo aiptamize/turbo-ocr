@@ -15,6 +15,7 @@ Turbo OCR — Fast GPU OCR server. C++ / CUDA / TensorRT. 270 img/s on FUNSD.
   <img src="https://img.shields.io/badge/throughput-270_img%2Fs-blue?logo=speedtest&logoColor=white" alt="270 img/s">
   <img src="https://img.shields.io/badge/GPU-NVIDIA_Turing+-76B900?logo=nvidia&logoColor=white" alt="NVIDIA Turing+">
   <img src="https://img.shields.io/badge/TensorRT-10.16-76B900?logo=nvidia&logoColor=white" alt="TensorRT 10.16">
+  <a href="https://github.com/PaddlePaddle/PaddleOCR"><img src="https://img.shields.io/badge/PP--OCRv5-PaddleOCR-0053D6?logo=paddlepaddle&logoColor=white" alt="PaddleOCR"></a>
   <img src="https://img.shields.io/badge/license-MIT-blue?logo=opensourceinitiative&logoColor=white" alt="MIT License">
 </p>
 
