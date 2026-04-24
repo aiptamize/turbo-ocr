@@ -13,8 +13,8 @@ Turbo OCR — Fast GPU OCR server. C++ / CUDA / TensorRT. 270 img/s on FUNSD.
 
 <p align="center">
   <img src="https://img.shields.io/badge/throughput-270_img%2Fs-blue?style=flat-square&logo=speedtest&logoColor=white" alt="270 img/s">
-  <a href="https://github.com/aiptimizer/turbo-ocr/releases/latest"><img src="https://img.shields.io/github/v/release/aiptimizer/turbo-ocr?style=flat-square&logo=github&logoColor=white" alt="Release"></a>
-  <a href="https://ghcr.io/aiptimizer/turbo-ocr"><img src="https://img.shields.io/badge/docker-ghcr.io-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker"></a>
+  <a href="https://github.com/aiptimizer/TurboOCR/releases/latest"><img src="https://img.shields.io/github/v/release/aiptimizer/TurboOCR?style=flat-square&logo=github&logoColor=white" alt="Release"></a>
+  <a href="https://ghcr.io/aiptimizer/turboocr"><img src="https://img.shields.io/badge/docker-ghcr.io-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker"></a>
   <img src="https://img.shields.io/badge/C%2B%2B20-00599C?style=flat-square&logo=cplusplus&logoColor=white" alt="C++20">
   <img src="https://img.shields.io/badge/CUDA-76B900?style=flat-square&logo=nvidia&logoColor=white" alt="CUDA">
   <img src="https://img.shields.io/badge/TensorRT-10.16-76B900?style=flat-square&logo=nvidia&logoColor=white" alt="TensorRT 10.16">
@@ -30,8 +30,10 @@ Turbo OCR — Fast GPU OCR server. C++ / CUDA / TensorRT. 270 img/s on FUNSD.
   <a href="#quick-start">Quick Start</a> &middot;
   <a href="#api">API</a> &middot;
   <a href="#benchmarks">Benchmarks</a> &middot;
+  <a href="#monitoring">Monitoring</a> &middot;
   <a href="#configuration">Configuration</a> &middot;
-  <a href="#building-from-source">Build</a>
+  <a href="#building-from-source">Build</a> &middot;
+  <a href="#roadmap">Roadmap</a>
 </p>
 
 ---
@@ -52,15 +54,25 @@ Turbo-OCR vs PaddleOCR · EasyOCR · VLMs — FUNSD (50 pages, RTX 5090)
 
 ### Highlights
 
-- **270 img/s** on FUNSD A4 forms (c=16) &mdash; **1,200+ img/s** on sparse documents
-- **11 ms p50 latency**, single request
-- **F1 = 90.2%** on FUNSD &mdash; higher accuracy than PaddleOCR Python with the same weights
-- **PDF native** &mdash; pages rendered and OCR'd in parallel, 580+ pages/s
-- **4 PDF modes** &mdash; pure OCR, native text layer, auto-dispatch, detection-verified hybrid
-- **Layout detection** &mdash; PP-DocLayoutV3 with 25 region classes, enabled by default, per-request `?layout=1` toggle (~20% throughput cost)
-- **HTTP + gRPC** from a single binary, sharing the same GPU pipeline pool
+- 🚀 **270 img/s** on FUNSD A4 forms (c=16) &mdash; **1,200+ img/s** on sparse documents
+- ⚡ **11 ms p50 latency**, single request
+- 🎯 **F1 = 90.2%** on FUNSD &mdash; higher accuracy than PaddleOCR Python with the same weights
+- 🖨️ **Prints & handwriting** &mdash; PP-OCRv5 handles both out of the box
+- 📄 **PDF native** &mdash; pages rendered and OCR'd in parallel
+- 🔒 **4 PDF modes** &mdash; pure OCR, native text layer, auto-dispatch, detection-verified hybrid
+- 🧩 **Layout detection** &mdash; PP-DocLayoutV3 with 25 region classes, per-request `?layout=1` toggle
+- 🌐 **HTTP + gRPC** from a single binary, sharing the same GPU pipeline pool
+- 🐳 **One-line Docker deploy** &mdash; `docker run` with auto TRT engine build on first start
+- 📊 **Prometheus metrics** &mdash; request counters, latency histograms, VRAM usage on `/metrics`
 
-*RTX 5090, PP-OCRv5 mobile latin, TensorRT FP16, pool=5. Not a replacement for VLM-based OCR on hard documents (handwriting, complex tables, structured extraction) &mdash; this is the fast lane.*
+*RTX 5090, PP-OCRv5 mobile latin, TensorRT FP16, pool=5. Prints, handwriting, layout detection. This is the fast lane.*
+
+### 🗺️ Roadmap
+
+- ✅ Configurable languages — Latin (default) + Chinese shipped; others on demand
+- 🔍 Structured extraction
+- 📝 Markdown output
+- 📊 Table parsing
 
 ---
 
@@ -71,7 +83,7 @@ Turbo-OCR vs PaddleOCR · EasyOCR · VLMs — FUNSD (50 pages, RTX 5090)
 ```bash
 docker run --gpus all -p 8000:8000 -p 50051:50051 \
   -v trt-cache:/home/ocr/.cache/turbo-ocr \
-  ghcr.io/aiptimizer/turbo-ocr:v2.0.0
+  ghcr.io/aiptimizer/turbo-ocr:v2.1.0
 ```
 
 First startup builds TensorRT engines from ONNX (~90s). The volume caches them for instant restarts. nginx (port 8000) reverse-proxies to Drogon (port 8080) for connection buffering — both start automatically.
@@ -272,6 +284,8 @@ Reproduce: `python tests/benchmark/comparison/bench_turbo_ocr.py` (requires runn
 
 | Variable | Default | Description |
 |----------|---------|-------------|
+| `OCR_LANG` | *(unset = latin)* | Language bundle: `latin`, `chinese`, `greek`, `eslav`, `arabic`, `korean`, `thai`. Non-latin bundles are fetched on first container start into the `trt-cache` volume. |
+| `OCR_SERVER` | *(unset)* | With `OCR_LANG=chinese`, set to `1` to use the 84 MB PP-OCRv5 server rec instead of the 16 MB mobile rec. Ignored for other languages. |
 | `PIPELINE_POOL_SIZE` | auto | Concurrent GPU pipelines (~1.4 GB each) |
 | `DISABLE_LAYOUT` | `0` | Set to `1` to disable PP-DocLayoutV3 layout detection and save ~300-500 MB VRAM |
 | `ENABLE_PDF_MODE` | `ocr` | Default PDF mode: `ocr` / `geometric` / `auto` / `auto_verified` |
@@ -290,7 +304,7 @@ Layout detection is **enabled by default**. The model is loaded at startup but o
 docker run --gpus all -p 8000:8000 \
   -v trt-cache:/home/ocr/.cache/turbo-ocr \
   -e PIPELINE_POOL_SIZE=3 \
-  turbo-ocr
+  turboocr
 ```
 
 Add `MAX_PDF_PAGES` (default `2000`) to limit the number of pages processed per PDF request. `LOG_LEVEL` (`debug`/`info`/`warn`/`error`) and `LOG_FORMAT` (`json`/`text`) control structured logging output.
@@ -361,13 +375,13 @@ Wuffs, Clipper, PDFium vendored in `third_party/`.
 
 ```bash
 # Docker (recommended)
-docker build -f docker/Dockerfile.gpu -t turbo-ocr .
+docker build -f docker/Dockerfile.gpu -t turboocr .
 docker run --gpus all -p 8000:8000 -p 50051:50051 \
-  -v trt-cache:/home/ocr/.cache/turbo-ocr turbo-ocr
+  -v trt-cache:/home/ocr/.cache/turbo-ocr turboocr
 
 # CPU only (Docker) — ~2-3 img/s, mainly for testing
-docker build -f docker/Dockerfile.cpu -t turbo-ocr-cpu .
-docker run -p 8000:8000 turbo-ocr-cpu
+docker build -f docker/Dockerfile.cpu -t turboocr-cpu .
+docker run -p 8000:8000 turboocr-cpu
 
 # Native build
 cmake -B build -DTENSORRT_DIR=/usr/local/tensorrt && cmake --build build -j$(nproc)
@@ -377,7 +391,33 @@ cmake -B build -DTENSORRT_DIR=/usr/local/tensorrt && cmake --build build -j$(npr
 
 ## Supported Languages
 
-Latin script (English, German, French, Italian, Polish, Czech, and more) plus Greek. 836 characters total.
+Set via the `OCR_LANG` environment variable. Latin is the default and ships in the image; every other language is downloaded on first container start into the `trt-cache` volume.
+
+| `OCR_LANG` | Script / family | In-image | Notes |
+|---|---|:---:|---|
+| *(unset)* / `latin` | Latin + basic Greek (English, German, French, Italian, Polish, Czech, …) | ✅ | 836-char dict; what powers the benchmarks above |
+| `chinese` | Simplified + Traditional Chinese | ⬇ on demand | 18,385-class mobile rec (16 MB); set `OCR_SERVER=1` for the 84 MB server variant |
+| `greek` | dedicated Greek rec | ⬇ on demand | 356-class Greek-specialized rec (7.8 MB) — higher accuracy than Latin's combined dict |
+| `korean` | Hangul + basic Latin | ⬇ on demand | 11,947-class rec (13 MB) |
+| `arabic`, `eslav`, `thai` | per-script PP-OCRv5 | ⬇ on demand | pulled from the PP-OCRv5 ONNX mirror at first start |
+
+```bash
+# Chinese
+docker run --gpus all -p 8000:8000 -p 50051:50051 \
+  -v trt-cache:/home/ocr/.cache/turbo-ocr \
+  -e OCR_LANG=chinese \
+  ghcr.io/aiptimizer/turbo-ocr:v2.1.0
+```
+
+> **Volume tip:** use a **named** volume (`trt-cache:`) as shown above, not a
+> host bind-mount. Named volumes auto-populate from the image on first use,
+> so the shipped Chinese bundle survives. A bind-mount of an empty host
+> directory would shadow `/home/ocr/.cache/turbo-ocr` and leave the server
+> with nothing to load.
+
+Run `tests/language_smoketest.py` to verify any language end-to-end on your
+hardware (renders a short phrase, OCRs it, checks char-recall against a
+per-language threshold).
 
 ---
 
