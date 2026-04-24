@@ -75,6 +75,7 @@ add_executable(turbo_ocr_tests
     tests/cpp/test_box.cpp
     tests/cpp/test_encoding.cpp
     tests/cpp/test_serialization.cpp
+    tests/cpp/test_language_paths.cpp
     tests/cpp/test_ctc_decode.cpp
     tests/cpp/test_perspective.cpp
     tests/cpp/test_det_postprocess.cpp
