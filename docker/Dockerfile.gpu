@@ -79,7 +79,7 @@ RUN bash scripts/install_fastpdf2png.sh && \
 
 # Build GPU mode (HTTP + gRPC)
 RUN mkdir -p build && cd build && \
-    cmake .. -DTENSORRT_DIR=/usr/lib/x86_64-linux-gnu && \
+    cmake .. -DTENSORRT_DIR=/usr/lib/x86_64-linux-gnu -DFETCH_MODELS=OFF && \
     make -j$(nproc)
 
 # Runtime-only layers — edits here do not trigger a rebuild.

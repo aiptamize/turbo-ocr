@@ -87,7 +87,7 @@ RUN cp third_party/pdfium/lib/libpdfium.so /usr/lib/ && ldconfig && \
 
 # Build CPU-only mode
 RUN mkdir -p build_cpu && cd build_cpu && \
-    cmake .. -DUSE_CPU_ONLY=ON && \
+    cmake .. -DUSE_CPU_ONLY=ON -DFETCH_MODELS=OFF && \
     make -j$(nproc)
 
 # Runtime-only layers — edits here do not trigger a rebuild.
