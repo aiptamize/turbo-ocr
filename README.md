@@ -69,7 +69,7 @@ Turbo-OCR vs PaddleOCR · EasyOCR · VLMs — FUNSD (50 pages, RTX 5090)
 
 ### 🗺️ Roadmap
 
-- 🌍 Configurable languages
+- ✅ Configurable languages — Latin (default) + Chinese shipped; others on demand
 - 🔍 Structured extraction
 - 📝 Markdown output
 - 📊 Table parsing
@@ -284,6 +284,8 @@ Reproduce: `python tests/benchmark/comparison/bench_turbo_ocr.py` (requires runn
 
 | Variable | Default | Description |
 |----------|---------|-------------|
+| `OCR_LANG` | *(unset = latin)* | Language bundle: `latin`, `chinese`, `greek`, `eslav`, `arabic`, `korean`, `thai`. Non-latin bundles are fetched on first container start into the `trt-cache` volume. |
+| `OCR_SERVER` | *(unset)* | With `OCR_LANG=chinese`, set to `1` to use the 84 MB PP-OCRv5 server rec instead of the 16 MB mobile rec. Ignored for other languages. |
 | `PIPELINE_POOL_SIZE` | auto | Concurrent GPU pipelines (~1.4 GB each) |
 | `DISABLE_LAYOUT` | `0` | Set to `1` to disable PP-DocLayoutV3 layout detection and save ~300-500 MB VRAM |
 | `ENABLE_PDF_MODE` | `ocr` | Default PDF mode: `ocr` / `geometric` / `auto` / `auto_verified` |
@@ -389,7 +391,33 @@ cmake -B build -DTENSORRT_DIR=/usr/local/tensorrt && cmake --build build -j$(npr
 
 ## Supported Languages
 
-Latin script (English, German, French, Italian, Polish, Czech, and more) plus Greek. 836 characters total.
+Set via the `OCR_LANG` environment variable. Latin is the default and ships in the image; every other language is downloaded on first container start into the `trt-cache` volume.
+
+| `OCR_LANG` | Script / family | In-image | Notes |
+|---|---|:---:|---|
+| *(unset)* / `latin` | Latin + basic Greek (English, German, French, Italian, Polish, Czech, …) | ✅ | 836-char dict; what powers the benchmarks above |
+| `chinese` | Simplified + Traditional Chinese | ⬇ on demand | 18,385-class mobile rec (16 MB); set `OCR_SERVER=1` for the 84 MB server variant |
+| `greek` | dedicated Greek rec | ⬇ on demand | 356-class Greek-specialized rec (7.8 MB) — higher accuracy than Latin's combined dict |
+| `korean` | Hangul + basic Latin | ⬇ on demand | 11,947-class rec (13 MB) |
+| `arabic`, `eslav`, `thai` | per-script PP-OCRv5 | ⬇ on demand | pulled from the PP-OCRv5 ONNX mirror at first start |
+
+```bash
+# Chinese
+docker run --gpus all -p 8000:8000 -p 50051:50051 \
+  -v trt-cache:/home/ocr/.cache/turbo-ocr \
+  -e OCR_LANG=chinese \
+  ghcr.io/aiptimizer/turboocr:v2.0.0
+```
+
+> **Volume tip:** use a **named** volume (`trt-cache:`) as shown above, not a
+> host bind-mount. Named volumes auto-populate from the image on first use,
+> so the shipped Chinese bundle survives. A bind-mount of an empty host
+> directory would shadow `/home/ocr/.cache/turbo-ocr` and leave the server
+> with nothing to load.
+
+Run `tests/language_smoketest.py` to verify any language end-to-end on your
+hardware (renders a short phrase, OCRs it, checks char-recall against a
+per-language threshold).
 
 ---
 
