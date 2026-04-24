@@ -61,7 +61,17 @@ RUN cd /tmp && \
     ldconfig && rm -rf /tmp/onnxruntime*
 
 WORKDIR /app
-COPY . .
+
+# Layered COPY so runtime edits (entrypoint.sh, download_models.sh, docker/
+# configs, models/, README) don't invalidate the expensive C++ build layers.
+COPY CMakeLists.txt ./
+COPY proto/ proto/
+COPY include/ include/
+COPY src/ src/
+COPY tools/ tools/
+COPY third_party/ third_party/
+COPY tests/ tests/
+COPY scripts/install_fastpdf2png.sh scripts/install_fastpdf2png.sh
 
 # Install fastpdf2png v2.0 (PDF renderer — daemon pool, raw PPM, /dev/shm)
 RUN bash scripts/install_fastpdf2png.sh && \
@@ -72,22 +82,45 @@ RUN mkdir -p build && cd build && \
     cmake .. -DTENSORRT_DIR=/usr/lib/x86_64-linux-gnu && \
     make -j$(nproc)
 
+# Runtime-only layers — edits here do not trigger a rebuild.
+COPY docker/ docker/
+COPY scripts/entrypoint.sh scripts/download_models.sh scripts/fetch_release_models.sh scripts/
+
+# Fetch every supported PP-OCRv5 bundle from the pinned GitHub Release, with
+# SHA256 verification. Populates /app/models/{det,cls,rec,keys.txt} (Latin
+# default) and /app/models/rec/<lang>/{rec.onnx,dict.txt} for every other
+# supported language. One layer keeps the image content auditable.
+ARG OCR_INCLUDE_SERVER=1
+ENV OCR_INCLUDE_SERVER=${OCR_INCLUDE_SERVER}
+RUN bash scripts/fetch_release_models.sh
+
 # Build CPU mode (HTTP only, ONNX Runtime) -- skip for now, has build issues
 # RUN mkdir -p build_cpu && cd build_cpu && \
 #     cmake .. -DUSE_CPU_ONLY=ON && \
 #     make -j$(nproc)
 
-# ONNX models + keys.txt are included in the repo.
+# Latin ONNX models (det/rec/cls + keys.txt) ship in the image under /app/models/.
+# Non-Latin languages (chinese, greek, korean, thai, …) are fetched at container
+# start by scripts/entrypoint.sh when OCR_LANG=<lang> is set, using the
+# pre-converted PaddleOCR ONNX weights mirrored by RapidOCR on ModelScope.
+# The bundle lands in /app/models/rec/<lang>/ and is cached in the volume.
+#
 # TRT engines are auto-built from ONNX on first startup (~90s).
-# Mount a volume to persist them: -v trt-cache:/home/ocr/.cache/turbo-ocr
+# Mount a volume to persist both:  -v trt-cache:/home/ocr/.cache/turbo-ocr
 
 EXPOSE 8000 50051
 
-# Non-root user for the OCR process (nginx runs as root, app drops to ocr via gosu)
-RUN useradd -m -s /bin/bash ocr && chown -R ocr:ocr /app
-RUN mkdir -p /home/ocr/.cache/turbo-ocr && chown -R ocr:ocr /home/ocr/.cache
+# Non-root user for the OCR process (nginx runs as root, app drops to ocr via gosu).
+# /app/models/rec/ is a symlink into the persisted cache volume so
+# runtime-downloaded language bundles survive container restarts via the
+# existing trt-cache volume. Latin uses the flat models/{det,rec,cls}.onnx
+# layout, which is already in /app/models/ — never under /app/models/rec/.
+RUN useradd -m -s /bin/bash ocr \
+    && chmod +x /app/scripts/entrypoint.sh \
+    && mkdir -p /home/ocr/.cache/turbo-ocr/models/rec \
+    && rm -rf /app/models/rec \
+    && ln -s /home/ocr/.cache/turbo-ocr/models/rec /app/models/rec \
+    && chown -R ocr:ocr /app /home/ocr/.cache
 
-COPY scripts/entrypoint.sh /app/scripts/
-RUN chmod +x /app/scripts/entrypoint.sh
 ENTRYPOINT ["/app/scripts/entrypoint.sh"]
 CMD ["./build/paddle_highspeed_cpp"]
