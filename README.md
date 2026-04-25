@@ -13,6 +13,7 @@ Turbo OCR — Fast GPU OCR server. C++ / CUDA / TensorRT. 270 img/s on FUNSD.
 
 <p align="center">
   <img src="https://img.shields.io/badge/throughput-270_img%2Fs-blue?style=flat-square&logo=speedtest&logoColor=white" alt="270 img/s">
+  <a href="https://turboocr.com"><img src="https://img.shields.io/badge/website-turboocr.com-3B82F6?style=flat-square&logo=googlechrome&logoColor=white" alt="turboocr.com"></a>
   <a href="https://github.com/aiptimizer/TurboOCR/releases/latest"><img src="https://img.shields.io/github/v/release/aiptimizer/TurboOCR?style=flat-square&logo=github&logoColor=white" alt="Release"></a>
   <a href="https://ghcr.io/aiptimizer/turboocr"><img src="https://img.shields.io/badge/docker-ghcr.io-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker"></a>
   <img src="https://img.shields.io/badge/C%2B%2B20-00599C?style=flat-square&logo=cplusplus&logoColor=white" alt="C++20">
@@ -33,7 +34,8 @@ Turbo OCR — Fast GPU OCR server. C++ / CUDA / TensorRT. 270 img/s on FUNSD.
   <a href="#monitoring">Monitoring</a> &middot;
   <a href="#configuration">Configuration</a> &middot;
   <a href="#building-from-source">Build</a> &middot;
-  <a href="#roadmap">Roadmap</a>
+  <a href="#roadmap">Roadmap</a> &middot;
+  <a href="https://turboocr.com">Website</a>
 </p>
 
 ---
@@ -64,12 +66,11 @@ Turbo-OCR vs PaddleOCR · EasyOCR · VLMs — FUNSD (50 pages, RTX 5090)
 - 🌐 **HTTP + gRPC** from a single binary, sharing the same GPU pipeline pool
 - 🐳 **One-line Docker deploy** &mdash; `docker run` with auto TRT engine build on first start
 - 📊 **Prometheus metrics** &mdash; request counters, latency histograms, VRAM usage on `/metrics`
+- 🌐 Configurable languages (Latine e.g., English, French, German, Spanish, Portuguese; Chinese, Greek, Russian, Arabic, Korean, Thai)
 
 *RTX 5090, PP-OCRv5 mobile latin, TensorRT FP16, pool=5. Prints, handwriting, layout detection. This is the fast lane.*
 
 ### 🗺️ Roadmap
-
-- ✅ Configurable languages — all 7 bundles (Latin, Chinese, Greek, Russian, Arabic, Korean, Thai) baked into the image
 - 🔍 Structured extraction
 - 📝 Markdown output
 - 📊 Table parsing
