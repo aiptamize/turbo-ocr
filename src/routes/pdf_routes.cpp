@@ -339,7 +339,16 @@ struct GpuPdfPageResult : public PdfPageResultBase {};
 // pipeline + AutoVerified verification depending on resolved mode, and
 // writes results into `page_results[page_idx]` under `results_mutex`. The
 // callback is invoked from inside pdf_renderer.render_streamed().
-void run_streamed_render_gpu(
+//
+// Returns the StreamHandle by value: the caller MUST keep it alive until
+// every future in `page_futures` has completed. The handle owns the
+// scratch tmpdir, and ~StreamHandle calls remove_all() on it — destroying
+// the handle before the dispatcher workers run their decode_ppm() lambdas
+// causes them to open files that no longer exist (the bug fixed here:
+// pages would silently come back empty when the GPU pool was busier than
+// the renderer, because StreamHandle's lifetime was confined to this
+// helper while the futures lived in the caller).
+[[nodiscard]] render::PdfRenderer::StreamHandle run_streamed_render_gpu(
     pipeline::PipelineDispatcher &dispatcher,
     render::PdfRenderer &pdf_renderer,
     const uint8_t *pdf_data, size_t pdf_len_local,
@@ -351,9 +360,8 @@ void run_streamed_render_gpu(
     std::vector<GpuPdfPageResult> &page_results,
     std::vector<uint8_t> &need_render,
     std::vector<std::future<void>> &page_futures,
-    std::mutex &futures_mutex,
-    int &num_pages_out) {
-  auto stream_handle = pdf_renderer.render_streamed(pdf_data, pdf_len_local, dpi,
+    std::mutex &futures_mutex) {
+  return pdf_renderer.render_streamed(pdf_data, pdf_len_local, dpi,
       [&](int page_idx, std::string ppm_path) {
         {
           std::lock_guard<std::mutex> rlock(results_mutex);
@@ -455,7 +463,6 @@ void run_streamed_render_gpu(
         std::lock_guard lock(futures_mutex);
         page_futures.push_back(std::move(fut));
       });
-  num_pages_out = stream_handle.num_pages;
 }
 #endif // !USE_CPU_ONLY
 
@@ -610,19 +617,29 @@ void register_pdf_route(server::WorkPool &pool,
                           page_results, need_render, &any_need_render);
       }
 
-      // Streamed render + OCR
+      // Streamed render + OCR.
+      //
+      // The StreamHandle owns the scratch tmpdir holding the rendered
+      // PPMs. It MUST outlive every future in `page_futures`, because
+      // those futures hold ppm_path strings that the dispatcher workers
+      // open lazily — destroying the handle while futures are pending
+      // unlinks the PPMs out from under them and they decode to empty
+      // images. Declared at handler scope and intentionally kept alive
+      // through the f.get() loop below.
       std::mutex futures_mutex;
       std::vector<std::future<void>> page_futures;
+      render::PdfRenderer::StreamHandle stream_handle;
       int num_pages = 0;
 
       if (any_need_render) {
         try {
-          run_streamed_render_gpu(dispatcher, pdf_renderer,
+          stream_handle = run_streamed_render_gpu(dispatcher, pdf_renderer,
                                    pdf_data, pdf_len_local,
                                    dpi, layout_enabled, want_reading_order, mode,
                                    pdf_doc.get(), page_text_cache,
                                    results_mutex, page_results, need_render,
-                                   page_futures, futures_mutex, num_pages);
+                                   page_futures, futures_mutex);
+          num_pages = stream_handle.num_pages;
         } catch (const std::exception &e) {
           for (auto &f : page_futures) { try { f.get(); } catch (...) {} }
           TOCR_LOG_ERROR("PDF render failed", "route", "/ocr/pdf", "error", std::string_view(e.what()));
