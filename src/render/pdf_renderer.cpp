@@ -2,6 +2,7 @@
 #include "turbo_ocr/common/errors.h"
 
 #include <atomic>
+#include <cerrno>
 #include <csignal>
 #include <cstdio>
 #include <cstring>
@@ -186,6 +187,17 @@ cv::Mat PdfRenderer::decode_ppm(const std::string &path) {
   }
   return bgr;
 }
+
+// NOTE: We deliberately do NOT install a process-wide SIGCHLD reaper.
+// In the container the OCR process is PID 1, which means orphaned grand-
+// children (the daemon's worker subprocesses) get re-parented to us.
+// A waitpid(-1, …, WNOHANG) drain in our SIGCHLD handler would race
+// the daemon's own waitpid() and steal the worker's exit status; the
+// daemon then thinks the worker is still alive, never delivers the
+// PPM, and OCR sees a missing file. The zombie risk the reaper was
+// added to address is bounded by the daemon count (16) and never
+// materialises under normal operation — the daemon stays alive across
+// the process lifetime. ~PdfRenderer reaps the daemons explicitly.
 
 PdfRenderer::PdfRenderer(int pool_size, int workers_per_render)
     : pool_size_(pool_size), workers_per_render_(workers_per_render),
@@ -383,16 +395,25 @@ PdfRenderer::render_streamed(const uint8_t *data, size_t len, int dpi,
   std::string pattern = std::format("{}/p_%04d.ppm", tmpdir.path);
 
   // Set up inotify BEFORE sending RENDER to avoid missing early pages.
-  // CLOSE_WRITE fires when a worker finishes writing a PPM file.
-  int inotify_fd = inotify_init1(IN_NONBLOCK | IN_CLOEXEC);
-  if (inotify_fd < 0)
+  // CLOSE_WRITE fires when a worker finishes writing a PPM file. The
+  // RAII guard ensures the fd is closed even if any later step throws
+  // (acquire_daemon, std::thread ctor, std::stoi on the daemon reply).
+  struct InotifyFdGuard {
+    int fd = -1;
+    int wd = -1;
+    ~InotifyFdGuard() noexcept {
+      if (wd >= 0 && fd >= 0) ::inotify_rm_watch(fd, wd);
+      if (fd >= 0) ::close(fd);
+    }
+  };
+  InotifyFdGuard inotify;
+  inotify.fd = ::inotify_init1(IN_NONBLOCK | IN_CLOEXEC);
+  if (inotify.fd < 0)
     throw turbo_ocr::PdfRenderError("inotify_init1 failed");
-
-  int wd = inotify_add_watch(inotify_fd, tmpdir.path.c_str(), IN_CLOSE_WRITE);
-  if (wd < 0) {
-    close(inotify_fd);
+  inotify.wd = ::inotify_add_watch(inotify.fd, tmpdir.path.c_str(), IN_CLOSE_WRITE);
+  if (inotify.wd < 0)
     throw turbo_ocr::PdfRenderError("inotify_add_watch failed");
-  }
+  const int inotify_fd = inotify.fd;
 
   // Track which pages have been delivered to avoid duplicates.
   // Uses a bitset-style vector; pages delivered via inotify are marked here
@@ -402,21 +423,23 @@ PdfRenderer::render_streamed(const uint8_t *data, size_t len, int dpi,
 
   // Launch render in a background thread so we can process inotify events
   // concurrently. The daemon mutex is held for the duration of RENDER.
+  // Adopt the lock OUTSIDE the lambda so a std::thread-ctor failure
+  // (bad_alloc on stack) doesn't strand the daemon mutex.
   int idx = acquire_daemon();
+  std::unique_lock<std::mutex> daemon_lock(daemons_[idx].mutex, std::adopt_lock);
   std::atomic<bool> render_done{false};
   std::string render_resp;
   std::exception_ptr render_error;
 
-  std::thread render_thread([&]() {
+  std::thread render_thread([&, daemon_lock = std::move(daemon_lock)]() mutable {
     try {
-      std::unique_lock<std::mutex> daemon_lock(daemons_[idx].mutex,
-                                                std::adopt_lock);
       render_resp = send_cmd(daemons_[idx],
           std::format("RENDER\t{}\t{}\t{}\t{}\t-1",
                       tmpfile.path, pattern, dpi, workers_per_render_));
     } catch (...) {
       render_error = std::current_exception();
     }
+    // daemon_lock RAII releases here.
     render_done.store(true, std::memory_order_release);
   });
 
@@ -469,12 +492,9 @@ PdfRenderer::render_streamed(const uint8_t *data, size_t len, int dpi,
 
   render_thread.join();
 
-  // Drain any remaining inotify events
+  // Drain any remaining inotify events. inotify fd + watch are released
+  // by the InotifyFdGuard dtor at function exit.
   process_events();
-
-  // Clean up inotify
-  inotify_rm_watch(inotify_fd, wd);
-  close(inotify_fd);
 
   if (render_error) std::rethrow_exception(render_error);
 
@@ -488,11 +508,19 @@ PdfRenderer::render_streamed(const uint8_t *data, size_t len, int dpi,
 
   // Safety net: deliver any pages missed by inotify (race, coalesced events).
   // The daemon may respond "OK N" before its forked workers finish writing
-  // the last PPM files, so retry briefly if expected files are missing.
+  // the last PPM files, so retry until either every page lands or we hit
+  // a generous wall-clock cap. Earlier this loop was 50 × 10 ms = 500 ms
+  // total — too short for 20+ page PDFs where the workers can still be
+  // mid-flush after the daemon's "OK N" reply. Extending to 30 s is safe
+  // because real renders never need this long; we only stop early so a
+  // truly missing page doesn't hang the request forever.
   if (pages_delivered < num_pages) {
     if (num_pages > static_cast<int>(delivered.size()))
       delivered.resize(num_pages, false);
-    for (int retry = 0; retry < 50 && pages_delivered < num_pages; ++retry) {
+    using clock = std::chrono::steady_clock;
+    const auto deadline = clock::now() + std::chrono::seconds(30);
+    while (pages_delivered < num_pages && clock::now() < deadline) {
+      bool found_any = false;
       for (int i = 0; i < num_pages; ++i) {
         if (delivered[i]) continue;
         std::string ppm_path = std::format("{}/p_{:04d}.ppm", tmpdir.path, i + 1);
@@ -500,8 +528,9 @@ PdfRenderer::render_streamed(const uint8_t *data, size_t len, int dpi,
         delivered[i] = true;
         on_page(i, std::move(ppm_path));
         ++pages_delivered;
+        found_any = true;
       }
-      if (pages_delivered < num_pages)
+      if (pages_delivered < num_pages && !found_any)
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
   }
