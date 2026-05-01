@@ -59,10 +59,12 @@ public:
   // routes) parse `?layout=1` from the request and pass it through.
   [[nodiscard]] OcrPipelineResult run_with_layout(const cv::Mat &img,
                                                    cudaStream_t stream,
-                                                   bool want_layout = false);
+                                                   bool want_layout = false,
+                                                   bool want_reading_order = false);
   [[nodiscard]] OcrPipelineResult run_with_layout(GpuImage gpu_img,
                                                    cudaStream_t stream = 0,
-                                                   bool want_layout = false);
+                                                   bool want_layout = false,
+                                                   bool want_reading_order = false);
 
   // Layout-only path: upload the image, run the PP-DocLayoutV3 inference,
   // collect the boxes, and return. Skips detection, angle classification,

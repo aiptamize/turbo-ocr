@@ -1,4 +1,5 @@
 #include "turbo_ocr/detection/cpu_paddle_det.h"
+#include "turbo_ocr/detection/det_config.h"
 #include "turbo_ocr/detection/det_postprocess.h"
 
 #include <algorithm>
@@ -10,6 +11,8 @@ using namespace turbo_ocr::detection;
 using turbo_ocr::engine::CpuEngine;
 
 bool CpuPaddleDet::load_model(const std::string &model_path) {
+  // Same DET_MAX_SIDE source as the GPU detector + the TRT engine builder.
+  kMaxSideLen = read_det_max_side();
   engine_ = std::make_unique<CpuEngine>(model_path);
   return engine_->load();
 }

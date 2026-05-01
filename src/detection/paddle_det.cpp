@@ -1,4 +1,5 @@
 #include "turbo_ocr/detection/paddle_det.h"
+#include "turbo_ocr/detection/det_config.h"
 #include "turbo_ocr/kernels/kernels.h"
 #include "turbo_ocr/detection/det_postprocess.h"
 
@@ -23,11 +24,9 @@ bool PaddleDet::load_model(const std::string &model_path) {
 }
 
 bool PaddleDet::init_buffers() {
-  // Read configurable max side length (clamped to [32, 4096] to prevent
-  // integer overflow in max_pixels = kMaxSideLen_^2 and downstream allocs)
-  if (const char *env = std::getenv("DET_MAX_SIDE"))
-    kMaxSideLen_ = std::atoi(env);
-  kMaxSideLen_ = std::clamp(kMaxSideLen_, 32, 4096);
+  // Single source of truth for DET_MAX_SIDE: detection/det_config.h. The
+  // engine builder reads the same value so the TRT profile MAX matches.
+  kMaxSideLen_ = turbo_ocr::detection::read_det_max_side();
 
   size_t max_pixels = static_cast<size_t>(kMaxSideLen_) * kMaxSideLen_;
   input_size_ = max_pixels * 3 * sizeof(float);
@@ -36,7 +35,7 @@ bool PaddleDet::init_buffers() {
   d_input_ = CudaPtr<float>(max_pixels * 3);
   d_output_ = CudaPtr<float>(max_pixels);
 
-  // Pre-allocate bitmap buffer (960x960 uint8)
+  // Pre-allocate bitmap buffer (kMaxSideLen_ x kMaxSideLen_ uint8)
   d_bitmap_buf_ = CudaPtr<uint8_t>(max_pixels);
 
   // Pre-allocate batch buffers (kMaxBatchSize x max_pixels)

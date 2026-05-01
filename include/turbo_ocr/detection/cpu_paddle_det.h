@@ -27,7 +27,11 @@ private:
   static constexpr float kDetDbThresh = 0.3f;
   static constexpr float kDetDbBoxThresh = 0.6f;
   static constexpr float kDetDbUnclipRatio = 1.5f;
-  static constexpr int kMaxSideLen = 960;
+  // Configurable via DET_MAX_SIDE (default 960, clamp [32, 4096]). Read
+  // from detection/det_config.h at load_model time. Was hardcoded to 960
+  // before, which silently truncated CPU output when the GPU pipeline was
+  // configured larger.
+  int kMaxSideLen = 960;
   static constexpr float kMinBoxSide = 3.0f;
   static constexpr float kMinUnclippedSide = 5.0f;
 
