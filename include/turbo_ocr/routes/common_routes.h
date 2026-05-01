@@ -22,9 +22,12 @@ void register_ocr_raw_route(server::WorkPool &pool,
                              bool layout_available);
 
 /// Convenience: register /health + /ocr + /ocr/raw (CPU paths).
+/// `readiness_check` is forwarded to /health/ready and should also be
+/// passed to start_grpc_server so HTTP and gRPC probes agree.
 void register_common_routes(server::WorkPool &pool,
                              const server::InferFunc &infer,
                              const server::ImageDecoder &decode,
-                             bool layout_available);
+                             bool layout_available,
+                             std::function<bool()> readiness_check = nullptr);
 
 } // namespace turbo_ocr::routes
