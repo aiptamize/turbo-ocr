@@ -13,6 +13,7 @@ add_library(turbo_ocr_common STATIC
     ${PROJECT_ROOT}/src/recognition/crop_utils.cpp
     ${PROJECT_ROOT}/src/recognition/ctc_decode.cpp
     ${PROJECT_ROOT}/src/decode/fast_png_decoder.cpp
+    ${PROJECT_ROOT}/src/layout/reading_order.cpp
     ${PROJECT_ROOT}/third_party/clipper/clipper.cpp
     ${PROJECT_ROOT}/third_party/simdutf/simdutf.cpp
 )
@@ -32,6 +33,9 @@ add_executable(turbo_ocr_tests
     test_ctc_decode.cpp
     test_perspective.cpp
     test_det_postprocess.cpp
+    test_xy_cut.cpp
+    test_logger_ratelimit.cpp
+    test_image_dims.cpp
     ${PROJECT_ROOT}/third_party/catch2/catch_amalgamated.cpp
 )
 target_link_libraries(turbo_ocr_tests PRIVATE turbo_ocr_common)
