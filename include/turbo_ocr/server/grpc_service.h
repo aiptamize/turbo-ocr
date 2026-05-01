@@ -4,6 +4,7 @@
 #include <format>
 #include <future>
 #include <iostream>
+#include <limits>
 #include <mutex>
 #include <string_view>
 
@@ -16,6 +17,9 @@
 #include "turbo_ocr/common/errors.h"
 #include "turbo_ocr/common/serialization.h"
 #include "turbo_ocr/common/types.h"
+#include "turbo_ocr/decode/image_config.h"
+#include "turbo_ocr/decode/image_dims.h"
+#include "turbo_ocr/server/env_utils.h"
 #include "turbo_ocr/decode/fast_png_decoder.h"
 #ifndef USE_CPU_ONLY
 #include "turbo_ocr/decode/nvjpeg_decoder.h"
@@ -32,6 +36,63 @@
 namespace turbo_ocr::server {
 
 enum class GrpcResponseMode { json_bytes, structured };
+
+// Helper: stamp the structured HTTP-parity error code into gRPC trailing
+// metadata under "x-error-code" and return the status. Keeps the legacy
+// StatusCode/message untouched so existing clients keep working while
+// new clients can branch on the structured code (matches HTTP's
+// {"error":{"code":...}} payload one-for-one).
+[[nodiscard]] inline grpc::Status
+grpc_error(grpc::ServerContext *ctx, grpc::StatusCode code,
+           const char *error_code, std::string message) {
+  if (ctx) ctx->AddTrailingMetadata("x-error-code", error_code);
+  return grpc::Status(code, std::move(message));
+}
+
+// Mirror parse_query_options() in server_types.h: when the client asks for
+// layout-derived output but the server was started without the layout
+// model, HTTP rejects the request with INVALID_PARAMETER (`?layout=1`) or
+// LAYOUT_DISABLED (`?reading_order=1`). gRPC used to silently zero those
+// flags, leaving callers wondering why they got a y/x fallback they did
+// not ask for. Returns nullopt on success.
+[[nodiscard]] inline std::optional<grpc::Status>
+grpc_check_layout_request(grpc::ServerContext *ctx, bool req_layout,
+                           bool req_reading_order, bool layout_available) {
+  if (req_layout && !layout_available) {
+    return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+                      "INVALID_PARAMETER",
+                      "Layout requested but the layout model is not loaded. "
+                      "Either models/layout/layout.onnx is missing from the "
+                      "image, or the server was started with DISABLE_LAYOUT=1.");
+  }
+  if (req_reading_order && !layout_available) {
+    return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+                      "LAYOUT_DISABLED",
+                      "reading_order=1 requires the layout model: start the "
+                      "server without DISABLE_LAYOUT=1 (layout is on by default)");
+  }
+  return std::nullopt;
+}
+
+// Returns nullopt on success, or a status carrying DIMENSIONS_TOO_LARGE when
+// the encoded image's PNG/JPEG/WebP header advertises width or height beyond
+// MAX_IMAGE_DIM. Caller checks before paying the decode cost — same
+// decompression-bomb defense the HTTP routes apply.
+[[nodiscard]] inline std::optional<grpc::Status>
+grpc_pre_decode_dim_check(grpc::ServerContext *ctx,
+                           std::string_view image_data) {
+  auto *data = reinterpret_cast<const unsigned char *>(image_data.data());
+  if (auto d = decode::peek_image_dimensions(data, image_data.size())) {
+    int cap = decode::max_image_dim();
+    if (d->width > cap || d->height > cap) {
+      return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+          "DIMENSIONS_TOO_LARGE",
+          std::format("Image dimensions {}x{} exceed maximum of {}x{}",
+                      d->width, d->height, cap, cap));
+    }
+  }
+  return std::nullopt;
+}
 
 inline cv::Mat grpc_decode_image(std::string_view image_data) {
   auto *data = reinterpret_cast<const unsigned char *>(image_data.data());
@@ -81,19 +142,40 @@ public:
         default_pdf_mode_(default_pdf_mode),
         layout_available_(layout_available) {}
 
+  /// Set the readiness probe used by Health(). Same signature as the
+  /// HTTP /health/ready check; called once per Health RPC. nullptr
+  /// (default) means "always ready".
+  void set_readiness_check(std::function<bool()> check) {
+    readiness_check_ = std::move(check);
+  }
+
   // ---- Health ----
-  grpc::Status Health(grpc::ServerContext *,
+  grpc::Status Health(grpc::ServerContext *ctx,
                       const ocr::HealthRequest *,
                       ocr::HealthResponse *response) override {
+    // Mirror HTTP /health/ready: probe the underlying pipeline so k8s
+    // gRPC liveness/readiness probes can actually fail when the
+    // dispatcher is wedged. Without the check, Health() always
+    // succeeded — a pod with a corrupt engine would stay in service.
+    if (readiness_check_ && !readiness_check_()) {
+      response->set_status("not_ready");
+      return grpc_error(ctx, grpc::StatusCode::UNAVAILABLE,
+                        "NOT_READY", "Pipeline not ready");
+    }
     response->set_status("ok");
     return grpc::Status::OK;
   }
 
-  // ---- Recognize (single image + pixels + layout) ----
-  grpc::Status Recognize(grpc::ServerContext *,
+  // ---- Recognize (single image + pixels + layout + reading_order) ----
+  grpc::Status Recognize(grpc::ServerContext *ctx,
                          const ocr::OCRRequest *request,
                          ocr::OCRResponse *response) override {
-    bool want_layout = request->layout() && layout_available_;
+    if (auto err = grpc_check_layout_request(ctx, request->layout(),
+            request->reading_order(), layout_available_); err)
+      return *err;
+    bool want_layout = request->layout();
+    bool want_reading_order = request->reading_order();
+    if (want_reading_order) want_layout = true;
 
     // Pixels path: raw BGR pixel data
     if (!request->pixels().empty()) {
@@ -103,73 +185,126 @@ public:
       if (channels == 0) channels = 3;
 
       if (width <= 0 || height <= 0 || (channels != 1 && channels != 3))
-        return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
-                            "Invalid dimensions or channels for pixels input");
+        return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+                          "INVALID_DIMENSIONS",
+                          "Invalid dimensions or channels for pixels input");
 
-      constexpr int kMaxPixelDim = 16384;
-      if (width > kMaxPixelDim || height > kMaxPixelDim)
-        return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+      const int cap = decode::max_image_dim();
+      if (width > cap || height > cap)
+        return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+            "DIMENSIONS_TOO_LARGE",
             std::format("Dimensions {}x{} exceed maximum of {}x{}",
-                        width, height, kMaxPixelDim, kMaxPixelDim));
+                        width, height, cap, cap));
 
       size_t expected = static_cast<size_t>(width) * height * channels;
       if (request->pixels().size() != expected)
-        return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+        return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+            "BODY_SIZE_MISMATCH",
             std::format("Pixels size mismatch: expected {} bytes ({}x{}x{}), got {}",
                         expected, width, height, channels, request->pixels().size()));
 
-      cv::Mat img(height, width, channels == 3 ? CV_8UC3 : CV_8UC1,
-                  const_cast<char *>(request->pixels().data()));
+      // Copy out of request->pixels() into an owning Mat. The dispatcher
+      // worker thread reads img.data; even though run_infer() blocks on
+      // .get() and the GPU pipeline syncs after its H2D memcpy, we don't
+      // want this contract to depend on knowledge of pipeline internals.
+      // One memcpy at request boundary keeps lifetime trivially correct.
+      cv::Mat img = cv::Mat(height, width, channels == 3 ? CV_8UC3 : CV_8UC1,
+                            const_cast<char *>(request->pixels().data()))
+                        .clone();
 
       try {
-        auto out = run_infer(img, want_layout);
-        fill_response(response, out.results, out.layout);
+        auto out = run_infer(img, want_layout, want_reading_order);
+        fill_response(response, out.results, out.layout, out.reading_order);
         return grpc::Status::OK;
       } catch (const turbo_ocr::PoolExhaustedError &e) {
-        return grpc::Status(grpc::StatusCode::RESOURCE_EXHAUSTED, e.what());
+        return grpc_error(ctx, grpc::StatusCode::RESOURCE_EXHAUSTED,
+                          "SERVER_BUSY", e.what());
       } catch (const std::exception &e) {
         std::cerr << std::format("[gRPC] Pixels inference error: {}\n", e.what());
-        return grpc::Status(grpc::StatusCode::INTERNAL, "Inference error");
+        return grpc_error(ctx, grpc::StatusCode::INTERNAL,
+                          "INFERENCE_ERROR", "Inference error");
       }
     }
 
     // Image path: encoded image bytes
     if (request->image().empty()) [[unlikely]]
-      return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Empty image");
+      return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+                        "MISSING_IMAGE", "Empty image");
+
+    if (auto err = grpc_pre_decode_dim_check(ctx, request->image()); err)
+      return *err;
 
     cv::Mat img = grpc_decode_image(request->image());
     if (img.empty()) [[unlikely]]
-      return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Decode failed");
+      return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+                        "IMAGE_DECODE_FAILED", "Decode failed");
+
+    {
+      const int cap = decode::max_image_dim();
+      if (img.cols > cap || img.rows > cap)
+        return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+            "DIMENSIONS_TOO_LARGE",
+            std::format("Image dimensions {}x{} exceed maximum of {}x{}",
+                        img.cols, img.rows, cap, cap));
+    }
 
     try {
-      auto out = run_infer(img, want_layout);
-      fill_response(response, out.results, out.layout);
+      auto out = run_infer(img, want_layout, want_reading_order);
+      fill_response(response, out.results, out.layout, out.reading_order);
       return grpc::Status::OK;
     } catch (const turbo_ocr::PoolExhaustedError &e) {
-      return grpc::Status(grpc::StatusCode::RESOURCE_EXHAUSTED, e.what());
+      return grpc_error(ctx, grpc::StatusCode::RESOURCE_EXHAUSTED,
+                        "SERVER_BUSY", e.what());
     } catch (const std::exception &e) {
       std::cerr << std::format("[gRPC] Inference error: {}\n", e.what());
-      return grpc::Status(grpc::StatusCode::INTERNAL, "Inference error");
+      return grpc_error(ctx, grpc::StatusCode::INTERNAL,
+                        "INFERENCE_ERROR", "Inference error");
     } catch (...) {
       std::cerr << "[gRPC] Inference error: unknown exception\n";
-      return grpc::Status(grpc::StatusCode::INTERNAL, "Inference error");
+      return grpc_error(ctx, grpc::StatusCode::INTERNAL,
+                        "INFERENCE_ERROR", "Inference error");
     }
   }
 
   // ---- RecognizeBatch ----
-  grpc::Status RecognizeBatch(grpc::ServerContext *,
+  grpc::Status RecognizeBatch(grpc::ServerContext *ctx,
                               const ocr::OCRBatchRequest *request,
                               ocr::OCRBatchResponse *response) override {
     int n = request->images_size();
     if (n == 0)
-      return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Empty images array");
+      return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+                        "EMPTY_BATCH", "Empty images array");
 
-    bool want_layout = request->layout() && layout_available_;
+    if (auto err = grpc_check_layout_request(ctx, request->layout(),
+            request->reading_order(), layout_available_); err)
+      return *err;
+    bool want_layout = request->layout();
+    bool want_reading_order = request->reading_order();
+    if (want_reading_order) want_layout = true;
+
+    // Pre-decode dim sniff on every item — refuses bombs before any decode.
+    for (int i = 0; i < n; ++i) {
+      if (auto err = grpc_pre_decode_dim_check(ctx, request->images(i)); err)
+        return *err;
+    }
 
     // Decode all images first
     std::vector<cv::Mat> imgs(n);
     for (int i = 0; i < n; ++i) {
       imgs[i] = grpc_decode_image(request->images(i));
+    }
+
+    // Post-decode safety net for formats we didn't sniff (BMP/TIFF/WebP).
+    {
+      const int cap = decode::max_image_dim();
+      for (int i = 0; i < n; ++i) {
+        if (imgs[i].empty()) continue;
+        if (imgs[i].cols > cap || imgs[i].rows > cap)
+          return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+              "DIMENSIONS_TOO_LARGE",
+              std::format("Image {} dimensions {}x{} exceed maximum of {}x{}",
+                          i, imgs[i].cols, imgs[i].rows, cap, cap));
+      }
     }
 
     // Check we have at least one valid image
@@ -178,53 +313,104 @@ public:
       if (!imgs[i].empty()) { any_valid = true; break; }
     }
     if (!any_valid)
-      return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "No valid images");
+      return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+                        "IMAGE_DECODE_FAILED", "No valid images");
 
-    // Dispatch each image through the pipeline
+    // Pre-allocate proto entries on the main thread so workers only
+    // mutate their own slot — protobuf's RepeatedPtrField is not
+    // thread-safe for concurrent add_*. Workers then fill entries[i]
+    // in parallel through run_infer, which is reentrant on both the
+    // GPU dispatcher (queue-serialized) and the CPU InferFunc (each
+    // call acquires its own pool handle).
     response->set_total_images(n);
+    std::vector<ocr::OCRResponse *> entries;
+    entries.reserve(static_cast<size_t>(n));
     for (int i = 0; i < n; ++i) {
-      auto *batch_entry = response->add_batch_results();
-      if (imgs[i].empty()) {
-        batch_entry->set_num_detections(0);
-        continue;
-      }
-      try {
-        auto out = run_infer(imgs[i], want_layout);
-        fill_response(batch_entry, out.results, out.layout);
-      } catch (const std::exception &e) {
-        std::cerr << std::format("[gRPC Batch] Image {} error: {}\n", i, e.what());
-        batch_entry->set_num_detections(0);
-      }
+      auto *e = response->add_batch_results();
+      if (imgs[i].empty()) e->set_num_detections(0);
+      entries.push_back(e);
     }
+
+    static const int requested_workers = env_int("GRPC_BATCH_WORKERS", 8, 1, 256);
+    const int num_workers = std::min(n, requested_workers);
+    std::atomic<int> next_idx{0};
+
+    {
+      std::vector<std::jthread> workers;
+      workers.reserve(static_cast<size_t>(num_workers));
+      for (int w = 0; w < num_workers; ++w) {
+        workers.emplace_back([&]() {
+          while (true) {
+            const int i = next_idx.fetch_add(1);
+            if (i >= n) break;
+            if (imgs[i].empty()) continue;
+            try {
+              auto out = run_infer(imgs[i], want_layout, want_reading_order);
+              fill_response(entries[i], out.results, out.layout,
+                            out.reading_order);
+            } catch (const std::exception &e) {
+              std::cerr << std::format("[gRPC Batch] Image {} error: {}\n",
+                                       i, e.what());
+              entries[i]->set_num_detections(0);
+            } catch (...) {
+              std::cerr << std::format("[gRPC Batch] Image {} error: unknown\n", i);
+              entries[i]->set_num_detections(0);
+            }
+          }
+        });
+      }
+    } // jthreads auto-join
 
     return grpc::Status::OK;
   }
 
   // ---- RecognizePDF ----
-  grpc::Status RecognizePDF(grpc::ServerContext *,
+  grpc::Status RecognizePDF(grpc::ServerContext *ctx,
                             const ocr::OCRPDFRequest *request,
                             ocr::OCRPDFResponse *response) override {
     if (!pdf_renderer_)
-      return grpc::Status(grpc::StatusCode::UNIMPLEMENTED,
-                          "PDF rendering not available on this server");
+      return grpc_error(ctx, grpc::StatusCode::UNIMPLEMENTED,
+                        "PDF_NOT_AVAILABLE",
+                        "PDF rendering not available on this server");
 
     if (request->pdf_data().empty())
-      return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Empty PDF data");
+      return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+                        "MISSING_PDF", "Empty PDF data");
+
+    if (auto err = grpc_check_layout_request(ctx, request->layout(),
+            /*reading_order=*/false, layout_available_); err)
+      return *err;
 
     const auto *pdf_data = reinterpret_cast<const uint8_t *>(request->pdf_data().data());
     size_t pdf_len = request->pdf_data().size();
 
-    bool want_layout = request->layout() && layout_available_;
+    bool want_layout = request->layout();
 
     int dpi = request->dpi();
     if (dpi == 0) dpi = 100;
     if (dpi < 50 || dpi > 600)
-      return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
-                          "DPI must be between 50 and 600");
+      return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+                        "INVALID_DPI", "DPI must be between 50 and 600");
 
     pdf::PdfMode req_mode = default_pdf_mode_;
     if (!request->mode().empty())
       req_mode = pdf::parse_pdf_mode(request->mode(), default_pdf_mode_);
+
+    // MAX_PDF_PAGES guard — same env var and limit as HTTP /ocr/pdf
+    // (default 2000). Open the doc once for the page count, then reuse
+    // it for the text-layer pre-pass when the mode requires it.
+    auto probe = std::make_unique<pdf::PdfDocument>(pdf_data, pdf_len);
+    if (probe->ok()) {
+      const int np_check = probe->page_count();
+      static const int limit = env_int("MAX_PDF_PAGES", 2000, 1, 100000);
+      if (np_check > limit) {
+        return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+            "PDF_TOO_LARGE",
+            std::format("PDF has {} pages, maximum is {} "
+                        "(set MAX_PDF_PAGES to increase)",
+                        np_check, limit));
+      }
+    }
 
     // Open PDF for text-layer modes
     std::unique_ptr<pdf::PdfDocument> pdf_doc;
@@ -367,8 +553,14 @@ public:
                   return;
               }
 
+              // Explicit captures so it's obvious which references the
+              // async task uses; render_streamed is fully synchronous and
+              // page_futures are joined before this function returns, so
+              // every captured reference outlives the task.
               auto fut = std::async(std::launch::async,
-                  [&, page_idx, path = std::move(ppm_path)]() {
+                  [this, &results_mutex, &page_results, &page_text_cache,
+                   &pdf_doc, want_layout, dpi, page_idx,
+                   path = std::move(ppm_path)]() {
                 cv::Mat img = render::PdfRenderer::decode_ppm(path);
                 if (img.empty()) {
                   std::cerr << std::format("[gRPC PDF] Failed to decode PPM for page {}\n", page_idx);
@@ -448,7 +640,8 @@ public:
       } catch (const std::exception &e) {
         for (auto &f : page_futures) { try { f.get(); } catch (...) {} }
         std::cerr << std::format("[gRPC PDF] PDF render failed: {}\n", e.what());
-        return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "PDF render failed");
+        return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+                          "PDF_RENDER_FAILED", "PDF render failed");
       }
     } else {
       num_pages = pdf_doc ? pdf_doc->page_count() : 0;
@@ -467,7 +660,8 @@ public:
     }
 
     if (num_pages == 0)
-      return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "PDF contains no pages");
+      return grpc_error(ctx, grpc::StatusCode::INVALID_ARGUMENT,
+                        "EMPTY_PDF", "PDF contains no pages");
 
     // Build response
     for (int i = 0; i < num_pages; ++i) {
@@ -493,13 +687,18 @@ public:
 private:
   void fill_response(ocr::OCRResponse *response,
                      std::vector<OCRResultItem> &results,
-                     std::vector<layout::LayoutBox> &layout_boxes) {
+                     std::vector<layout::LayoutBox> &layout_boxes,
+                     const std::vector<int> &reading_order = {}) {
     response->set_num_detections(static_cast<int>(results.size()));
     if (mode_ == GrpcResponseMode::json_bytes) {
-      if (layout_boxes.empty())
+      if (!reading_order.empty()) {
+        response->set_json_response(results_with_reading_order(
+            results, layout_boxes, reading_order));
+      } else if (layout_boxes.empty()) {
         response->set_json_response(results_to_json(results));
-      else
+      } else {
         response->set_json_response(results_to_json(results, layout_boxes));
+      }
     } else {
       response->mutable_results()->Reserve(static_cast<int>(results.size()));
       for (const auto &item : results) {
@@ -515,6 +714,13 @@ private:
           bbox->add_y(static_cast<float>(item.box[k][1]));
         }
       }
+    }
+    // Always populate the dedicated reading_order field so non-JSON
+    // clients can read it without parsing json_response.
+    if (!reading_order.empty()) {
+      response->mutable_reading_order()->Reserve(
+          static_cast<int>(reading_order.size()));
+      for (int idx : reading_order) response->add_reading_order(idx);
     }
   }
 
@@ -537,17 +743,26 @@ private:
   }
 
   /// Unified inference: uses InferFunc if set, otherwise dispatcher.
-  pipeline::OcrPipelineResult run_infer(const cv::Mat &img, bool want_layout) {
+  /// `want_reading_order` auto-enables `want_layout` because reading-order
+  /// is computed over layout regions — the contract matches the HTTP
+  /// `?reading_order=1` query handler.
+  pipeline::OcrPipelineResult run_infer(const cv::Mat &img, bool want_layout,
+                                         bool want_reading_order = false) {
+    if (want_reading_order) want_layout = want_layout || layout_available_;
     if (infer_fn_) {
-      auto r = infer_fn_(img, want_layout);
+      InferOptions opts;
+      opts.want_layout = want_layout;
+      opts.want_reading_order = want_reading_order;
+      auto r = infer_fn_(img, opts);
       return pipeline::OcrPipelineResult{
-          .results = std::move(r.results),
-          .layout  = std::move(r.layout),
+          .results       = std::move(r.results),
+          .layout        = std::move(r.layout),
+          .reading_order = std::move(r.reading_order),
       };
     }
 #ifndef USE_CPU_ONLY
-    return dispatcher_->submit([&img, want_layout](auto &e) {
-      return e.pipeline->run_with_layout(img, e.stream, want_layout);
+    return dispatcher_->submit([&img, want_layout, want_reading_order](auto &e) {
+      return e.pipeline->run_with_layout(img, e.stream, want_layout, want_reading_order);
     }).get();
 #else
     throw std::logic_error("No inference backend configured");
@@ -557,6 +772,7 @@ private:
 #ifndef USE_CPU_ONLY
   pipeline::PipelineDispatcher *dispatcher_ = nullptr;
 #endif
+  std::function<bool()> readiness_check_;
   InferFunc infer_fn_;
   GrpcResponseMode mode_;
   render::PdfRenderer *pdf_renderer_ = nullptr;
@@ -575,7 +791,16 @@ namespace detail {
 
 inline GrpcHandle launch_grpc_server(std::shared_ptr<OCRServiceImpl> service,
                                       int port) {
-  constexpr int kMaxMsg = 100 * 1024 * 1024;
+  // Track the same MAX_BODY_MB env var the HTTP path uses so gRPC and HTTP
+  // agree on the body cap. Default 100 MB matches historical behaviour.
+  int max_body_mb = turbo_ocr::server::env_int("MAX_BODY_MB", 100, 1, 102400);
+  // Compute in int64 so MAX_BODY_MB=2048 (= 2^31 bytes) doesn't wrap
+  // signed int. gRPC's SetMax{Receive,Send}MessageSize takes int, so
+  // clamp to INT_MAX (~2 GiB) — operators wanting more must split
+  // requests at the application layer.
+  const int64_t max_msg64 = static_cast<int64_t>(max_body_mb) * 1024 * 1024;
+  const int max_msg = static_cast<int>(
+      std::min<int64_t>(max_msg64, std::numeric_limits<int>::max()));
   int cqs = 10;
   if (const char *env = std::getenv("GRPC_CQS"))
     cqs = std::max(1, std::atoi(env));
@@ -585,7 +810,8 @@ inline GrpcHandle launch_grpc_server(std::shared_ptr<OCRServiceImpl> service,
   grpc::ServerBuilder builder;
   builder.AddListeningPort(address, grpc::InsecureServerCredentials());
   builder.RegisterService(service.get());
-  builder.SetMaxReceiveMessageSize(kMaxMsg);
+  builder.SetMaxReceiveMessageSize(max_msg);
+  builder.SetMaxSendMessageSize(max_msg);
   builder.SetSyncServerOption(grpc::ServerBuilder::SyncServerOption::NUM_CQS, cqs);
   builder.SetSyncServerOption(grpc::ServerBuilder::SyncServerOption::MIN_POLLERS, cqs);
   builder.SetSyncServerOption(grpc::ServerBuilder::SyncServerOption::MAX_POLLERS, cqs * 2);
@@ -593,7 +819,8 @@ inline GrpcHandle launch_grpc_server(std::shared_ptr<OCRServiceImpl> service,
   builder.AddChannelArgument(GRPC_ARG_MINIMAL_STACK, 1);
 
   auto server = builder.BuildAndStart();
-  std::cout << std::format("gRPC server listening on {}\n", address);
+  std::cout << std::format("gRPC server listening on {} (max_body_mb={})\n",
+                            address, max_body_mb);
 
   auto thread = std::jthread([srv = server.get(), svc = std::move(service)]() {
     srv->Wait();
@@ -606,11 +833,14 @@ inline GrpcHandle launch_grpc_server(std::shared_ptr<OCRServiceImpl> service,
 
 #ifndef USE_CPU_ONLY
 /// Start gRPC server using a PipelineDispatcher (GPU path).
+/// `readiness_check` is invoked from Health() so gRPC probes match
+/// HTTP /health/ready behaviour. Pass {} to keep Health unconditionally OK.
 inline GrpcHandle start_grpc_server(pipeline::PipelineDispatcher &dispatcher,
                                      int port,
                                      render::PdfRenderer *pdf_renderer = nullptr,
                                      pdf::PdfMode default_pdf_mode = pdf::PdfMode::Ocr,
-                                     bool layout_available = false) {
+                                     bool layout_available = false,
+                                     std::function<bool()> readiness_check = {}) {
   auto mode = GrpcResponseMode::json_bytes;
   if (const char *env = std::getenv("GRPC_RESPONSE_MODE")) {
     if (std::strcmp(env, "structured") == 0)
@@ -619,6 +849,7 @@ inline GrpcHandle start_grpc_server(pipeline::PipelineDispatcher &dispatcher,
 
   auto service = std::make_shared<OCRServiceImpl>(
       dispatcher, mode, pdf_renderer, default_pdf_mode, layout_available);
+  service->set_readiness_check(std::move(readiness_check));
   return detail::launch_grpc_server(std::move(service), port);
 }
 #endif
@@ -628,7 +859,8 @@ inline GrpcHandle start_grpc_server(InferFunc infer_fn,
                                      int port,
                                      render::PdfRenderer *pdf_renderer = nullptr,
                                      pdf::PdfMode default_pdf_mode = pdf::PdfMode::Ocr,
-                                     bool layout_available = false) {
+                                     bool layout_available = false,
+                                     std::function<bool()> readiness_check = {}) {
   auto mode = GrpcResponseMode::json_bytes;
   if (const char *env = std::getenv("GRPC_RESPONSE_MODE")) {
     if (std::strcmp(env, "structured") == 0)
@@ -637,6 +869,7 @@ inline GrpcHandle start_grpc_server(InferFunc infer_fn,
 
   auto service = std::make_shared<OCRServiceImpl>(
       std::move(infer_fn), mode, pdf_renderer, default_pdf_mode, layout_available);
+  service->set_readiness_check(std::move(readiness_check));
   return detail::launch_grpc_server(std::move(service), port);
 }
 
