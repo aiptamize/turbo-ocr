@@ -30,15 +30,22 @@ namespace turbo_ocr::server {
 
 /// Combined result of one inference: text OCR results + optional layout.
 struct InferResult {
-  std::vector<OCRResultItem>       results;
-  std::vector<layout::LayoutBox>   layout;
+  std::vector<OCRResultItem>            results;
+  std::vector<layout::LayoutBox>        layout;
+  std::vector<int>                      reading_order;
+};
+
+/// Per-request feature flags parsed from query parameters.
+struct InferOptions {
+  bool want_layout = false;
+  bool want_reading_order = false;
 };
 
 /// Image decoder: (raw_bytes_ptr, length) -> cv::Mat
 using ImageDecoder = std::function<cv::Mat(const unsigned char *data, size_t len)>;
 
-/// Inference function: given cv::Mat + layout flag, run OCR pipeline.
-using InferFunc = std::function<InferResult(const cv::Mat &, bool want_layout)>;
+/// Inference function: given cv::Mat + feature flags, run OCR pipeline.
+using InferFunc = std::function<InferResult(const cv::Mat &, const InferOptions &)>;
 
 /// Drogon callback alias.
 using DrogonCallback = std::function<void(const drogon::HttpResponsePtr &)>;
@@ -128,10 +135,10 @@ void run_with_error_handling(DrogonCallback &cb, const char *route, F &&fn) {
   } catch (const turbo_ocr::ImageDecodeError &e) {
     cb(error_response(drogon::k400BadRequest, "IMAGE_DECODE_FAILED", e.what()));
   } catch (const std::exception &e) {
-    TOCR_LOG_ERROR("Inference error", "route", std::string_view(route), "error", std::string_view(e.what()));
+    TOCR_LOG_ERROR_RL("Inference error", "route", std::string_view(route), "error", std::string_view(e.what()));
     cb(error_response(drogon::k500InternalServerError, "INFERENCE_ERROR", "Inference error"));
   } catch (...) {
-    TOCR_LOG_ERROR("Inference error: unknown exception", "route", std::string_view(route));
+    TOCR_LOG_ERROR_RL("Inference error: unknown exception", "route", std::string_view(route));
     cb(error_response(drogon::k500InternalServerError, "INFERENCE_ERROR", "Inference error"));
   }
 }
@@ -218,16 +225,19 @@ inline void register_observability_middleware() {
 // ── Utilities ───────────────────────────────────────────────────────────
 
 [[nodiscard]] inline cv::Mat cpu_decode_image(const unsigned char *data, size_t len) {
-  if (len >= 2 && data[0] == 0xFF && data[1] == 0xD8) {
+  // PNG via Wuffs (fast path); every other format (JPEG, WebP, BMP, TIFF,
+  // GIF, …) via cv::imdecode. OpenCV's imgcodecs is linked to libwebp /
+  // libtiff so it covers the rest.
+  auto opencv_decode = [&]() -> cv::Mat {
     if (len > static_cast<size_t>(INT_MAX)) return {};
     return cv::imdecode(
         cv::Mat(1, static_cast<int>(len), CV_8UC1,
                 const_cast<unsigned char *>(data)),
         cv::IMREAD_COLOR);
-  }
+  };
   if (decode::FastPngDecoder::is_png(data, len))
     return decode::FastPngDecoder::decode(data, len);
-  return {};
+  return opencv_decode();
 }
 
 [[nodiscard]] inline std::string parse_layout_query(const drogon::HttpRequestPtr &req,
@@ -248,6 +258,63 @@ inline void register_observability_middleware() {
                        "image, or the server was started with DISABLE_LAYOUT=1.");
   }
   *out = on;
+  return {};
+}
+
+// Parse a generic boolean query param ("1"/"true"/"on"/"yes" etc.).
+// Returns empty string on success and writes to *out; otherwise returns an
+// error message. When the parameter is absent, *out is set to false and an
+// empty string is returned.
+[[nodiscard]] inline std::string parse_bool_query(const drogon::HttpRequestPtr &req,
+                                                   const char *key,
+                                                   bool *out) {
+  *out = false;
+  auto v = req->getParameter(key);
+  if (v.empty()) return {};
+  std::string s(v);
+  for (char &c : s) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+  if (s == "1" || s == "true" || s == "on" || s == "yes")       { *out = true; return {}; }
+  if (s == "0" || s == "false" || s == "off" || s == "no")      { *out = false; return {}; }
+  return std::format("Invalid {} param: '{}' "
+                     "(expected 0/1, true/false, on/off, or yes/no)",
+                     key, s);
+}
+
+// Parse the full set of opt-in query parameters for inference routes.
+// `layout` and `reading_order` both default to 0; either being set to 1
+// without the underlying layout model causes a 400 with a descriptive
+// error code (LAYOUT_DISABLED).
+struct ParseOptionsResult {
+  std::string error;     // empty on success
+  std::string error_code; // populated when error is non-empty
+};
+[[nodiscard]] inline ParseOptionsResult
+parse_query_options(const drogon::HttpRequestPtr &req,
+                    bool layout_available,
+                    InferOptions *out) {
+  *out = {};
+  if (auto err = parse_layout_query(req, layout_available, &out->want_layout);
+      !err.empty())
+    return {err, "INVALID_PARAMETER"};
+
+  if (auto err = parse_bool_query(req, "reading_order",
+                                   &out->want_reading_order);
+      !err.empty())
+    return {err, "INVALID_PARAMETER"};
+  if (out->want_reading_order && !layout_available) {
+    // Reading order is derived from layout boxes — without the model
+    // there's nothing to derive from. Reject the request explicitly so
+    // clients don't silently get the y/x fallback they didn't ask for.
+    return {"reading_order=1 requires the layout model: start the server "
+            "without DISABLE_LAYOUT=1 (layout is on by default)",
+            "LAYOUT_DISABLED"};
+  }
+  if (out->want_reading_order && !out->want_layout) {
+    // Reading order auto-enables layout so /ocr behaves as documented:
+    // ?reading_order=1 alone yields a populated reading_order array.
+    out->want_layout = true;
+  }
+
   return {};
 }
 
