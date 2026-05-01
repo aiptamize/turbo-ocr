@@ -12,15 +12,25 @@
 //   - match_unsorted_blocks (dispatch)
 //
 // Simplifications vs the Python reference:
-//   - We assume horizontal page direction (PP-DocLayoutV3 only emits
-//     horizontal layouts in production; the vertical branch is a small
-//     constant of relabelings that don't matter for our use cases).
+//   - We assume horizontal page direction. PP-DocLayoutV3 itself has
+//     no opinion on page direction — PaddleX infers it from bbox
+//     aspect ratios via a majority vote across the region's
+//     text-class children. Vertical-text documents (Japanese
+//     tategaki, traditional Chinese / Korean) will have scrambled
+//     cross-column reading order; locally text remains correct.
+//     Latin / Cyrillic / Greek / Arabic / Thai / Latin-typeset
+//     Chinese / Korean (i.e. >99% of expected production traffic)
+//     are unaffected.
 //   - No LayoutRegion abstraction — text_line_width / text_line_height
-//     are passed through as scalars derived from the median height of
-//     all text-class blocks on the page.
-//   - No `insert_child_blocks` (we don't have hierarchical blocks).
-//   - tolerance_len is fixed at 2 px (PaddleX's default in
-//     XYCUT_SETTINGS["edge_distance_compare_tolerance_len"]).
+//     are passed through as scalars derived from the median width /
+//     height of all text-class blocks on the page.
+//   - tolerance_len for non-doc_title blocks is fixed at 2 px
+//     (PaddleX's default in XYCUT_SETTINGS["edge_distance_compare_
+//     tolerance_len"]); doc_title scales by text_line_width.
+//   - No `get_seg_flag` look-ahead — its inputs require per-paragraph
+//     text-line metadata we don't compute. Approximate via a
+//     "neighbour is multi-line and horizontally encloses" heuristic
+//     in the vision step-back branch.
 
 #include <array>
 #include <vector>

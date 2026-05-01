@@ -8,6 +8,7 @@
 #include <numeric>
 
 #include "turbo_ocr/common/box.h"
+#include "turbo_ocr/layout/child_blocks.h"
 #include "turbo_ocr/layout/match_unsorted.h"
 
 namespace turbo_ocr::layout {
@@ -542,23 +543,45 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
     return out;
   }
 
-  // Median text-line width — used by the label-aware insertion as a
-  // tolerance scale. Falls back to 0 (which collapses the doc_title
-  // disperse term to its base 2 px) when no text-class layout is
-  // present.
+  // Median text-line width + height — used by the label-aware
+  // insertion as a tolerance scale and by child-block detection as
+  // the proximity threshold. Falls back to 0 when no text-class
+  // layout is present (collapses tolerances to their base values).
   int text_line_width = 0;
+  int text_line_height = 0;
   {
-    std::vector<int> widths;
+    std::vector<int> widths, heights;
     widths.reserve(layout.size());
+    heights.reserve(layout.size());
     for (const auto &lb : layout) {
-      if (lb.class_id == 22 /*text*/) {
-        widths.push_back(lb.box[1][0] - lb.box[0][0]);
-      }
+      if (lb.class_id != 22 /*text*/) continue;
+      widths.push_back(lb.box[1][0] - lb.box[0][0]);
+      heights.push_back(lb.box[3][1] - lb.box[0][1]);
     }
     if (!widths.empty()) {
-      auto mid = widths.begin() + widths.size() / 2;
-      std::nth_element(widths.begin(), mid, widths.end());
-      text_line_width = *mid;
+      auto mw = widths.begin() + widths.size() / 2;
+      std::nth_element(widths.begin(), mw, widths.end());
+      text_line_width = *mw;
+      auto mh = heights.begin() + heights.size() / 2;
+      std::nth_element(heights.begin(), mh, heights.end());
+      text_line_height = *mh;
+    }
+  }
+
+  // Detect parent → children relationships once for the page; the
+  // sidecar links survive across buckets so vision_footnote can stay
+  // glued to its (body-bucket) parent vision block even if the bucket
+  // sweep would otherwise emit them in different strata.
+  const auto child_links = detect_child_blocks(layout, text_line_height);
+
+  // Set of layout indices that ARE children of some parent. These
+  // never participate in bucket collection or XY-cut directly — they
+  // emit under their parent's slot via the emit loop's child splice.
+  std::vector<char> is_child(layout.size(), 0);
+  for (const auto &cl : child_links) {
+    for (int ci : cl.child_indices) {
+      if (ci >= 0 && static_cast<size_t>(ci) < is_child.size())
+        is_child[static_cast<size_t>(ci)] = 1;
     }
   }
 
@@ -580,6 +603,7 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
     aug.reserve(layout.size());
     for (size_t li = 0; li < layout.size(); ++li) {
       if (layout[li].class_id == kSupplementaryRegionClassId) continue;
+      if (is_child[li]) continue;  // emitted under its parent
       if (reading_priority_bucket(layout[li].class_id) != bucket) continue;
       const OrderLabel ol = order_label_for(layout[li].class_id);
       if (ol == OrderLabel::kBody) {
@@ -648,14 +672,31 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
       match_unsorted_blocks(sorted_blocks, unsorted, text_line_width);
     }
 
-    // 4. Emit results.
+    // 4. Emit results. For each sorted layout entry, also splice in
+    //    the layout's children (vision_footnote, sub-titles, etc.)
+    //    immediately after, in top-down geometric order — mirrors
+    //    PaddleX's insert_child_blocks.
+    auto emit_layout = [&](int layout_idx) {
+      for (int ri : by_layout[static_cast<size_t>(layout_idx)]) {
+        if (!emitted[static_cast<size_t>(ri)]) {
+          out.push_back(ri);
+          emitted[static_cast<size_t>(ri)] = 1;
+        }
+      }
+    };
     for (const auto &sb : sorted_blocks) {
       if (sb.layout_idx >= 0) {
-        for (int ri : by_layout[static_cast<size_t>(sb.layout_idx)]) {
-          if (!emitted[static_cast<size_t>(ri)]) {
-            out.push_back(ri);
-            emitted[static_cast<size_t>(ri)] = 1;
-          }
+        emit_layout(sb.layout_idx);
+        const auto &cl = child_links[static_cast<size_t>(sb.layout_idx)];
+        if (!cl.child_indices.empty()) {
+          std::vector<int> kids = cl.child_indices;
+          std::sort(kids.begin(), kids.end(), [&](int a, int b_) {
+            auto [ax0, ay0, ax1, ay1] = turbo_ocr::aabb(layout[a].box);
+            auto [bx0, by0, bx1, by1] = turbo_ocr::aabb(layout[b_].box);
+            if (ay0 != by0) return ay0 < by0;
+            return ax0 < bx0;
+          });
+          for (int ci : kids) emit_layout(ci);
         }
       } else {
         const int ri = -2 - sb.layout_idx;

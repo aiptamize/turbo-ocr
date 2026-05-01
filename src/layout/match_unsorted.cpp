@@ -173,11 +173,21 @@ void euclidean_insert(UnsortedBlock block,
 // secondary heuristic comparing the candidate's y1/x1 to the sorted
 // block's. Used for titles, captions, and vision blocks.
 //
-// Faithful to PaddleX's logic minus the vision-segmentation
-// look-ahead/look-behind (`get_seg_flag`) since we don't expose the
-// segmentation flags from PP-DocLayoutV3.
+// `text_line_width` is the median width of `text`-class blocks on the
+// page, used to scale the doc_title disperse tolerance — without it the
+// disperse term collapses to 0 and a doc_title's edge_distance ties
+// with the wrong neighbour, landing it mid-paragraph.
+//
+// Vision look-ahead approximation: PaddleX uses get_seg_flag (which
+// depends on per-paragraph text-line metadata we don't compute) to
+// decide whether to bump insertion ±1 around a vision block. Lacking
+// that signal we step back by 1 only when the neighbour is plausibly
+// multi-line — a simple "neighbour is taller than 1.5× the block AND
+// horizontally encloses it" heuristic that fires when the neighbour
+// is a real text paragraph but stays put when it's a single line.
 void weighted_distance_insert(UnsortedBlock block,
-                              std::vector<UnsortedBlock> &sorted_blocks) {
+                              std::vector<UnsortedBlock> &sorted_blocks,
+                              int text_line_width) {
   if (sorted_blocks.empty()) {
     sorted_blocks.push_back(block);
     return;
@@ -185,6 +195,14 @@ void weighted_distance_insert(UnsortedBlock block,
   const auto weights = weights_for(block.order_label);
   const int x1 = block.aabb[0], y1 = block.aabb[1];
   const int x2 = block.aabb[2];
+
+  // Disperse term: doc_title gets a tolerance of max(2, text_line_width)
+  // px so up-edge distance ties cleanly across same-row neighbours
+  // (mirrors PaddleX disperse = max(1, region.text_line_width)).
+  float tolerance_len = kEdgeDistanceTolerance;
+  if (block.order_label == OrderLabel::kDocTitle && text_line_width > 0) {
+    tolerance_len = std::max(tolerance_len, float(text_line_width));
+  }
 
   float min_weighted = std::numeric_limits<float>::infinity();
   float min_up_edge = std::numeric_limits<float>::infinity();
@@ -212,7 +230,7 @@ void weighted_distance_insert(UnsortedBlock block,
       left_edge = -left_edge;
     }
 
-    if (std::abs(min_up_edge - up_edge) <= kEdgeDistanceTolerance) {
+    if (std::abs(min_up_edge - up_edge) <= tolerance_len) {
       up_edge = min_up_edge;
     }
 
@@ -241,10 +259,27 @@ void weighted_distance_insert(UnsortedBlock block,
       if (block_distance > sorted_distance) {
         nearest = i + 1;
       } else if (i > 0) {
+        // PaddleX's get_seg_flag check requires per-paragraph text-line
+        // metadata. Approximate: only step back into the previous slot
+        // when the neighbour at i looks like a multi-line paragraph
+        // that spatially encloses the block (so insertion BEFORE it
+        // doesn't break a paragraph).
         const bool is_vision =
             block.order_label == OrderLabel::kVision ||
             block.order_label == OrderLabel::kVisionTitle;
-        if (is_vision) nearest = i - 1;
+        if (is_vision) {
+          const int sb_height = sb.aabb[3] - sb.aabb[1];
+          const int sb_width = sb.aabb[2] - sb.aabb[0];
+          const int bl_height = std::max(1, block.aabb[3] - block.aabb[1]);
+          const bool neighbour_is_multiline =
+              sb_height > bl_height * 3 / 2;
+          const bool neighbour_encloses_horizontally =
+              sb.aabb[0] <= x1 && sb.aabb[2] >= x2 &&
+              sb_width > (x2 - x1);
+          if (neighbour_is_multiline && neighbour_encloses_horizontally) {
+            nearest = i - 1;
+          }
+        }
       }
     }
   }
@@ -256,7 +291,7 @@ void weighted_distance_insert(UnsortedBlock block,
 
 void match_unsorted_block(UnsortedBlock block,
                           std::vector<UnsortedBlock> &sorted_blocks,
-                          int /*text_line_width*/) {
+                          int text_line_width) {
   switch (block.order_label) {
     case OrderLabel::kCrossReference:
       reference_insert(block, sorted_blocks);
@@ -268,7 +303,7 @@ void match_unsorted_block(UnsortedBlock block,
     case OrderLabel::kParagraphTitle:
     case OrderLabel::kVisionTitle:
     case OrderLabel::kVision:
-      weighted_distance_insert(block, sorted_blocks);
+      weighted_distance_insert(block, sorted_blocks, text_line_width);
       break;
     case OrderLabel::kBody:
     default:

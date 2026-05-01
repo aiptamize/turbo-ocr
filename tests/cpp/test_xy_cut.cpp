@@ -7,6 +7,7 @@
 #include <catch_amalgamated.hpp>
 
 #include "turbo_ocr/common/serialization.h"
+#include "turbo_ocr/layout/child_blocks.h"
 #include "turbo_ocr/layout/match_unsorted.h"
 #include "turbo_ocr/layout/reading_order.h"
 
@@ -696,4 +697,96 @@ TEST_CASE("order_label_for: PP-DocLayoutV3 class_id mapping",
   CHECK(order_label_for(22) == OrderLabel::kBody);       // text — XY-cut
   CHECK(order_label_for(4)  == OrderLabel::kBody);       // content
   CHECK(order_label_for(-1) == OrderLabel::kBody);       // SupplementaryRegion
+}
+
+// =====  Child-block detection + splice (PaddleX layer 3)  =====
+
+TEST_CASE("detect_child_blocks: doc_title attaches small adjacent text",
+          "[child_blocks]") {
+  // doc_title with a short subtitle line right underneath. The
+  // subtitle's short side is well under 80% of the title's, edge
+  // distance is under 2× text_line_height — should attach.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(100, 100, 700, 160, /*class_id=*/6),   // doc_title
+      make_layout(150, 180, 650, 210, /*class_id=*/22),  // text subtitle
+      make_layout( 50, 400, 750, 800, /*class_id=*/22),  // body text
+  };
+  auto links = turbo_ocr::layout::detect_child_blocks(layout, /*tlh=*/30);
+  CHECK(links.size() == 3);
+  // doc_title (idx 0) should claim subtitle (idx 1).
+  CHECK(links[0].child_indices.size() == 1);
+  CHECK(links[0].child_indices[0] == 1);
+  CHECK(links[1].child_indices.empty());
+  CHECK(links[2].child_indices.empty());
+}
+
+TEST_CASE("detect_child_blocks: vision attaches a single-line caption below",
+          "[child_blocks]") {
+  // image with a "Figure 1: …" single-line caption right underneath.
+  // Caption is left-aligned with image's left edge AND vertical edge
+  // distance is small.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(100, 100, 600, 400, /*class_id=*/14),  // image
+      make_layout(100, 410, 580, 440, /*class_id=*/22),  // caption text
+  };
+  auto links = turbo_ocr::layout::detect_child_blocks(layout, /*tlh=*/30);
+  REQUIRE(links.size() == 2);
+  // image (idx 0) should claim caption (idx 1).
+  CHECK(links[0].child_indices.size() == 1);
+  CHECK(links[0].child_indices[0] == 1);
+}
+
+TEST_CASE("detect_child_blocks: paragraph_title attaches sub-headings",
+          "[child_blocks]") {
+  // A paragraph_title at y=100, then another paragraph_title at y=140
+  // with the same left-edge — the second is a sub-heading and should
+  // attach to the first.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(100, 100, 500, 130, /*class_id=*/17),  // top
+      make_layout(100, 140, 450, 165, /*class_id=*/17),  // sub-heading
+  };
+  auto links = turbo_ocr::layout::detect_child_blocks(layout, /*tlh=*/30);
+  REQUIRE(links.size() == 2);
+  CHECK(links[0].child_indices.size() == 1);
+  CHECK(links[0].child_indices[0] == 1);
+  CHECK(links[1].child_indices.empty());
+}
+
+TEST_CASE("detect_child_blocks: no candidates → empty links",
+          "[child_blocks]") {
+  // text-only layout: nothing has a parent role.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout( 50, 100, 750, 200, /*class_id=*/22),
+      make_layout( 50, 220, 750, 320, /*class_id=*/22),
+  };
+  auto links = turbo_ocr::layout::detect_child_blocks(layout, 25);
+  REQUIRE(links.size() == 2);
+  CHECK(links[0].child_indices.empty());
+  CHECK(links[1].child_indices.empty());
+}
+
+TEST_CASE("assign_reading_order_for_results: vision + caption emit contiguously",
+          "[child_blocks][reading_order]") {
+  // Three layout cells: a body paragraph (text), an image, and a
+  // single-line caption text right below the image. The vision should
+  // attract the caption as a child so caption emits IMMEDIATELY after
+  // image's results, before the body paragraph's that comes later.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout( 50, 800, 750, 900, /*class_id=*/22),  // body text (later)
+      make_layout(100, 100, 600, 400, /*class_id=*/14),  // image
+      make_layout(100, 410, 580, 440, /*class_id=*/22),  // caption
+  };
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      make_result(100, 410, 580, 440, /*layout_id=*/-1),  // caption text
+      make_result( 50, 820, 750, 850, /*layout_id=*/-1),  // body text
+  };
+  // assign_layout_ids first (mutates layout_id and may add SupplementaryRegion)
+  turbo_ocr::assign_layout_ids(results, layout);
+  auto order = turbo_ocr::layout::assign_reading_order_for_results(results, layout);
+  REQUIRE(order.size() == 2);
+  // Caption (results[0]) should come BEFORE body (results[1]) because
+  // it's emitted under the image's slot via child splice, and the
+  // image sits above the body.
+  CHECK(order[0] == 0);  // caption
+  CHECK(order[1] == 1);  // body
 }
