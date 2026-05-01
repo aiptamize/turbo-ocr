@@ -8,6 +8,7 @@
 #include <numeric>
 
 #include "turbo_ocr/common/box.h"
+#include "turbo_ocr/layout/match_unsorted.h"
 
 namespace turbo_ocr::layout {
 
@@ -541,23 +542,51 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
     return out;
   }
 
-  // Process each bucket in TOP→BODY→BOTTOM order. Body bucket adds
-  // orphan synthetic rects; top/bottom buckets only contain real layout
-  // boxes (orphans without a class signal stay in body).
+  // Median text-line width — used by the label-aware insertion as a
+  // tolerance scale. Falls back to 0 (which collapses the doc_title
+  // disperse term to its base 2 px) when no text-class layout is
+  // present.
+  int text_line_width = 0;
+  {
+    std::vector<int> widths;
+    widths.reserve(layout.size());
+    for (const auto &lb : layout) {
+      if (lb.class_id == 22 /*text*/) {
+        widths.push_back(lb.box[1][0] - lb.box[0][0]);
+      }
+    }
+    if (!widths.empty()) {
+      auto mid = widths.begin() + widths.size() / 2;
+      std::nth_element(widths.begin(), mid, widths.end());
+      text_line_width = *mid;
+    }
+  }
+
+  // Process each bucket in TOP→BODY→BOTTOM order. Each bucket splits
+  // layout boxes into:
+  //   - regulars (kBody) → run through XY-cut
+  //   - unsorted (titles, captions, vision, cross-refs, unordered) →
+  //     inserted via match_unsorted_blocks AFTER the XY-cut so each
+  //     uses the strategy keyed by its order label (weighted distance
+  //     for titles/vision, manhattan for unordered, reference for
+  //     cross-refs).
+  // Orphan results (synthetic SupplementaryRegion members) are inlined
+  // into the body bucket as XY-cut entries so they keep their
+  // geometric placement.
   std::vector<char> emitted(results.size(), 0);
   auto run_bucket = [&](int bucket) {
     std::vector<AugRect> aug;
+    std::vector<UnsortedBlock> unsorted;
     aug.reserve(layout.size());
     for (size_t li = 0; li < layout.size(); ++li) {
-      // SupplementaryRegion is a synthetic block that wraps the
-      // minimum-enclosing rectangle of orphan results. We don't want
-      // to XY-cut by it as a single unit (its bbox can span the whole
-      // page when orphans are scattered) — instead the orphans inside
-      // it are emitted individually in the bucket==1 loop below, so
-      // each one lands at its true geometric position.
       if (layout[li].class_id == kSupplementaryRegionClassId) continue;
-      if (reading_priority_bucket(layout[li].class_id) == bucket) {
+      if (reading_priority_bucket(layout[li].class_id) != bucket) continue;
+      const OrderLabel ol = order_label_for(layout[li].class_id);
+      if (ol == OrderLabel::kBody) {
         aug.push_back({layout_aabb[li], 0, static_cast<int>(li)});
+      } else {
+        unsorted.push_back({static_cast<int>(li), layout_aabb[li], ol,
+                            layout[li].class_id});
       }
     }
     if (bucket == 1) {
@@ -574,8 +603,9 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
         }
       }
     }
-    if (aug.empty()) return;
+    if (aug.empty() && unsorted.empty()) return;
 
+    // 1. XY-cut over the regulars.
     std::vector<std::array<int, 4>> rects;
     rects.reserve(aug.size());
     for (const auto &a : aug) rects.push_back(a.aabb);
@@ -584,8 +614,6 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
     std::vector<int> aug_order;
     aug_order.reserve(aug.size());
     recursive_xy_cut(rects, aug_indices, aug_order, min_gap);
-    // Defense in depth: degenerate inputs can drop indices; append any
-    // missed in input order so we don't lose any results.
     std::vector<char> seen(aug.size(), 0);
     for (int ai : aug_order) {
       if (ai >= 0 && static_cast<size_t>(ai) < seen.size()) seen[ai] = 1;
@@ -594,18 +622,45 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
       if (!seen[k]) aug_order.push_back(static_cast<int>(k));
     }
 
+    // 2. Convert XY-cut output to a list of (UnsortedBlock + emit
+    //    payload) so match_unsorted_blocks can mutate ordering. Layout
+    //    AABB carries the original aug payload (kind, idx) via the
+    //    `class_id` field's sign trick: positive class_id = real
+    //    layout idx into outer layout vector; -1 sentinel is reserved
+    //    for orphan rects (kind == 1) which we encode via order_label.
+    std::vector<UnsortedBlock> sorted_blocks;
+    sorted_blocks.reserve(aug.size());
     for (int ai : aug_order) {
       const auto &a = aug[static_cast<size_t>(ai)];
       if (a.kind == 0) {
-        for (int ri : by_layout[static_cast<size_t>(a.payload)]) {
+        sorted_blocks.push_back({a.payload, a.aabb, OrderLabel::kBody,
+                                  layout[static_cast<size_t>(a.payload)].class_id});
+      } else {
+        // Orphan rect: payload is a result index. Encode via negative
+        // layout_idx so the emitter can recover it (-2 - ri).
+        sorted_blocks.push_back({-2 - a.payload, a.aabb,
+                                  OrderLabel::kBody, -1});
+      }
+    }
+
+    // 3. Insert label-aware unsorted blocks.
+    if (!unsorted.empty()) {
+      match_unsorted_blocks(sorted_blocks, unsorted, text_line_width);
+    }
+
+    // 4. Emit results.
+    for (const auto &sb : sorted_blocks) {
+      if (sb.layout_idx >= 0) {
+        for (int ri : by_layout[static_cast<size_t>(sb.layout_idx)]) {
           if (!emitted[static_cast<size_t>(ri)]) {
             out.push_back(ri);
             emitted[static_cast<size_t>(ri)] = 1;
           }
         }
       } else {
-        int ri = a.payload;
-        if (!emitted[static_cast<size_t>(ri)]) {
+        const int ri = -2 - sb.layout_idx;
+        if (ri >= 0 && static_cast<size_t>(ri) < results.size() &&
+            !emitted[static_cast<size_t>(ri)]) {
           out.push_back(ri);
           emitted[static_cast<size_t>(ri)] = 1;
         }

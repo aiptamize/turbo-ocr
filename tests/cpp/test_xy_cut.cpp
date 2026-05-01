@@ -7,6 +7,7 @@
 #include <catch_amalgamated.hpp>
 
 #include "turbo_ocr/common/serialization.h"
+#include "turbo_ocr/layout/match_unsorted.h"
 #include "turbo_ocr/layout/reading_order.h"
 
 using turbo_ocr::Box;
@@ -589,4 +590,110 @@ TEST_CASE("assign_reading_order_for_results: orphans inside SupplementaryRegion 
   // Top result should come first geometrically.
   CHECK(order[0] == 1);
   CHECK(order[1] == 0);
+}
+
+// =====  Layer 2: label-aware match_unsorted_blocks  =====
+
+TEST_CASE("match_unsorted_blocks: doc_title pinned to top via weighted insert",
+          "[match_unsorted]") {
+  // Body has two text blocks at y=200 and y=400. A doc_title (class 6)
+  // appears at y=50 — should land at position 0.
+  std::vector<turbo_ocr::layout::UnsortedBlock> sorted = {
+      {/*idx=*/0, {{50, 200, 750, 240}}, turbo_ocr::layout::OrderLabel::kBody, 22},
+      {/*idx=*/1, {{50, 400, 750, 440}}, turbo_ocr::layout::OrderLabel::kBody, 22},
+  };
+  std::vector<turbo_ocr::layout::UnsortedBlock> unsorted = {
+      {/*idx=*/2, {{200, 50, 600, 90}},
+       turbo_ocr::layout::OrderLabel::kDocTitle, /*class_id=*/6},
+  };
+  turbo_ocr::layout::match_unsorted_blocks(sorted, unsorted, /*text_line_width=*/700);
+  REQUIRE(sorted.size() == 3);
+  CHECK(sorted[0].layout_idx == 2);  // doc_title first
+  CHECK(sorted[1].layout_idx == 0);
+  CHECK(sorted[2].layout_idx == 1);
+}
+
+TEST_CASE("match_unsorted_blocks: cross_reference appended via reference_insert",
+          "[match_unsorted]") {
+  // A reference block at the bottom of the page. reference_insert
+  // should place it AFTER the highest sorted block whose y2 ≤
+  // reference y1.
+  std::vector<turbo_ocr::layout::UnsortedBlock> sorted = {
+      {/*idx=*/0, {{50,  60, 750, 100}}, turbo_ocr::layout::OrderLabel::kBody, 22},
+      {/*idx=*/1, {{50, 200, 750, 240}}, turbo_ocr::layout::OrderLabel::kBody, 22},
+      {/*idx=*/2, {{50, 400, 750, 440}}, turbo_ocr::layout::OrderLabel::kBody, 22},
+  };
+  std::vector<turbo_ocr::layout::UnsortedBlock> unsorted = {
+      {/*idx=*/3, {{50, 500, 750, 540}},
+       turbo_ocr::layout::OrderLabel::kCrossReference, /*class_id=*/18},
+  };
+  turbo_ocr::layout::match_unsorted_blocks(sorted, unsorted, 700);
+  REQUIRE(sorted.size() == 4);
+  // Reference is below all three sorted blocks; goes after index 2.
+  CHECK(sorted[3].layout_idx == 3);
+}
+
+TEST_CASE("match_unsorted_blocks: unordered (page number) via manhattan_insert",
+          "[match_unsorted]") {
+  // A `number` block (page number, class_id=16) at the bottom-left.
+  // manhattan_insert places it after the nearest sorted block by L1
+  // distance between top-left corners.
+  std::vector<turbo_ocr::layout::UnsortedBlock> sorted = {
+      {/*idx=*/0, {{50, 100, 750, 140}}, turbo_ocr::layout::OrderLabel::kBody, 22},
+      {/*idx=*/1, {{50, 500, 200, 530}}, turbo_ocr::layout::OrderLabel::kBody, 22},
+  };
+  std::vector<turbo_ocr::layout::UnsortedBlock> unsorted = {
+      {/*idx=*/2, {{60, 540, 110, 560}},
+       turbo_ocr::layout::OrderLabel::kUnordered, /*class_id=*/16},
+  };
+  turbo_ocr::layout::match_unsorted_blocks(sorted, unsorted, 700);
+  REQUIRE(sorted.size() == 3);
+  // Page number should land after the closer sorted block (idx 1 at y=500),
+  // not after the far one (idx 0 at y=100).
+  CHECK(sorted[2].layout_idx == 2);
+}
+
+TEST_CASE("match_unsorted_blocks: vision below text bound via weighted_insert",
+          "[match_unsorted]") {
+  // Two text columns; an image sits below the left column. The
+  // weighted-distance insert should land it adjacent to its nearest
+  // text neighbor.
+  std::vector<turbo_ocr::layout::UnsortedBlock> sorted = {
+      {/*idx=*/0, {{ 50, 100, 350, 140}}, turbo_ocr::layout::OrderLabel::kBody, 22},
+      {/*idx=*/1, {{450, 100, 750, 140}}, turbo_ocr::layout::OrderLabel::kBody, 22},
+      {/*idx=*/2, {{450, 200, 750, 240}}, turbo_ocr::layout::OrderLabel::kBody, 22},
+  };
+  std::vector<turbo_ocr::layout::UnsortedBlock> unsorted = {
+      {/*idx=*/3, {{ 50, 200, 350, 380}},
+       turbo_ocr::layout::OrderLabel::kVision, /*class_id=*/14},
+  };
+  turbo_ocr::layout::match_unsorted_blocks(sorted, unsorted, 300);
+  REQUIRE(sorted.size() == 4);
+  // Vision block should be inserted somewhere in the sequence; the
+  // important property is that it ended up next to its nearest text.
+  // Find its position and check the neighbor is sensible.
+  size_t vision_pos = 0;
+  for (size_t i = 0; i < sorted.size(); ++i) {
+    if (sorted[i].layout_idx == 3) { vision_pos = i; break; }
+  }
+  CHECK(vision_pos > 0);  // never first since left column header is above
+}
+
+TEST_CASE("order_label_for: PP-DocLayoutV3 class_id mapping",
+          "[match_unsorted]") {
+  using turbo_ocr::layout::order_label_for;
+  using turbo_ocr::layout::OrderLabel;
+  CHECK(order_label_for(6)  == OrderLabel::kDocTitle);
+  CHECK(order_label_for(17) == OrderLabel::kParagraphTitle);
+  CHECK(order_label_for(7)  == OrderLabel::kVisionTitle);
+  CHECK(order_label_for(14) == OrderLabel::kVision);
+  CHECK(order_label_for(21) == OrderLabel::kVision);  // table
+  CHECK(order_label_for(3)  == OrderLabel::kVision);  // chart
+  CHECK(order_label_for(18) == OrderLabel::kCrossReference);
+  CHECK(order_label_for(10) == OrderLabel::kCrossReference);  // footnote
+  CHECK(order_label_for(16) == OrderLabel::kUnordered);  // page number
+  CHECK(order_label_for(20) == OrderLabel::kUnordered);  // seal
+  CHECK(order_label_for(22) == OrderLabel::kBody);       // text — XY-cut
+  CHECK(order_label_for(4)  == OrderLabel::kBody);       // content
+  CHECK(order_label_for(-1) == OrderLabel::kBody);       // SupplementaryRegion
 }

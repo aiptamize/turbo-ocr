@@ -74,6 +74,7 @@ add_library(turbo_ocr_common STATIC
     src/recognition/ctc_decode.cpp
     src/decode/fast_png_decoder.cpp
     src/layout/reading_order.cpp
+    src/layout/match_unsorted.cpp
     third_party/clipper/clipper.cpp
     third_party/simdutf/simdutf.cpp
 )
