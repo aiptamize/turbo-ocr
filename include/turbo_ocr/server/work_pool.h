@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <chrono>
 #include <condition_variable>
 #include <functional>
 #include <mutex>
@@ -33,24 +34,50 @@ public:
           std::function<void()> task;
           {
             std::unique_lock lock(mutex_);
-            cv_.wait(lock, [this] {
-              return stop_.load(std::memory_order_acquire) || !queue_.empty();
-            });
+            // Predicate form is only safe against lost wakeups when the
+            // notifier mutates state under the same mutex — see dtor.
+            cv_.wait(lock, [this] { return stop_ || !queue_.empty(); });
             if (queue_.empty()) {
-              if (stop_.load(std::memory_order_acquire)) return;
+              if (stop_) return;
               continue;
             }
             task = std::move(queue_.front());
             queue_.pop();
+            ++inflight_;
           }
-          task();
+          // RAII inflight decrement: even if `task()` escapes with an
+          // exception, inflight_ MUST drop back to 0 — otherwise
+          // wait_drain() hangs forever (the graceful-shutdown path
+          // depends on inflight_ reaching 0). Tasks submitted via
+          // submit_work() are wrapped in run_with_error_handling, which
+          // catches everything; this guard is the second layer of
+          // defence for any future call site that submits raw lambdas.
+          struct InflightGuard {
+            WorkPool *self;
+            ~InflightGuard() noexcept {
+              std::lock_guard lock(self->mutex_);
+              --self->inflight_;
+              if (self->inflight_ == 0 && self->queue_.empty())
+                self->drain_cv_.notify_all();
+            }
+          } guard{this};
+          try {
+            task();
+          } catch (...) {
+            // Swallowed: a task escaping is a bug at the call site, but
+            // we cannot let it kill this worker (the pool would slowly
+            // bleed threads until wait_drain() hangs).
+          }
         }
       });
     }
   }
 
   ~WorkPool() {
-    stop_.store(true, std::memory_order_release);
+    {
+      std::lock_guard lock(mutex_);
+      stop_ = true;
+    }
     cv_.notify_all();
     for (auto &w : workers_)
       if (w.joinable()) w.join();
@@ -71,12 +98,25 @@ public:
     cv_.notify_one();
   }
 
+  /// Block until queue is empty and no task is in flight, OR timeout
+  /// elapses. Returns true on full drain, false on timeout. Used by the
+  /// graceful-shutdown path: caller stops admitting new work first, then
+  /// waits here for inflight to finish before tearing down Drogon.
+  bool wait_drain(std::chrono::milliseconds timeout) {
+    std::unique_lock lock(mutex_);
+    return drain_cv_.wait_for(lock, timeout, [this] {
+      return queue_.empty() && inflight_ == 0;
+    });
+  }
+
 private:
   std::vector<std::thread> workers_;
   std::queue<std::function<void()>> queue_;
   std::mutex mutex_;
   std::condition_variable cv_;
-  std::atomic<bool> stop_{false};
+  std::condition_variable drain_cv_;
+  bool stop_{false};        // guarded by mutex_
+  size_t inflight_{0};      // guarded by mutex_
   size_t max_depth_;
 };
 
