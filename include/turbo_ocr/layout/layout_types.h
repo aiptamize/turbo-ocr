@@ -32,6 +32,58 @@ inline constexpr std::string_view label_name(int class_id) noexcept {
   return {};
 }
 
+// Reading-order priority bucket per layout class.
+//
+// PaddleX's xycut_enhanced pipeline partitions layout regions into three
+// strata before running the spatial sort, so common page furniture lands
+// in the right slot regardless of where the layout model placed it:
+//
+//   0  TOP    — header, header_image. Read first.
+//   1  BODY   — every other class (text, paragraph_title, doc_title,
+//                table, image, abstract, formulas, figures, charts,
+//                seals, captions, asides, AND `number` because page
+//                numbers can appear at the top OR the bottom of a page).
+//                Run through XY-cut.
+//   2  BOTTOM — footer, footer_image, footnote, reference,
+//                reference_content, vision_footnote. Read last.
+//
+// Within each bucket we run XY-cut so the natural left-to-right /
+// top-to-bottom order still applies to multi-line headers, footers,
+// reference lists, etc. Static-asserts below pin the class IDs to the
+// label-array slots so a future PaddleX label re-shuffle can't silently
+// misroute a class.
+inline constexpr int reading_priority_bucket(int class_id) noexcept {
+  // Only the unambiguous header/footer/reference classes get bucketed.
+  // 'number' (page number) can sit at the top OR the bottom of a page
+  // depending on style, so we leave it in BODY and let XY-cut place it
+  // by geometric position.
+  switch (class_id) {
+    case 12: // header
+    case 13: // header_image
+      return 0;
+    case 8:  // footer
+    case 9:  // footer_image
+    case 10: // footnote
+    case 18: // reference
+    case 19: // reference_content
+    case 24: // vision_footnote
+      return 2;
+    default:
+      return 1;
+  }
+}
+
+// If PaddleX ever reshuffles the label list, fail at build time rather
+// than silently misrouting classes through reading_priority_bucket.
+static_assert(kLayoutLabels[8]  == "footer",            "class_id 8 must be 'footer'");
+static_assert(kLayoutLabels[9]  == "footer_image",      "class_id 9 must be 'footer_image'");
+static_assert(kLayoutLabels[10] == "footnote",          "class_id 10 must be 'footnote'");
+static_assert(kLayoutLabels[12] == "header",            "class_id 12 must be 'header'");
+static_assert(kLayoutLabels[13] == "header_image",      "class_id 13 must be 'header_image'");
+static_assert(kLayoutLabels[18] == "reference",         "class_id 18 must be 'reference'");
+static_assert(kLayoutLabels[19] == "reference_content", "class_id 19 must be 'reference_content'");
+static_assert(kLayoutLabels[24] == "vision_footnote",   "class_id 24 must be 'vision_footnote'");
+
 struct LayoutBox {
   int class_id = 0;
   float score = 0.0f;
