@@ -1,1 +1,529 @@
-{"results":[{"text":"IN CONG RESS. JULY 4. 1776.","confidence":0.91254,"bounding_box":[[93,7],[329,8],[329,29],[93,28]]},{"text":"She umanimons Declarations ssStates ofHmerica","confidence":0.89061,"bounding_box":[[17,42],[368,42],[368,60],[17,60]]},{"text":"Whe","confidence":0.55025,"bounding_box":[[98,67],[135,67],[135,78],[98,78]]},{"text":"the canghe otnd wnghet de","confidence":0.57942,"bounding_box":[[46,86],[96,86],[96,91],[46,91]]},{"text":" n , tday b  p ","confidence":0.5086,"bounding_box":[[36,91],[142,93],[142,99],[36,96]]},{"text":"ghe pd","confidence":0.56234,"bounding_box":[[64,98],[108,98],[108,104],[64,104]]},{"text":"fy ad bi pead g hefpingh tht b fon dr lyle f","confidence":0.5344,"bounding_box":[[145,92],[285,90],[285,97],[145,99]]},{"text":"fd byy","confidence":0.55216,"bounding_box":[[20,105],[65,107],[65,113],[20,112]]},{"text":"nd po r fn fit fi fay had hes","confidence":0.50879,"bounding_box":[[242,122],[379,122],[379,131],[242,131]]},{"text":"ling te ban fo talin fohy","confidence":0.548,"bounding_box":[[18,190],[92,190],[92,198],[18,198]]},{"text":"a in la f fae danckng dln wathod de banand fan bjaiti","confidence":0.50732,"bounding_box":[[17,210],[159,210],[159,218],[17,218]]},{"text":"  ","confidence":0.57678,"bounding_box":[[171,224],[207,224],[207,229],[171,229]]},{"text":"whach ley chonud a","confidence":0.5682,"bounding_box":[[213,223],[257,221],[257,230],[213,232]]},{"text":"Jn oing din ln Suin glaplik Le cn a anplihng tnnn, ahbong Dnn on dthhory pn","confidence":0.51485,"bounding_box":[[91,237],[314,236],[314,241],[91,242]]},{"text":"bhar and hile","confidence":0.52135,"bounding_box":[[187,248],[227,248],[227,255],[187,255]]},{"text":"od","confidence":0.56555,"bounding_box":[[161,251],[187,248],[187,254],[161,256]]},{"text":"hat babibin and","confidence":0.54446,"bounding_box":[[218,262],[262,262],[262,269],[218,269]]},{"text":"heRanced","confidence":0.61023,"bounding_box":[[179,352],[228,352],[228,363],[179,363]]},{"text":" ","confidence":0.60059,"bounding_box":[[108,373],[135,373],[135,385],[108,385]]},{"text":"eute he","confidence":0.54871,"bounding_box":[[282,375],[313,375],[313,380],[282,380]]},{"text":"T","confidence":0.57568,"bounding_box":[[166,386],[201,386],[201,395],[166,395]]},{"text":"dnMepkin","confidence":0.51706,"bounding_box":[[331,397],[382,399],[382,413],[331,410]]},{"text":"Willian Elley","confidence":0.64186,"bounding_box":[[328,408],[385,411],[384,425],[328,422]]},{"text":" ","confidence":0.69922,"bounding_box":[[230,416],[320,416],[320,444],[230,444]]},{"text":"fanting","confidence":0.50889,"bounding_box":[[221,428],[265,428],[265,443],[221,443]]},{"text":"ThAfena","confidence":0.60645,"bounding_box":[[165,430],[215,430],[215,443],[165,443]]}]}
+{
+  "results": [
+    {
+      "text": "IN CONG RESS. JULY 4. 1776.",
+      "bounding_box": [
+        [
+          93,
+          6
+        ],
+        [
+          329,
+          8
+        ],
+        [
+          329,
+          29
+        ],
+        [
+          93,
+          28
+        ]
+      ]
+    },
+    {
+      "text": "She umanimons Declaration ssStates ofKmerica",
+      "bounding_box": [
+        [
+          16,
+          41
+        ],
+        [
+          367,
+          42
+        ],
+        [
+          367,
+          61
+        ],
+        [
+          16,
+          60
+        ]
+      ]
+    },
+    {
+      "text": "Wher",
+      "bounding_box": [
+        [
+          96,
+          66
+        ],
+        [
+          117,
+          66
+        ],
+        [
+          117,
+          79
+        ],
+        [
+          96,
+          79
+        ]
+      ]
+    },
+    {
+      "text": "hadhe baih",
+      "bounding_box": [
+        [
+          336,
+          84
+        ],
+        [
+          369,
+          84
+        ],
+        [
+          369,
+          89
+        ],
+        [
+          336,
+          89
+        ]
+      ]
+    },
+    {
+      "text": " ",
+      "bounding_box": [
+        [
+          22,
+          112
+        ],
+        [
+          47,
+          112
+        ],
+        [
+          47,
+          117
+        ],
+        [
+          22,
+          117
+        ]
+      ]
+    },
+    {
+      "text": "y",
+      "bounding_box": [
+        [
+          247,
+          139
+        ],
+        [
+          260,
+          139
+        ],
+        [
+          260,
+          144
+        ],
+        [
+          247,
+          144
+        ]
+      ]
+    },
+    {
+      "text": "T",
+      "bounding_box": [
+        [
+          199,
+          147
+        ],
+        [
+          227,
+          143
+        ],
+        [
+          228,
+          149
+        ],
+        [
+          199,
+          152
+        ]
+      ]
+    },
+    {
+      "text": "Jlnge bibili hgk anlj",
+      "bounding_box": [
+        [
+          87,
+          158
+        ],
+        [
+          151,
+          158
+        ],
+        [
+          151,
+          164
+        ],
+        [
+          87,
+          164
+        ]
+      ]
+    },
+    {
+      "text": "tae agranbbal bi langes",
+      "bounding_box": [
+        [
+          49,
+          184
+        ],
+        [
+          106,
+          184
+        ],
+        [
+          106,
+          190
+        ],
+        [
+          49,
+          190
+        ]
+      ]
+    },
+    {
+      "text": "he",
+      "bounding_box": [
+        [
+          83,
+          198
+        ],
+        [
+          96,
+          198
+        ],
+        [
+          96,
+          203
+        ],
+        [
+          83,
+          203
+        ]
+      ]
+    },
+    {
+      "text": "N pd ",
+      "bounding_box": [
+        [
+          89,
+          276
+        ],
+        [
+          138,
+          276
+        ],
+        [
+          138,
+          281
+        ],
+        [
+          89,
+          281
+        ]
+      ]
+    },
+    {
+      "text": "Johg",
+      "bounding_box": [
+        [
+          348,
+          273
+        ],
+        [
+          369,
+          273
+        ],
+        [
+          369,
+          282
+        ],
+        [
+          348,
+          282
+        ]
+      ]
+    },
+    {
+      "text": "ata ga fattin de",
+      "bounding_box": [
+        [
+          19,
+          283
+        ],
+        [
+          72,
+          281
+        ],
+        [
+          72,
+          288
+        ],
+        [
+          19,
+          290
+        ]
+      ]
+    },
+    {
+      "text": " ",
+      "bounding_box": [
+        [
+          169,
+          296
+        ],
+        [
+          379,
+          307
+        ],
+        [
+          378,
+          325
+        ],
+        [
+          168,
+          314
+        ]
+      ]
+    },
+    {
+      "text": "  ",
+      "bounding_box": [
+        [
+          329,
+          291
+        ],
+        [
+          363,
+          291
+        ],
+        [
+          363,
+          301
+        ],
+        [
+          329,
+          301
+        ]
+      ]
+    },
+    {
+      "text": "n ha aged b",
+      "bounding_box": [
+        [
+          328,
+          302
+        ],
+        [
+          375,
+          301
+        ],
+        [
+          375,
+          306
+        ],
+        [
+          328,
+          308
+        ]
+      ]
+    },
+    {
+      "text": "thnRanird",
+      "bounding_box": [
+        [
+          179,
+          352
+        ],
+        [
+          227,
+          352
+        ],
+        [
+          227,
+          364
+        ],
+        [
+          179,
+          364
+        ]
+      ]
+    },
+    {
+      "text": " ",
+      "bounding_box": [
+        [
+          108,
+          373
+        ],
+        [
+          135,
+          373
+        ],
+        [
+          135,
+          385
+        ],
+        [
+          108,
+          385
+        ]
+      ]
+    },
+    {
+      "text": "eoute en",
+      "bounding_box": [
+        [
+          282,
+          375
+        ],
+        [
+          312,
+          375
+        ],
+        [
+          312,
+          380
+        ],
+        [
+          282,
+          380
+        ]
+      ]
+    },
+    {
+      "text": "Joke Sioms.",
+      "bounding_box": [
+        [
+          326,
+          374
+        ],
+        [
+          369,
+          374
+        ],
+        [
+          369,
+          387
+        ],
+        [
+          326,
+          387
+        ]
+      ]
+    },
+    {
+      "text": "Willian Elley",
+      "bounding_box": [
+        [
+          328,
+          408
+        ],
+        [
+          385,
+          411
+        ],
+        [
+          384,
+          425
+        ],
+        [
+          328,
+          422
+        ]
+      ]
+    },
+    {
+      "text": "George Hythe",
+      "bounding_box": [
+        [
+          169,
+          416
+        ],
+        [
+          214,
+          414
+        ],
+        [
+          214,
+          426
+        ],
+        [
+          169,
+          428
+        ]
+      ]
+    },
+    {
+      "text": "fanrting-",
+      "bounding_box": [
+        [
+          221,
+          428
+        ],
+        [
+          265,
+          428
+        ],
+        [
+          265,
+          443
+        ],
+        [
+          221,
+          443
+        ]
+      ]
+    },
+    {
+      "text": "ThAfena",
+      "bounding_box": [
+        [
+          165,
+          430
+        ],
+        [
+          216,
+          430
+        ],
+        [
+          216,
+          443
+        ],
+        [
+          165,
+          443
+        ]
+      ]
+    },
+    {
+      "text": "Am Clack",
+      "bounding_box": [
+        [
+          272,
+          439
+        ],
+        [
+          310,
+          441
+        ],
+        [
+          310,
+          453
+        ],
+        [
+          272,
+          452
+        ]
+      ]
+    }
+  ]
+}
