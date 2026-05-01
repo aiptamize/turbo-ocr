@@ -13,7 +13,14 @@
 # Image size: ~500MB (vs ~10GB for GPU image)
 # ============================================================
 
-FROM ubuntu:24.04
+# Base image pinned by multi-arch manifest digest. To refresh:
+#   docker manifest inspect ubuntu:24.04
+# or for the index digest:
+#   TOKEN=$(curl -s 'https://auth.docker.io/token?service=registry.docker.io&scope=repository:library/ubuntu:pull' | jq -r .token)
+#   curl -sI -H "Authorization: Bearer $TOKEN" \
+#     -H "Accept: application/vnd.oci.image.index.v1+json" \
+#     https://registry-1.docker.io/v2/library/ubuntu/manifests/24.04 | grep -i docker-content-digest
+FROM ubuntu:24.04@sha256:c4a8d5503dfb2a3eb8ab5f807da5bc69a85730fb49b5cfca2330194ebcc41c7b
 
 # Avoid interactive prompts during apt install
 ENV DEBIAN_FRONTEND=noninteractive
@@ -27,6 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libopencv-dev \
     nginx \
     gosu \
+    libwebp-dev \
     libgrpc++-dev \
     libc-ares-dev \
     libprotobuf-dev \
@@ -39,6 +47,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     wget \
     ca-certificates \
+    gettext-base \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Drogon HTTP framework (async, epoll-based — replaces Crow)
@@ -53,10 +62,15 @@ RUN cd /tmp && \
     make -j$(nproc) && make install && \
     rm -rf /tmp/drogon
 
-# Install ONNX Runtime C++ SDK
+# Install ONNX Runtime C++ SDK.
+# Pinned tarball SHA256 — must match ORT_VERSION below. To refresh after a
+# version bump, recompute via:
+#   curl -sL https://github.com/microsoft/onnxruntime/releases/download/v<NEW>/onnxruntime-linux-x64-<NEW>.tgz | sha256sum
 ARG ORT_VERSION=1.22.0
+ARG ORT_SHA256=8344d55f93d5bc5021ce342db50f62079daf39aaafb5d311a451846228be49b3
 RUN cd /tmp && \
-    wget -q "https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/onnxruntime-linux-x64-${ORT_VERSION}.tgz" && \
+    wget -q "https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/onnxruntime-linux-x64-${ORT_VERSION}.tgz" -O onnxruntime-linux-x64-${ORT_VERSION}.tgz && \
+    echo "${ORT_SHA256}  onnxruntime-linux-x64-${ORT_VERSION}.tgz" | sha256sum -c - && \
     tar xzf onnxruntime-linux-x64-${ORT_VERSION}.tgz && \
     cp -r onnxruntime-linux-x64-${ORT_VERSION}/include/* /usr/local/include/ && \
     cp onnxruntime-linux-x64-${ORT_VERSION}/lib/libonnxruntime.so* /usr/local/lib/ && \
