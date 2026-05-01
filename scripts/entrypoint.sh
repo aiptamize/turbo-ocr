@@ -59,10 +59,18 @@ fi
 # signal; fail fast at startup with an actionable message instead.
 if [[ -n "${TRT_ENGINE_CACHE:-}" ]]; then
   TRT_CACHE_DIR="${TRT_ENGINE_CACHE}"
-elif [[ -n "${HOME:-}" ]]; then
-  TRT_CACHE_DIR="${HOME}/.cache/turbo-ocr"
 else
-  TRT_CACHE_DIR="/tmp/turbo-ocr-engines"
+  # Mirror src/engine/onnx_to_trt.cpp::get_engine_cache_dir(), but
+  # resolve $HOME the way the BINARY will see it after gosu drops to
+  # ocr — the entrypoint itself is running as root with HOME=/root,
+  # which would point at a path the binary will never touch and that
+  # ocr can't write to.
+  OCR_HOME=$(gosu ocr bash -c 'printf %s "${HOME:-}"' 2>/dev/null || true)
+  if [[ -n "$OCR_HOME" ]]; then
+    TRT_CACHE_DIR="${OCR_HOME}/.cache/turbo-ocr"
+  else
+    TRT_CACHE_DIR="/tmp/turbo-ocr-engines"
+  fi
 fi
 mkdir -p "${TRT_CACHE_DIR}" 2>/dev/null || true
 
