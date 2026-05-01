@@ -132,10 +132,11 @@ HTTP on port 8000, gRPC on port 50051 — single binary, shared GPU pipeline poo
 |-----------|-----------|--------|---------|
 | `layout` | all | `0` / `1` | `0` — include [layout regions](#layout-detection) (~20% throughput cost) |
 | `reading_order` | image routes | `0` / `1` | `0` — emit `reading_order` array indexing `results` in proper reading order (auto-enables `layout=1`). Class-aware: header → body → footer/footnote/reference; XY-cut on body with row-tolerant table-cell sort and orphan placement |
+| `as_blocks` | image + PDF routes | `0` / `1` | `0` — when `1`, response includes a `blocks` array: paragraph-level aggregate, one entry per non-empty layout cell, in reading order. Auto-enables `layout=1` and `reading_order=1`. Each block has `{id, layout_id, class, bounding_box, content, order_index}`. Mirrors PaddleX PP-StructureV3 `parsing_res_list` granularity. |
 | `mode` | `/ocr/pdf` | `ocr` / `geometric` / `auto` / `auto_verified` | `ocr` — on the CPU binary, `auto_verified` is silently aliased to `auto` (no native text re-verifier on CPU). Inspect the per-page `mode` field in the response to see which path actually ran. |
 | `dpi` | `/ocr/pdf` | `50`–`600` | `100` — render resolution |
 
-**Parameter parsing rules.** Parameter *names* are case-sensitive: `?layout=1` works, `?Layout=1` is silently ignored. Boolean values for `layout` and `reading_order` accept any case of `1/0`, `true/false`, `on/off`, `yes/no`, and reject anything else with `400 INVALID_PARAMETER`. Values for `mode=` are **case-sensitive and silently fall back to the configured default** when unrecognized — `?mode=Auto`, `?mode=AUTO`, or `?mode=foobar` all run as `mode=ocr` (or whatever `ENABLE_PDF_MODE` is set to) without error. Always pass exactly `ocr`, `geometric`, `auto`, or `auto_verified`.
+**Parameter parsing rules.** Parameter *names* are case-sensitive: `?layout=1` works, `?Layout=1` is silently ignored. Boolean values for `layout`, `reading_order`, and `as_blocks` accept any case of `1/0`, `true/false`, `on/off`, `yes/no`, and reject anything else with `400 INVALID_PARAMETER`. Values for `mode=` are **case-sensitive and silently fall back to the configured default** when unrecognized — `?mode=Auto`, `?mode=AUTO`, or `?mode=foobar` all run as `mode=ocr` (or whatever `ENABLE_PDF_MODE` is set to) without error. Always pass exactly `ocr`, `geometric`, `auto`, or `auto_verified`.
 
 ### Examples
 
