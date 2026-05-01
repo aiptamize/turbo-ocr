@@ -24,35 +24,35 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\tocr.proto\x12\x03ocr\"l\n\nOCRRequest\x12\r\n\x05image\x18\x01 \x01(\x0c\x12\x0e\n\x06layout\x18\x05 \x01(\x08\x12\x0e\n\x06pixels\x18\x06 \x01(\x0c\x12\r\n\x05width\x18\x07 \x01(\x05\x12\x0e\n\x06height\x18\x08 \x01(\x05\x12\x10\n\x08\x63hannels\x18\t \x01(\x05\"H\n\x0fOCRBatchRequest\x12\x0e\n\x06images\x18\x01 \x03(\x0c\x12\x15\n\rdet_batch_num\x18\x02 \x01(\x05\x12\x0e\n\x06layout\x18\x03 \x01(\x08\"#\n\x0b\x42oundingBox\x12\t\n\x01x\x18\x01 \x03(\x02\x12\t\n\x01y\x18\x02 \x03(\x02\"U\n\tOCRResult\x12\x0c\n\x04text\x18\x01 \x01(\t\x12\x12\n\nconfidence\x18\x02 \x01(\x02\x12&\n\x0c\x62ounding_box\x18\x03 \x03(\x0b\x32\x10.ocr.BoundingBox\"]\n\x0bOCRResponse\x12\x1f\n\x07results\x18\x01 \x03(\x0b\x32\x0e.ocr.OCRResult\x12\x16\n\x0enum_detections\x18\x02 \x01(\x05\x12\x15\n\rjson_response\x18\x03 \x01(\x0c\"Q\n\x10OCRBatchResponse\x12\'\n\rbatch_results\x18\x01 \x03(\x0b\x32\x10.ocr.OCRResponse\x12\x14\n\x0ctotal_images\x18\x02 \x01(\x05\"L\n\rOCRPDFRequest\x12\x10\n\x08pdf_data\x18\x01 \x01(\x0c\x12\x0c\n\x04mode\x18\x02 \x01(\t\x12\x0b\n\x03\x64pi\x18\x03 \x01(\x05\x12\x0e\n\x06layout\x18\x04 \x01(\x08\"3\n\x0eOCRPDFResponse\x12!\n\x05pages\x18\x01 \x03(\x0b\x32\x12.ocr.OCRPageResult\"\xb2\x01\n\rOCRPageResult\x12\x13\n\x0bpage_number\x18\x01 \x01(\x05\x12\x1f\n\x07results\x18\x02 \x03(\x0b\x32\x0e.ocr.OCRResult\x12\r\n\x05width\x18\x03 \x01(\x05\x12\x0e\n\x06height\x18\x04 \x01(\x05\x12\x0b\n\x03\x64pi\x18\x05 \x01(\x05\x12\x0c\n\x04mode\x18\x06 \x01(\t\x12\x1a\n\x12text_layer_quality\x18\x07 \x01(\t\x12\x15\n\rjson_response\x18\x08 \x01(\x0c\"\x0f\n\rHealthRequest\" \n\x0eHealthResponse\x12\x0e\n\x06status\x18\x01 \x01(\t2\xe7\x01\n\nOCRService\x12.\n\tRecognize\x12\x0f.ocr.OCRRequest\x1a\x10.ocr.OCRResponse\x12=\n\x0eRecognizeBatch\x12\x14.ocr.OCRBatchRequest\x1a\x15.ocr.OCRBatchResponse\x12\x37\n\x0cRecognizePDF\x12\x12.ocr.OCRPDFRequest\x1a\x13.ocr.OCRPDFResponse\x12\x31\n\x06Health\x12\x12.ocr.HealthRequest\x1a\x13.ocr.HealthResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\tocr.proto\x12\x03ocr\"\x96\x01\n\nOCRRequest\x12\r\n\x05image\x18\x01 \x01(\x0c\x12\x0e\n\x06layout\x18\x05 \x01(\x08\x12\x0e\n\x06pixels\x18\x06 \x01(\x0c\x12\r\n\x05width\x18\x07 \x01(\x05\x12\x0e\n\x06height\x18\x08 \x01(\x05\x12\x10\n\x08\x63hannels\x18\t \x01(\x05\x12\x15\n\rreading_order\x18\n \x01(\x08\x12\x11\n\tas_blocks\x18\x0b \x01(\x08\"r\n\x0fOCRBatchRequest\x12\x0e\n\x06images\x18\x01 \x03(\x0c\x12\x15\n\rdet_batch_num\x18\x02 \x01(\x05\x12\x0e\n\x06layout\x18\x03 \x01(\x08\x12\x15\n\rreading_order\x18\x04 \x01(\x08\x12\x11\n\tas_blocks\x18\x05 \x01(\x08\"#\n\x0b\x42oundingBox\x12\t\n\x01x\x18\x01 \x03(\x02\x12\t\n\x01y\x18\x02 \x03(\x02\"U\n\tOCRResult\x12\x0c\n\x04text\x18\x01 \x01(\t\x12\x12\n\nconfidence\x18\x02 \x01(\x02\x12&\n\x0c\x62ounding_box\x18\x03 \x03(\x0b\x32\x10.ocr.BoundingBox\"t\n\x0bOCRResponse\x12\x1f\n\x07results\x18\x01 \x03(\x0b\x32\x0e.ocr.OCRResult\x12\x16\n\x0enum_detections\x18\x02 \x01(\x05\x12\x15\n\rjson_response\x18\x03 \x01(\x0c\x12\x15\n\rreading_order\x18\x04 \x03(\x05\"Q\n\x10OCRBatchResponse\x12\'\n\rbatch_results\x18\x01 \x03(\x0b\x32\x10.ocr.OCRResponse\x12\x14\n\x0ctotal_images\x18\x02 \x01(\x05\"_\n\rOCRPDFRequest\x12\x10\n\x08pdf_data\x18\x01 \x01(\x0c\x12\x0c\n\x04mode\x18\x02 \x01(\t\x12\x0b\n\x03\x64pi\x18\x03 \x01(\x05\x12\x0e\n\x06layout\x18\x04 \x01(\x08\x12\x11\n\tas_blocks\x18\x05 \x01(\x08\"3\n\x0eOCRPDFResponse\x12!\n\x05pages\x18\x01 \x03(\x0b\x32\x12.ocr.OCRPageResult\"\xb2\x01\n\rOCRPageResult\x12\x13\n\x0bpage_number\x18\x01 \x01(\x05\x12\x1f\n\x07results\x18\x02 \x03(\x0b\x32\x0e.ocr.OCRResult\x12\r\n\x05width\x18\x03 \x01(\x05\x12\x0e\n\x06height\x18\x04 \x01(\x05\x12\x0b\n\x03\x64pi\x18\x05 \x01(\x05\x12\x0c\n\x04mode\x18\x06 \x01(\t\x12\x1a\n\x12text_layer_quality\x18\x07 \x01(\t\x12\x15\n\rjson_response\x18\x08 \x01(\x0c\"\x0f\n\rHealthRequest\" \n\x0eHealthResponse\x12\x0e\n\x06status\x18\x01 \x01(\t2\xe7\x01\n\nOCRService\x12.\n\tRecognize\x12\x0f.ocr.OCRRequest\x1a\x10.ocr.OCRResponse\x12=\n\x0eRecognizeBatch\x12\x14.ocr.OCRBatchRequest\x1a\x15.ocr.OCRBatchResponse\x12\x37\n\x0cRecognizePDF\x12\x12.ocr.OCRPDFRequest\x1a\x13.ocr.OCRPDFResponse\x12\x31\n\x06Health\x12\x12.ocr.HealthRequest\x1a\x13.ocr.HealthResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'ocr_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_OCRREQUEST']._serialized_start=18
-  _globals['_OCRREQUEST']._serialized_end=126
-  _globals['_OCRBATCHREQUEST']._serialized_start=128
-  _globals['_OCRBATCHREQUEST']._serialized_end=200
-  _globals['_BOUNDINGBOX']._serialized_start=202
-  _globals['_BOUNDINGBOX']._serialized_end=237
-  _globals['_OCRRESULT']._serialized_start=239
-  _globals['_OCRRESULT']._serialized_end=324
-  _globals['_OCRRESPONSE']._serialized_start=326
-  _globals['_OCRRESPONSE']._serialized_end=419
-  _globals['_OCRBATCHRESPONSE']._serialized_start=421
-  _globals['_OCRBATCHRESPONSE']._serialized_end=502
-  _globals['_OCRPDFREQUEST']._serialized_start=504
-  _globals['_OCRPDFREQUEST']._serialized_end=580
-  _globals['_OCRPDFRESPONSE']._serialized_start=582
-  _globals['_OCRPDFRESPONSE']._serialized_end=633
-  _globals['_OCRPAGERESULT']._serialized_start=636
-  _globals['_OCRPAGERESULT']._serialized_end=814
-  _globals['_HEALTHREQUEST']._serialized_start=816
-  _globals['_HEALTHREQUEST']._serialized_end=831
-  _globals['_HEALTHRESPONSE']._serialized_start=833
-  _globals['_HEALTHRESPONSE']._serialized_end=865
-  _globals['_OCRSERVICE']._serialized_start=868
-  _globals['_OCRSERVICE']._serialized_end=1099
+  _globals['_OCRREQUEST']._serialized_start=19
+  _globals['_OCRREQUEST']._serialized_end=169
+  _globals['_OCRBATCHREQUEST']._serialized_start=171
+  _globals['_OCRBATCHREQUEST']._serialized_end=285
+  _globals['_BOUNDINGBOX']._serialized_start=287
+  _globals['_BOUNDINGBOX']._serialized_end=322
+  _globals['_OCRRESULT']._serialized_start=324
+  _globals['_OCRRESULT']._serialized_end=409
+  _globals['_OCRRESPONSE']._serialized_start=411
+  _globals['_OCRRESPONSE']._serialized_end=527
+  _globals['_OCRBATCHRESPONSE']._serialized_start=529
+  _globals['_OCRBATCHRESPONSE']._serialized_end=610
+  _globals['_OCRPDFREQUEST']._serialized_start=612
+  _globals['_OCRPDFREQUEST']._serialized_end=707
+  _globals['_OCRPDFRESPONSE']._serialized_start=709
+  _globals['_OCRPDFRESPONSE']._serialized_end=760
+  _globals['_OCRPAGERESULT']._serialized_start=763
+  _globals['_OCRPAGERESULT']._serialized_end=941
+  _globals['_HEALTHREQUEST']._serialized_start=943
+  _globals['_HEALTHREQUEST']._serialized_end=958
+  _globals['_HEALTHRESPONSE']._serialized_start=960
+  _globals['_HEALTHRESPONSE']._serialized_end=992
+  _globals['_OCRSERVICE']._serialized_start=995
+  _globals['_OCRSERVICE']._serialized_end=1226
 # @@protoc_insertion_point(module_scope)

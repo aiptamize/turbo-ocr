@@ -10,6 +10,7 @@
 #include "turbo_ocr/layout/child_blocks.h"
 #include "turbo_ocr/layout/match_unsorted.h"
 #include "turbo_ocr/layout/reading_order.h"
+#include "turbo_ocr/layout/text_line_cluster.h"
 
 using turbo_ocr::Box;
 using turbo_ocr::OCRResultItem;
@@ -607,7 +608,7 @@ TEST_CASE("match_unsorted_blocks: doc_title pinned to top via weighted insert",
       {/*idx=*/2, {{200, 50, 600, 90}},
        turbo_ocr::layout::OrderLabel::kDocTitle, /*class_id=*/6},
   };
-  turbo_ocr::layout::match_unsorted_blocks(sorted, unsorted, /*text_line_width=*/700);
+  turbo_ocr::layout::match_unsorted_blocks(sorted, unsorted, /*text_line_width=*/700, turbo_ocr::layout::Direction::kHorizontal, /*layout=*/{});
   REQUIRE(sorted.size() == 3);
   CHECK(sorted[0].layout_idx == 2);  // doc_title first
   CHECK(sorted[1].layout_idx == 0);
@@ -628,7 +629,7 @@ TEST_CASE("match_unsorted_blocks: cross_reference appended via reference_insert"
       {/*idx=*/3, {{50, 500, 750, 540}},
        turbo_ocr::layout::OrderLabel::kCrossReference, /*class_id=*/18},
   };
-  turbo_ocr::layout::match_unsorted_blocks(sorted, unsorted, 700);
+  turbo_ocr::layout::match_unsorted_blocks(sorted, unsorted, 700, turbo_ocr::layout::Direction::kHorizontal, /*layout=*/{});
   REQUIRE(sorted.size() == 4);
   // Reference is below all three sorted blocks; goes after index 2.
   CHECK(sorted[3].layout_idx == 3);
@@ -647,7 +648,7 @@ TEST_CASE("match_unsorted_blocks: unordered (page number) via manhattan_insert",
       {/*idx=*/2, {{60, 540, 110, 560}},
        turbo_ocr::layout::OrderLabel::kUnordered, /*class_id=*/16},
   };
-  turbo_ocr::layout::match_unsorted_blocks(sorted, unsorted, 700);
+  turbo_ocr::layout::match_unsorted_blocks(sorted, unsorted, 700, turbo_ocr::layout::Direction::kHorizontal, /*layout=*/{});
   REQUIRE(sorted.size() == 3);
   // Page number should land after the closer sorted block (idx 1 at y=500),
   // not after the far one (idx 0 at y=100).
@@ -668,7 +669,7 @@ TEST_CASE("match_unsorted_blocks: vision below text bound via weighted_insert",
       {/*idx=*/3, {{ 50, 200, 350, 380}},
        turbo_ocr::layout::OrderLabel::kVision, /*class_id=*/14},
   };
-  turbo_ocr::layout::match_unsorted_blocks(sorted, unsorted, 300);
+  turbo_ocr::layout::match_unsorted_blocks(sorted, unsorted, 300, turbo_ocr::layout::Direction::kHorizontal, /*layout=*/{});
   REQUIRE(sorted.size() == 4);
   // Vision block should be inserted somewhere in the sequence; the
   // important property is that it ended up next to its nearest text.
@@ -789,4 +790,421 @@ TEST_CASE("assign_reading_order_for_results: vision + caption emit contiguously"
   // image sits above the body.
   CHECK(order[0] == 0);  // caption
   CHECK(order[1] == 1);  // body
+}
+
+// =====  Text-line clustering pre-pass + direction inference  =====
+
+TEST_CASE("cluster_text_lines: groups boxes on the same y-band into one line",
+          "[cluster][text_lines]") {
+  // Two y-bands, three boxes per band — each band should become one
+  // TextLine, so num_of_lines = 2.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(0, 0, 1000, 200, /*class_id=*/22),
+  };
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      make_result( 50, 50, 200, 80, /*layout_id=*/0),
+      make_result(220, 50, 400, 80, /*layout_id=*/0),
+      make_result(420, 50, 600, 80, /*layout_id=*/0),
+      make_result( 50,150, 200,180, /*layout_id=*/0),
+      make_result(220,150, 400,180, /*layout_id=*/0),
+      make_result(420,150, 600,180, /*layout_id=*/0),
+  };
+  turbo_ocr::layout::cluster_text_lines(results, layout);
+  CHECK(layout[0].num_of_lines == 2);
+  CHECK(layout[0].direction == turbo_ocr::layout::Direction::kHorizontal);
+  CHECK(layout[0].text_line_height >  0);
+  CHECK(layout[0].text_line_width >  0);
+  // First line starts at x=50, last line ends at x=600.
+  CHECK(layout[0].seg_start_coordinate == 50);
+  CHECK(layout[0].seg_end_coordinate == 600);
+}
+
+TEST_CASE("cluster_text_lines: vertical-text cell gets vertical direction",
+          "[cluster][text_lines][vertical]") {
+  // 4 single-column tall narrow boxes — taller than wide, so each
+  // box votes "vertical". Cluster sorts by descending x and groups
+  // by x-projection overlap.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(0, 0, 200, 1000, /*class_id=*/22),
+  };
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      make_result(80,  50,  120, 250, /*layout_id=*/0),
+      make_result(80, 270,  120, 470, /*layout_id=*/0),
+      make_result(80, 490,  120, 690, /*layout_id=*/0),
+      make_result(80, 710,  120, 910, /*layout_id=*/0),
+  };
+  turbo_ocr::layout::cluster_text_lines(results, layout);
+  CHECK(layout[0].direction == turbo_ocr::layout::Direction::kVertical);
+  CHECK(layout[0].num_of_lines == 1);  // all 4 spans share an x-band
+}
+
+TEST_CASE("infer_page_direction: majority vote over text cells",
+          "[cluster][direction]") {
+  using turbo_ocr::layout::Direction;
+  // 3 text cells: 2 horizontal, 1 vertical → page is horizontal.
+  std::vector<turbo_ocr::layout::LayoutBox> layout(3);
+  for (auto &lb : layout) lb.class_id = 22;
+  layout[0].direction = Direction::kHorizontal;
+  layout[1].direction = Direction::kHorizontal;
+  layout[2].direction = Direction::kVertical;
+  CHECK(turbo_ocr::layout::infer_page_direction(layout) ==
+        Direction::kHorizontal);
+
+  // Flip: 1H 2V → vertical.
+  layout[0].direction = Direction::kVertical;
+  CHECK(turbo_ocr::layout::infer_page_direction(layout) ==
+        Direction::kVertical);
+
+  // Empty layout → horizontal default.
+  std::vector<turbo_ocr::layout::LayoutBox> empty;
+  CHECK(turbo_ocr::layout::infer_page_direction(empty) ==
+        Direction::kHorizontal);
+}
+
+TEST_CASE("get_seg_flag: continuing paragraph signals seg_start_flag = false",
+          "[seg_flag]") {
+  using turbo_ocr::layout::Direction;
+  using turbo_ocr::layout::get_seg_flag;
+  // prev: multi-line block ending flush right (seg_end at x1).
+  // current: starts flush left (seg_start at x0).
+  turbo_ocr::layout::LayoutBox prev;
+  prev.box = make_box(50, 100, 750, 300);
+  prev.direction = Direction::kHorizontal;
+  prev.num_of_lines = 4;
+  prev.text_line_height = 25;
+  prev.seg_start_coordinate = 50;
+  prev.seg_end_coordinate = 745;  // close to x1=750
+
+  turbo_ocr::layout::LayoutBox cur;
+  cur.box = make_box(50, 320, 750, 500);
+  cur.direction = Direction::kHorizontal;
+  cur.num_of_lines = 3;
+  cur.text_line_height = 25;
+  cur.seg_start_coordinate = 52;  // close to x0=50
+  cur.seg_end_coordinate = 600;
+
+  auto sf = get_seg_flag(cur, prev, Direction::kHorizontal);
+  CHECK(sf.seg_start_flag == false);  // continues prev's paragraph
+}
+
+TEST_CASE("get_seg_flag: clean break signals seg_start_flag = true",
+          "[seg_flag]") {
+  using turbo_ocr::layout::Direction;
+  using turbo_ocr::layout::get_seg_flag;
+  // prev: ends MID-LINE (seg_end is far from x1) — clean paragraph break.
+  turbo_ocr::layout::LayoutBox prev;
+  prev.box = make_box(50, 100, 750, 300);
+  prev.direction = Direction::kHorizontal;
+  prev.num_of_lines = 3;
+  prev.text_line_height = 25;
+  prev.seg_start_coordinate = 50;
+  prev.seg_end_coordinate = 400;  // far from x1=750 → paragraph end
+
+  turbo_ocr::layout::LayoutBox cur;
+  cur.box = make_box(50, 320, 750, 500);
+  cur.direction = Direction::kHorizontal;
+  cur.num_of_lines = 3;
+  cur.text_line_height = 25;
+  cur.seg_start_coordinate = 50;
+  cur.seg_end_coordinate = 600;
+
+  auto sf = get_seg_flag(cur, prev, Direction::kHorizontal);
+  CHECK(sf.seg_start_flag == true);
+}
+
+TEST_CASE("vertical reading order: right column emits before left column",
+          "[xy_cut][vertical]") {
+  // Two columns of vertical text. PaddleX/CJK convention: rightmost
+  // column reads first. Build text-class cells with vertical
+  // direction signal so infer_page_direction picks vertical.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(  50, 50, 250, 800, /*class_id=*/22),  // LEFT col (idx 0)
+      make_layout( 350, 50, 550, 800, /*class_id=*/22),  // RIGHT col (idx 1)
+  };
+  // Synthesise vertical-text result boxes inside each column so
+  // cluster_text_lines votes vertical. Each box: width 50, height 200
+  // → height > width → "vertical".
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      make_result( 80,  80, 130, 280, /*layout_id=*/0),  // left col span 1
+      make_result( 80, 300, 130, 500, /*layout_id=*/0),  // left col span 2
+      make_result(380,  80, 430, 280, /*layout_id=*/1),  // right col span 1
+      make_result(380, 300, 430, 500, /*layout_id=*/1),  // right col span 2
+  };
+  // assign_layout_ids first to set ids stably.
+  turbo_ocr::assign_layout_ids(results, layout);
+  auto order =
+      turbo_ocr::layout::assign_reading_order_for_results(results, layout);
+  REQUIRE(order.size() == 4);
+  // After cluster: both cells voted vertical, page direction = vertical.
+  // Reading order: right column (layout idx 1) comes before left (idx 0).
+  // Within each column: top-to-bottom (the 2 spans inside).
+  // Result order should be: right col span 1, right col span 2, left col span 1, left col span 2.
+  // Mapping result indices to expected positions in `order`:
+  //   results[2] (right col, top)    → order[0]
+  //   results[3] (right col, bottom) → order[1]
+  //   results[0] (left col, top)     → order[2]
+  //   results[1] (left col, bottom)  → order[3]
+  CHECK(order[0] == 2);
+  CHECK(order[1] == 3);
+  CHECK(order[2] == 0);
+  CHECK(order[3] == 1);
+}
+
+// =====  flatten_descendants — nested child trees  =====
+
+TEST_CASE("flatten_descendants: linear A → B → C chain emits in depth order",
+          "[child_blocks][nested]") {
+  // Manually build a chain: layout[0] (A) parent of layout[1] (B);
+  // layout[1] (B) parent of layout[2] (C). Expected order: B, C.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout( 50,  10, 750,  60),  // A
+      make_layout(100, 100, 700, 200),  // B
+      make_layout(200, 220, 600, 280),  // C
+  };
+  std::vector<turbo_ocr::layout::ChildLinks> links(3);
+  links[0].child_indices = {1};
+  links[1].child_indices = {2};
+
+  auto desc = turbo_ocr::layout::flatten_descendants(0, links, layout);
+  REQUIRE(desc.size() == 2);
+  CHECK(desc[0] == 1);
+  CHECK(desc[1] == 2);
+}
+
+TEST_CASE("flatten_descendants: branching A → [B, C], B → D",
+          "[child_blocks][nested]") {
+  // A has two children B and C; B has child D. Walk emits B before
+  // its descendants, then C. Expected: B, D, C.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout( 50,  10, 750,  60),  // 0 = A
+      make_layout(100, 100, 350, 200),  // 1 = B (top-left)
+      make_layout(400, 100, 750, 200),  // 2 = C (top-right)
+      make_layout(150, 220, 300, 260),  // 3 = D (under B)
+  };
+  std::vector<turbo_ocr::layout::ChildLinks> links(4);
+  links[0].child_indices = {1, 2};
+  links[1].child_indices = {3};
+
+  auto desc = turbo_ocr::layout::flatten_descendants(0, links, layout);
+  REQUIRE(desc.size() == 3);
+  CHECK(desc[0] == 1);  // B
+  CHECK(desc[1] == 3);  // D (B's child)
+  CHECK(desc[2] == 2);  // C
+}
+
+TEST_CASE("flatten_descendants: cycle A ↔ B is broken by visited set",
+          "[child_blocks][nested]") {
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(50, 10, 750, 60),
+      make_layout(50, 80, 750, 130),
+  };
+  std::vector<turbo_ocr::layout::ChildLinks> links(2);
+  links[0].child_indices = {1};
+  links[1].child_indices = {0};  // cycle back to A
+
+  auto desc = turbo_ocr::layout::flatten_descendants(0, links, layout);
+  REQUIRE(desc.size() == 1);
+  CHECK(desc[0] == 1);  // visit B; do not recurse back into A
+}
+
+TEST_CASE("flatten_descendants: self-loop A → A is silently skipped",
+          "[child_blocks][nested]") {
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(50, 10, 750, 60),
+      make_layout(50, 80, 750, 130),
+  };
+  std::vector<turbo_ocr::layout::ChildLinks> links(2);
+  links[0].child_indices = {0, 1};  // includes self
+  auto desc = turbo_ocr::layout::flatten_descendants(0, links, layout);
+  REQUIRE(desc.size() == 1);
+  CHECK(desc[0] == 1);  // self-reference dropped, sibling kept
+}
+
+TEST_CASE("flatten_descendants: out-of-bounds parent → empty",
+          "[child_blocks][nested]") {
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(50, 10, 750, 60),
+  };
+  std::vector<turbo_ocr::layout::ChildLinks> links(1);
+  CHECK(turbo_ocr::layout::flatten_descendants(-1, links, layout).empty());
+  CHECK(turbo_ocr::layout::flatten_descendants(99, links, layout).empty());
+}
+
+TEST_CASE("flatten_descendants: out-of-bounds child indices skipped",
+          "[child_blocks][nested]") {
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(50, 10, 750, 60),
+      make_layout(50, 80, 750, 130),
+  };
+  std::vector<turbo_ocr::layout::ChildLinks> links(2);
+  links[0].child_indices = {1, 99, -1};  // 99 / -1 are bogus
+  auto desc = turbo_ocr::layout::flatten_descendants(0, links, layout);
+  REQUIRE(desc.size() == 1);
+  CHECK(desc[0] == 1);
+}
+
+TEST_CASE("flatten_descendants: empty children → empty",
+          "[child_blocks][nested]") {
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(50, 10, 750, 60),
+  };
+  std::vector<turbo_ocr::layout::ChildLinks> links(1);
+  auto desc = turbo_ocr::layout::flatten_descendants(0, links, layout);
+  CHECK(desc.empty());
+}
+
+TEST_CASE("flatten_descendants: deep chain hits depth limit, doesn't infinite-loop",
+          "[child_blocks][nested]") {
+  // Pathological: every node points to itself + the next, forming
+  // a self-loop tree. The visited set short-circuits each self-loop
+  // and the depth limit guards against any cycle the visited set
+  // somehow misses.
+  const int N = 50;
+  std::vector<turbo_ocr::layout::LayoutBox> layout;
+  layout.reserve(N);
+  for (int i = 0; i < N; ++i) {
+    layout.push_back(make_layout(i * 10, 100 + i, i * 10 + 50, 130 + i));
+  }
+  std::vector<turbo_ocr::layout::ChildLinks> links(N);
+  for (int i = 0; i < N - 1; ++i) {
+    links[i].child_indices = {i, i + 1};  // self + next
+  }
+  auto desc = turbo_ocr::layout::flatten_descendants(0, links, layout);
+  // Visits 1..N-1 (N-1 entries). 0 was the parent, doesn't appear.
+  CHECK(desc.size() == static_cast<size_t>(N - 1));
+}
+
+TEST_CASE("assign_reading_order_for_results: nested children A→B→C emit "
+          "in depth order with manually-built links via splice_child_blocks",
+          "[child_blocks][nested]") {
+  // Build a UnsortedBlock sequence for splice_child_blocks where
+  // layout[0] has child layout[1], and layout[1] has child layout[2].
+  // After splice: only layout[0] remains as a top-level entry, with
+  // layout[1] then layout[2] inserted after it.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(  0,   0, 100,  20),  // 0 root
+      make_layout(  0,  30, 100,  50),  // 1
+      make_layout(  0,  60, 100,  80),  // 2
+  };
+  std::vector<turbo_ocr::layout::ChildLinks> links(3);
+  links[0].child_indices = {1};
+  links[1].child_indices = {2};
+
+  std::vector<turbo_ocr::layout::UnsortedBlock> sorted = {
+      {0, {{0,  0, 100, 20}}, turbo_ocr::layout::OrderLabel::kBody, 22},
+      {1, {{0, 30, 100, 50}}, turbo_ocr::layout::OrderLabel::kBody, 22},
+      {2, {{0, 60, 100, 80}}, turbo_ocr::layout::OrderLabel::kBody, 22},
+  };
+  turbo_ocr::layout::splice_child_blocks(sorted, links, layout);
+  REQUIRE(sorted.size() == 3);
+  CHECK(sorted[0].layout_idx == 0);
+  CHECK(sorted[1].layout_idx == 1);  // child of 0
+  CHECK(sorted[2].layout_idx == 2);  // grandchild via 1
+}
+
+// =====  ?as_blocks=1 — paragraph-level aggregate  =====
+
+TEST_CASE("results_with_blocks: short lines (mid-cell end) join with newline",
+          "[blocks]") {
+  // Two layout cells with two text lines each. Lines END WELL SHORT
+  // of the cell's right margin → smart-join detects "paragraph end"
+  // and emits '\n' between them. (A line that DID reach the right
+  // margin would be a wrap and get joined with ' '; covered by the
+  // dedicated "long lines" test below.)
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      // Cell right margin at x=350; lines end at x=200 → 150px short.
+      make_layout(50,  50, 350, 200, /*class_id=*/22),
+      make_layout(400, 50, 700, 200, /*class_id=*/22),
+  };
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      make_result(50,  60,  200,  90, /*layout_id=*/0),
+      make_result(50, 110,  200, 140, /*layout_id=*/0),
+      make_result(400, 60,  550,  90, /*layout_id=*/1),
+      make_result(400,110,  550, 140, /*layout_id=*/1),
+  };
+  results[0].text = "left top";
+  results[1].text = "left bottom";
+  results[2].text = "right top";
+  results[3].text = "right bottom";
+  layout[0].text_line_height = 35;
+  layout[1].text_line_height = 35;
+  std::vector<int> reading_order = {0, 1, 2, 3};
+
+  auto json = turbo_ocr::results_with_blocks(results, layout, reading_order);
+  REQUIRE(json.find("\"blocks\":[") != std::string::npos);
+  CHECK(json.find("\"content\":\"left top\\nleft bottom\"") != std::string::npos);
+  CHECK(json.find("\"content\":\"right top\\nright bottom\"") != std::string::npos);
+}
+
+TEST_CASE("results_with_blocks: long lines (right-margin) join with space",
+          "[blocks]") {
+  // Lines that EXTEND to within text_line_height of the cell's right
+  // margin are paragraph wraps — smart-join emits ' ' instead of '\n'
+  // so the multi-line paragraph reads as one flowing string.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(50, 50, 350, 200, /*class_id=*/22),  // x1=350
+  };
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      // Both lines end close enough to right margin (340 vs 350) that
+      // smart-join treats them as a paragraph wrap.
+      make_result(50,  60, 340,  90, /*layout_id=*/0),
+      make_result(50, 110, 340, 140, /*layout_id=*/0),
+  };
+  results[0].text = "the quick brown fox jumps over";
+  results[1].text = "the lazy dog";
+  layout[0].text_line_height = 35;
+  std::vector<int> reading_order = {0, 1};
+
+  auto json = turbo_ocr::results_with_blocks(results, layout, reading_order);
+  CHECK(json.find("\"content\":\"the quick brown fox jumps over the lazy dog\"")
+        != std::string::npos);
+}
+
+TEST_CASE("results_with_blocks: same-line texts join with space",
+          "[blocks]") {
+  // Two text spans on the same y-band → joined with ' ', not '\n'.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(50, 50, 700, 100, /*class_id=*/22),
+  };
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      make_result( 50, 60, 200, 80, /*layout_id=*/0),
+      make_result(220, 60, 400, 80, /*layout_id=*/0),
+      make_result(420, 60, 690, 80, /*layout_id=*/0),
+  };
+  results[0].text = "alpha";
+  results[1].text = "beta";
+  results[2].text = "gamma";
+  layout[0].text_line_height = 25;
+  std::vector<int> reading_order = {0, 1, 2};
+
+  auto json = turbo_ocr::results_with_blocks(results, layout, reading_order);
+  CHECK(json.find("\"content\":\"alpha beta gamma\"") != std::string::npos);
+}
+
+TEST_CASE("results_with_blocks: omits blocks key when no layout/reading_order",
+          "[blocks]") {
+  std::vector<turbo_ocr::layout::LayoutBox> layout;
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      make_result(10, 20, 30, 40, /*layout_id=*/-1),
+  };
+  results[0].text = "x";
+  std::vector<int> reading_order;
+  auto json = turbo_ocr::results_with_blocks(results, layout, reading_order);
+  CHECK(json.find("\"blocks\"") == std::string::npos);
+}
+
+TEST_CASE("results_with_blocks: escapes JSON-special chars in content",
+          "[blocks]") {
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(0, 0, 200, 100, /*class_id=*/22),
+  };
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      make_result(10, 20, 190, 60, /*layout_id=*/0),
+  };
+  results[0].text = "with \"quotes\" and \\backslash";
+  layout[0].text_line_height = 25;
+  std::vector<int> reading_order = {0};
+  auto json = turbo_ocr::results_with_blocks(results, layout, reading_order);
+  CHECK(json.find("\"content\":\"with \\\"quotes\\\" and \\\\backslash\"")
+        != std::string::npos);
 }

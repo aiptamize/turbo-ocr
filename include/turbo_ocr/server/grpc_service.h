@@ -171,10 +171,16 @@ public:
                          const ocr::OCRRequest *request,
                          ocr::OCRResponse *response) override {
     if (auto err = grpc_check_layout_request(ctx, request->layout(),
-            request->reading_order(), layout_available_); err)
+            request->reading_order() || request->as_blocks(),
+            layout_available_); err)
       return *err;
     bool want_layout = request->layout();
     bool want_reading_order = request->reading_order();
+    const bool want_blocks = request->as_blocks();
+    if (want_blocks) {
+      want_reading_order = true;
+      want_layout = true;
+    }
     if (want_reading_order) want_layout = true;
 
     // Pixels path: raw BGR pixel data
@@ -214,7 +220,7 @@ public:
 
       try {
         auto out = run_infer(img, want_layout, want_reading_order);
-        fill_response(response, out.results, out.layout, out.reading_order);
+        fill_response(response, out.results, out.layout, out.reading_order, want_blocks);
         return grpc::Status::OK;
       } catch (const turbo_ocr::PoolExhaustedError &e) {
         return grpc_error(ctx, grpc::StatusCode::RESOURCE_EXHAUSTED,
@@ -250,7 +256,7 @@ public:
 
     try {
       auto out = run_infer(img, want_layout, want_reading_order);
-      fill_response(response, out.results, out.layout, out.reading_order);
+      fill_response(response, out.results, out.layout, out.reading_order, want_blocks);
       return grpc::Status::OK;
     } catch (const turbo_ocr::PoolExhaustedError &e) {
       return grpc_error(ctx, grpc::StatusCode::RESOURCE_EXHAUSTED,
@@ -276,10 +282,16 @@ public:
                         "EMPTY_BATCH", "Empty images array");
 
     if (auto err = grpc_check_layout_request(ctx, request->layout(),
-            request->reading_order(), layout_available_); err)
+            request->reading_order() || request->as_blocks(),
+            layout_available_); err)
       return *err;
     bool want_layout = request->layout();
     bool want_reading_order = request->reading_order();
+    const bool want_blocks = request->as_blocks();
+    if (want_blocks) {
+      want_reading_order = true;
+      want_layout = true;
+    }
     if (want_reading_order) want_layout = true;
 
     // Pre-decode dim sniff on every item — refuses bombs before any decode.
@@ -347,7 +359,7 @@ public:
             try {
               auto out = run_infer(imgs[i], want_layout, want_reading_order);
               fill_response(entries[i], out.results, out.layout,
-                            out.reading_order);
+                            out.reading_order, want_blocks);
             } catch (const std::exception &e) {
               std::cerr << std::format("[gRPC Batch] Image {} error: {}\n",
                                        i, e.what());
@@ -378,13 +390,17 @@ public:
                         "MISSING_PDF", "Empty PDF data");
 
     if (auto err = grpc_check_layout_request(ctx, request->layout(),
-            /*reading_order=*/false, layout_available_); err)
+            /*reading_order=*/request->as_blocks(),
+            layout_available_); err)
       return *err;
 
     const auto *pdf_data = reinterpret_cast<const uint8_t *>(request->pdf_data().data());
     size_t pdf_len = request->pdf_data().size();
 
     bool want_layout = request->layout();
+    const bool want_blocks = request->as_blocks();
+    const bool want_reading_order = want_blocks;
+    if (want_blocks) want_layout = true;
 
     int dpi = request->dpi();
     if (dpi == 0) dpi = 100;
@@ -435,6 +451,7 @@ public:
     struct PdfPageResult {
       std::vector<OCRResultItem> results;
       std::vector<layout::LayoutBox> layout;
+      std::vector<int> reading_order;
       int width = 0, height = 0, effective_dpi = 0;
       pdf::PdfMode resolved_mode = pdf::PdfMode::Ocr;
       std::string_view text_layer_quality = "absent";
@@ -559,7 +576,7 @@ public:
               // every captured reference outlives the task.
               auto fut = std::async(std::launch::async,
                   [this, &results_mutex, &page_results, &page_text_cache,
-                   &pdf_doc, want_layout, dpi, page_idx,
+                   &pdf_doc, want_layout, want_reading_order, dpi, page_idx,
                    path = std::move(ppm_path)]() {
                 cv::Mat img = render::PdfRenderer::decode_ppm(path);
                 if (img.empty()) {
@@ -578,16 +595,18 @@ public:
 
                 std::vector<OCRResultItem> rec_results;
                 std::vector<layout::LayoutBox> layout_snapshot;
+                std::vector<int> reading_order_snapshot;
 
                 // Geometric mode with layout: run full inference to get layout
                 // (CPU has no run_layout_only; GPU path also benefits from unified code)
                 if (page_mode == pdf::PdfMode::Geometric && want_layout) {
-                  auto infer_out = run_infer(img, true);
+                  auto infer_out = run_infer(img, true, want_reading_order);
                   layout_snapshot = std::move(infer_out.layout);
                 } else if (page_mode != pdf::PdfMode::Geometric) {
-                  auto infer_out = run_infer(img, want_layout);
+                  auto infer_out = run_infer(img, want_layout, want_reading_order);
                   rec_results = std::move(infer_out.results);
                   layout_snapshot = std::move(infer_out.layout);
+                  reading_order_snapshot = std::move(infer_out.reading_order);
                   for (auto &it : rec_results) it.source = "ocr";
                 }
 
@@ -626,6 +645,7 @@ public:
                   slot.results = std::move(rec_results);
                 }
                 slot.layout        = std::move(layout_snapshot);
+                slot.reading_order = std::move(reading_order_snapshot);
                 slot.width         = pw;
                 slot.height        = ph;
                 slot.effective_dpi = dpi;
@@ -675,7 +695,12 @@ public:
       page->set_text_layer_quality(std::string(pg.text_layer_quality));
 
       if (mode_ == GrpcResponseMode::json_bytes) {
-        page->set_json_response(results_to_json(pg.results, pg.layout));
+        if (!pg.reading_order.empty()) {
+          page->set_json_response(emit_results_json(
+              pg.results, pg.layout, pg.reading_order, want_blocks));
+        } else {
+          page->set_json_response(results_to_json(pg.results, pg.layout));
+        }
       } else {
         fill_page_results(page, pg.results);
       }
@@ -688,12 +713,13 @@ private:
   void fill_response(ocr::OCRResponse *response,
                      std::vector<OCRResultItem> &results,
                      std::vector<layout::LayoutBox> &layout_boxes,
-                     const std::vector<int> &reading_order = {}) {
+                     const std::vector<int> &reading_order = {},
+                     bool want_blocks = false) {
     response->set_num_detections(static_cast<int>(results.size()));
     if (mode_ == GrpcResponseMode::json_bytes) {
       if (!reading_order.empty()) {
-        response->set_json_response(results_with_reading_order(
-            results, layout_boxes, reading_order));
+        response->set_json_response(emit_results_json(
+            results, layout_boxes, reading_order, want_blocks));
       } else if (layout_boxes.empty()) {
         response->set_json_response(results_to_json(results));
       } else {

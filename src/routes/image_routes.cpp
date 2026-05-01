@@ -18,7 +18,7 @@
 using turbo_ocr::OCRResultItem;
 using turbo_ocr::base64_decode;
 using turbo_ocr::results_to_json;
-using turbo_ocr::results_with_reading_order;
+using turbo_ocr::emit_results_json;
 using turbo_ocr::decode::NvJpegDecoder;
 
 namespace turbo_ocr::routes {
@@ -104,8 +104,7 @@ void register_ocr_raw_route_gpu(server::WorkPool &pool,
                                                opts.want_layout,
                                                opts.want_reading_order);
           }).get();
-          cb(server::json_response(results_with_reading_order(
-              out.results, out.layout, out.reading_order)));
+          cb(server::json_response(emit_results_json(out.results, out.layout, out.reading_order, opts.want_blocks)));
           return;
         }
 
@@ -126,8 +125,7 @@ void register_ocr_raw_route_gpu(server::WorkPool &pool,
                                               opts.want_layout,
                                               opts.want_reading_order);
         }).get();
-        cb(server::json_response(results_with_reading_order(
-            out.results, out.layout, out.reading_order)));
+        cb(server::json_response(emit_results_json(out.results, out.layout, out.reading_order, opts.want_blocks)));
       });
     });
   }, {drogon::Post});
@@ -301,7 +299,8 @@ void batch_run_pipeline(pipeline::PipelineDispatcher &dispatcher,
 // — null in the errors array for successful slots, an error string otherwise.
 std::string batch_emit_json(std::vector<BatchItem> &all_items,
                              const std::vector<std::string> &errors,
-                             bool want_layout) {
+                             bool want_layout,
+                             bool want_blocks) {
   size_t n = all_items.size();
   std::string json_str;
   json_str.reserve(n * 1024);
@@ -309,9 +308,7 @@ std::string batch_emit_json(std::vector<BatchItem> &all_items,
   for (size_t i = 0; i < n; ++i) {
     if (i > 0) json_str += ',';
     if (want_layout) {
-      json_str += results_with_reading_order(
-          all_items[i].results, all_items[i].layout,
-          all_items[i].reading_order);
+      json_str += emit_results_json(all_items[i].results, all_items[i].layout, all_items[i].reading_order, want_blocks);
     } else {
       json_str += results_to_json(all_items[i].results);
     }
@@ -410,7 +407,7 @@ void register_ocr_batch_route_gpu(server::WorkPool &pool,
         batch_run_pipeline(dispatcher, valid_imgs, valid_indices,
                             want_layout, opts, all_items, errors);
 
-        cb(server::json_response(batch_emit_json(all_items, errors, want_layout)));
+        cb(server::json_response(batch_emit_json(all_items, errors, want_layout, opts.want_blocks)));
       });
     });
   }, {drogon::Post});
@@ -487,8 +484,7 @@ void register_ocr_pixels_route_gpu(server::WorkPool &pool,
                                               opts.want_layout,
                                               opts.want_reading_order);
         }).get();
-        cb(server::json_response(results_with_reading_order(
-            out.results, out.layout, out.reading_order)));
+        cb(server::json_response(emit_results_json(out.results, out.layout, out.reading_order, opts.want_blocks)));
       });
     });
   }, {drogon::Post});

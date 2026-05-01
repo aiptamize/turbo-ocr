@@ -39,6 +39,11 @@ struct InferResult {
 struct InferOptions {
   bool want_layout = false;
   bool want_reading_order = false;
+  // ?as_blocks=1 — emit a `blocks` array (paragraph-level aggregate,
+  // one entry per non-empty layout cell, mirrors PaddleX's
+  // PP-StructureV3 parsing_res_list granularity). Auto-enables layout
+  // and reading_order since aggregation needs both.
+  bool want_blocks = false;
 };
 
 /// Image decoder: (raw_bytes_ptr, length) -> cv::Mat
@@ -312,6 +317,20 @@ parse_query_options(const drogon::HttpRequestPtr &req,
   if (out->want_reading_order && !out->want_layout) {
     // Reading order auto-enables layout so /ocr behaves as documented:
     // ?reading_order=1 alone yields a populated reading_order array.
+    out->want_layout = true;
+  }
+
+  if (auto err = parse_bool_query(req, "as_blocks", &out->want_blocks);
+      !err.empty())
+    return {err, "INVALID_PARAMETER"};
+  if (out->want_blocks && !layout_available) {
+    return {"as_blocks=1 requires the layout model: start the server "
+            "without DISABLE_LAYOUT=1 (layout is on by default)",
+            "LAYOUT_DISABLED"};
+  }
+  if (out->want_blocks) {
+    // Aggregation needs reading_order (and reading_order needs layout).
+    out->want_reading_order = true;
     out->want_layout = true;
   }
 

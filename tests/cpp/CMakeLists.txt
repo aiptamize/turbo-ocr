@@ -16,6 +16,7 @@ add_library(turbo_ocr_common STATIC
     ${PROJECT_ROOT}/src/layout/reading_order.cpp
     ${PROJECT_ROOT}/src/layout/match_unsorted.cpp
     ${PROJECT_ROOT}/src/layout/child_blocks.cpp
+    ${PROJECT_ROOT}/src/layout/text_line_cluster.cpp
     ${PROJECT_ROOT}/third_party/clipper/clipper.cpp
     ${PROJECT_ROOT}/third_party/simdutf/simdutf.cpp
 )

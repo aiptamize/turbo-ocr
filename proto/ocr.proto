@@ -34,6 +34,9 @@ message OCRRequest {
   int32 height = 8;          // pixel height (required with pixels field)
   int32 channels = 9;        // pixel channels (required with pixels field, typically 3)
   bool reading_order = 10;   // emit reading_order permutation (auto-enables layout)
+  bool as_blocks = 11;       // emit `blocks` paragraph-level aggregate in json_response
+                             // (mirrors PaddleX PP-StructureV3 parsing_res_list).
+                             // Auto-enables layout + reading_order.
 }
 
 message OCRBatchRequest {
@@ -41,6 +44,7 @@ message OCRBatchRequest {
   int32 det_batch_num = 2;
   bool layout = 3;           // enable layout analysis for all images in batch
   bool reading_order = 4;    // emit reading_order permutation per image (auto-enables layout)
+  bool as_blocks = 5;        // emit `blocks` aggregate per image (auto-enables layout + reading_order)
 }
 
 message BoundingBox {
@@ -79,6 +83,7 @@ message OCRPDFRequest {
   string mode = 2;        // "ocr", "geometric", "auto", "auto_verified" (default "ocr")
   int32 dpi = 3;          // render DPI (default 100)
   bool layout = 4;
+  bool as_blocks = 5;     // emit `blocks` aggregate per page (auto-enables layout)
 }
 
 message OCRPDFResponse {

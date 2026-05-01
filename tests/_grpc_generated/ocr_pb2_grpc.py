@@ -26,7 +26,24 @@ if _version_not_supported:
 
 
 class OCRServiceStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """Error codes (HTTP parity)
+    -------------------------
+    Every non-OK gRPC response from this service carries a structured error
+    code in the trailing metadata under the key "x-error-code". The value is
+    the same string the HTTP API returns inside {"error":{"code":"..."}} so
+    clients can branch on a single set of identifiers regardless of transport.
+
+    Known codes:
+    LAYOUT_DISABLED, INVALID_PARAMETER, BASE64_DECODE_FAILED,
+    IMAGE_DECODE_FAILED, DIMENSIONS_TOO_LARGE, EMPTY_BATCH, MISSING_IMAGE,
+    MISSING_PDF, INVALID_DPI, INVALID_DIMENSIONS, BODY_SIZE_MISMATCH,
+    PDF_RENDER_FAILED, PDF_NOT_AVAILABLE, EMPTY_PDF, SERVER_BUSY,
+    INFERENCE_ERROR, NOT_READY.
+
+    The legacy grpc::StatusCode + status message remain primary for older
+    clients; "x-error-code" is purely additive. Read it via
+    ClientContext::GetServerTrailingMetadata() after the call completes.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -57,7 +74,24 @@ class OCRServiceStub(object):
 
 
 class OCRServiceServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """Error codes (HTTP parity)
+    -------------------------
+    Every non-OK gRPC response from this service carries a structured error
+    code in the trailing metadata under the key "x-error-code". The value is
+    the same string the HTTP API returns inside {"error":{"code":"..."}} so
+    clients can branch on a single set of identifiers regardless of transport.
+
+    Known codes:
+    LAYOUT_DISABLED, INVALID_PARAMETER, BASE64_DECODE_FAILED,
+    IMAGE_DECODE_FAILED, DIMENSIONS_TOO_LARGE, EMPTY_BATCH, MISSING_IMAGE,
+    MISSING_PDF, INVALID_DPI, INVALID_DIMENSIONS, BODY_SIZE_MISMATCH,
+    PDF_RENDER_FAILED, PDF_NOT_AVAILABLE, EMPTY_PDF, SERVER_BUSY,
+    INFERENCE_ERROR, NOT_READY.
+
+    The legacy grpc::StatusCode + status message remain primary for older
+    clients; "x-error-code" is purely additive. Read it via
+    ClientContext::GetServerTrailingMetadata() after the call completes.
+    """
 
     def Recognize(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -115,7 +149,24 @@ def add_OCRServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class OCRService(object):
-    """Missing associated documentation comment in .proto file."""
+    """Error codes (HTTP parity)
+    -------------------------
+    Every non-OK gRPC response from this service carries a structured error
+    code in the trailing metadata under the key "x-error-code". The value is
+    the same string the HTTP API returns inside {"error":{"code":"..."}} so
+    clients can branch on a single set of identifiers regardless of transport.
+
+    Known codes:
+    LAYOUT_DISABLED, INVALID_PARAMETER, BASE64_DECODE_FAILED,
+    IMAGE_DECODE_FAILED, DIMENSIONS_TOO_LARGE, EMPTY_BATCH, MISSING_IMAGE,
+    MISSING_PDF, INVALID_DPI, INVALID_DIMENSIONS, BODY_SIZE_MISMATCH,
+    PDF_RENDER_FAILED, PDF_NOT_AVAILABLE, EMPTY_PDF, SERVER_BUSY,
+    INFERENCE_ERROR, NOT_READY.
+
+    The legacy grpc::StatusCode + status message remain primary for older
+    clients; "x-error-code" is purely additive. Read it via
+    ClientContext::GetServerTrailingMetadata() after the call completes.
+    """
 
     @staticmethod
     def Recognize(request,

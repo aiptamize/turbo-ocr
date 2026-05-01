@@ -33,7 +33,7 @@ using turbo_ocr::Box;
 using turbo_ocr::OCRResultItem;
 using turbo_ocr::base64_decode;
 using turbo_ocr::results_to_json;
-using turbo_ocr::results_with_reading_order;
+using turbo_ocr::emit_results_json;
 using turbo_ocr::server::env_or;
 
 namespace {
@@ -241,8 +241,7 @@ int main() {
                         const_cast<char *>(req->body().data()));
             auto inf = infer(img, opts);
             cb(turbo_ocr::server::json_response(
-                turbo_ocr::results_with_reading_order(
-                    inf.results, inf.layout, inf.reading_order)));
+                turbo_ocr::emit_results_json(inf.results, inf.layout, inf.reading_order, opts.want_blocks)));
           });
         });
       },
@@ -431,9 +430,7 @@ int main() {
           json_str += "{\"batch_results\":[";
           for (size_t i = 0; i < batch_items.size(); ++i) {
             if (i > 0) json_str += ',';
-            json_str += results_with_reading_order(
-                batch_items[i].results, batch_items[i].layout,
-                batch_items[i].reading_order);
+            json_str += emit_results_json(batch_items[i].results, batch_items[i].layout, batch_items[i].reading_order, opts.want_blocks);
           }
           json_str += "],\"errors\":[";
           for (size_t i = 0; i < batch_items.size(); ++i) {

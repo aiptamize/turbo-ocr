@@ -54,6 +54,7 @@ int max_pdf_pages() {
 struct PdfPageResultBase {
   std::vector<OCRResultItem> results;
   std::vector<layout::LayoutBox> layout;
+  std::vector<int> reading_order;
   int width = 0, height = 0, effective_dpi = 0;
   pdf::PdfMode resolved_mode = pdf::PdfMode::Ocr;
   std::string_view text_layer_quality = "absent";
@@ -289,7 +290,8 @@ void prepopulate_pages(pdf::PdfMode mode,
 // and tiny pages from over-allocating.
 template <typename PageResult>
 std::string emit_pdf_response(std::vector<PageResult> &page_results,
-                               int request_dpi) {
+                               int request_dpi,
+                               bool want_blocks = false) {
   size_t n_pages = page_results.size();
   size_t total_results = 0;
   for (size_t i = 0; i < n_pages; ++i)
@@ -312,7 +314,10 @@ std::string emit_pdf_response(std::vector<PageResult> &page_results,
     json_str += ",\"height\":";
     json_str += std::to_string(pg.height);
     json_str += ',';
-    auto page_json = results_to_json(pg.results, pg.layout);
+    auto page_json = !pg.reading_order.empty()
+                         ? emit_results_json(pg.results, pg.layout,
+                                              pg.reading_order, want_blocks)
+                         : results_to_json(pg.results, pg.layout);
     json_str.append(page_json.data() + 1, page_json.size() - 2);
     json_str += ",\"mode\":\"";
     json_str += pdf::mode_name(pg.resolved_mode);
@@ -338,7 +343,8 @@ void run_streamed_render_gpu(
     pipeline::PipelineDispatcher &dispatcher,
     render::PdfRenderer &pdf_renderer,
     const uint8_t *pdf_data, size_t pdf_len_local,
-    int dpi, bool layout_enabled, pdf::PdfMode mode,
+    int dpi, bool layout_enabled, bool want_reading_order,
+    pdf::PdfMode mode,
     pdf::PdfDocument *pdf_doc,
     const std::vector<pdf::PdfPageText> &page_text_cache,
     std::mutex &results_mutex,
@@ -390,10 +396,15 @@ void run_streamed_render_gpu(
               layout_snapshot = std::move(lo.layout);
             } else {
               auto pipeline_out = e.pipeline->run_with_layout(
-                  img, e.stream, layout_enabled);
+                  img, e.stream, layout_enabled, want_reading_order);
               rec_results = std::move(pipeline_out.results);
               layout_snapshot = std::move(pipeline_out.layout);
               for (auto &it : rec_results) it.source = "ocr";
+              if (want_reading_order) {
+                std::lock_guard<std::mutex> rlock(results_mutex);
+                page_results[page_idx].reading_order =
+                    std::move(pipeline_out.reading_order);
+              }
             }
 
             if (page_mode == pdf::PdfMode::AutoVerified &&
@@ -456,7 +467,7 @@ int run_streamed_render_cpu(
     const server::InferFunc &infer,
     render::PdfRenderer &pdf_renderer,
     const uint8_t *pdf_data, size_t pdf_len_local,
-    int dpi, bool want_layout, pdf::PdfMode mode,
+    int dpi, bool want_layout, bool want_reading_order, pdf::PdfMode mode,
     std::vector<PdfPageResultBase> &page_results,
     const std::vector<uint8_t> &need_render) {
   auto stream_handle = pdf_renderer.render_streamed(pdf_data, pdf_len_local, dpi,
@@ -475,6 +486,7 @@ int run_streamed_render_cpu(
 
         turbo_ocr::server::InferOptions inf_opts;
         inf_opts.want_layout = want_layout;
+        inf_opts.want_reading_order = want_reading_order;
         // mode==Ocr means the per-page resolved_mode wasn't set up
         // front (we skipped the text-layer pre-pass entirely), so
         // pin it to Ocr here. For non-ocr modes pg.resolved_mode is
@@ -507,6 +519,7 @@ int run_streamed_render_cpu(
           auto inf = infer(img, inf_opts);
           pg.results = std::move(inf.results);
           pg.layout = std::move(inf.layout);
+          pg.reading_order = std::move(inf.reading_order);
           pg.width = img.cols;
           pg.height = img.rows;
           pg.effective_dpi = dpi;
@@ -539,11 +552,16 @@ void register_pdf_route(server::WorkPool &pool,
     if (!extract_pdf_bytes(req, *pdf_buf, pdf_ptr, pdf_len, callback))
       return;
 
-    bool layout_enabled = false;
-    if (auto err = server::parse_layout_query(req, layout_available, &layout_enabled); !err.empty()) {
-      callback(server::error_response(drogon::k400BadRequest, "INVALID_PARAMETER", err));
+    server::InferOptions opts;
+    if (auto r = server::parse_query_options(req, layout_available, &opts);
+        !r.error.empty()) {
+      callback(server::error_response(drogon::k400BadRequest,
+                                       r.error_code.c_str(), r.error));
       return;
     }
+    const bool layout_enabled = opts.want_layout;
+    const bool want_reading_order = opts.want_reading_order;
+    const bool want_blocks = opts.want_blocks;
 
     int dpi = 100;
     auto dpi_str = req->getParameter("dpi");
@@ -564,7 +582,8 @@ void register_pdf_route(server::WorkPool &pool,
 
     server::submit_work(pool, std::move(callback),
         [pdf_buf, req, &dispatcher, &pdf_renderer,
-         layout_enabled, dpi, req_mode](server::DrogonCallback &cb) {
+         layout_enabled, want_reading_order, want_blocks,
+         dpi, req_mode](server::DrogonCallback &cb) {
       const auto *pdf_data = reinterpret_cast<const uint8_t *>(pdf_buf->data());
       size_t pdf_len_local = pdf_buf->size();
 
@@ -600,7 +619,7 @@ void register_pdf_route(server::WorkPool &pool,
         try {
           run_streamed_render_gpu(dispatcher, pdf_renderer,
                                    pdf_data, pdf_len_local,
-                                   dpi, layout_enabled, mode,
+                                   dpi, layout_enabled, want_reading_order, mode,
                                    pdf_doc.get(), page_text_cache,
                                    results_mutex, page_results, need_render,
                                    page_futures, futures_mutex, num_pages);
@@ -640,7 +659,7 @@ void register_pdf_route(server::WorkPool &pool,
         for (int i = 0; i < num_pages && i < static_cast<int>(page_results.size()); ++i)
           trimmed.push_back(std::move(page_results[i]));
       }
-      cb(server::json_response(emit_pdf_response(trimmed, dpi)));
+      cb(server::json_response(emit_pdf_response(trimmed, dpi, want_blocks)));
     });
   }, {drogon::Post});
 }
@@ -666,11 +685,16 @@ void register_pdf_route(server::WorkPool &pool,
     if (!extract_pdf_bytes(req, decoded_buf, pdf_ptr, pdf_len, callback))
       return;
 
-    bool want_layout = false;
-    if (auto err = server::parse_layout_query(req, layout_available, &want_layout); !err.empty()) {
-      callback(server::error_response(drogon::k400BadRequest, "INVALID_PARAMETER", err));
+    server::InferOptions opts;
+    if (auto r = server::parse_query_options(req, layout_available, &opts);
+        !r.error.empty()) {
+      callback(server::error_response(drogon::k400BadRequest,
+                                       r.error_code.c_str(), r.error));
       return;
     }
+    const bool want_layout = opts.want_layout;
+    const bool want_reading_order = opts.want_reading_order;
+    const bool want_blocks = opts.want_blocks;
 
     int dpi = 100;
     auto dpi_str = req->getParameter("dpi");
@@ -688,7 +712,8 @@ void register_pdf_route(server::WorkPool &pool,
     auto pdf_buf = std::make_shared<std::string>(pdf_ptr, pdf_len);
 
     server::submit_work(pool, std::move(callback),
-        [pdf_buf, &infer, &pdf_renderer, want_layout, dpi,
+        [pdf_buf, &infer, &pdf_renderer, want_layout,
+         want_reading_order, want_blocks, dpi,
          req_mode](server::DrogonCallback &cb) {
       const auto *pdf_data = reinterpret_cast<const uint8_t *>(pdf_buf->data());
       size_t pdf_len_local = pdf_buf->size();
@@ -734,7 +759,8 @@ void register_pdf_route(server::WorkPool &pool,
 
         if (any_need_render) {
           int num_pages = run_streamed_render_cpu(infer, pdf_renderer,
-              pdf_data, pdf_len_local, dpi, want_layout, mode,
+              pdf_data, pdf_len_local, dpi, want_layout,
+              want_reading_order, mode,
               page_results, need_render);
           if (static_cast<int>(page_results.size()) < num_pages)
             page_results.resize(num_pages);
@@ -751,7 +777,7 @@ void register_pdf_route(server::WorkPool &pool,
         return;
       }
 
-      cb(server::json_response(emit_pdf_response(page_results, dpi)));
+      cb(server::json_response(emit_pdf_response(page_results, dpi, want_blocks)));
     });
   }, {drogon::Post});
 }
