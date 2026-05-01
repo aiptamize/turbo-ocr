@@ -65,10 +65,24 @@ else
   TRT_CACHE_DIR="/tmp/turbo-ocr-engines"
 fi
 mkdir -p "${TRT_CACHE_DIR}" 2>/dev/null || true
+
+# We're still root here (gosu drops privileges further down). Bind-mounted
+# host volumes inherit the host uid/gid (commonly 1000), but the ocr user
+# inside the container is uid 1001 — so without this chown the binary's
+# std::ofstream silently fails with EACCES when writing engine files. The
+# only externally visible symptom is "[TRT] Failed to build engine from:
+# <onnx>" with no diagnostic, even though TRT actually built the engine.
+# Cheap when the dir is already correctly owned, critical when it isn't.
+if [[ $EUID -eq 0 ]]; then
+  chown -R ocr:ocr "${TRT_CACHE_DIR}" 2>/dev/null || true
+fi
+
+# Probe writability AS THE ocr USER — the previous probe ran as root and
+# always passed even when the actual binary couldn't write a byte.
 TRT_CACHE_SENTINEL="${TRT_CACHE_DIR}/.entrypoint_writecheck.$$"
-if ! ( : > "${TRT_CACHE_SENTINEL}" ) 2>/dev/null; then
-  echo "[entrypoint] FATAL: TRT engine cache directory '${TRT_CACHE_DIR}' is not writable." >&2
-  echo "[entrypoint]        Mount it read-write or unset TRT_ENGINE_CACHE to fall back to ~/.cache/turbo-ocr." >&2
+if ! gosu ocr bash -c ": > '${TRT_CACHE_SENTINEL}'" 2>/dev/null; then
+  echo "[entrypoint] FATAL: TRT engine cache directory '${TRT_CACHE_DIR}' is not writable by the ocr user." >&2
+  echo "[entrypoint]        Even after chown -R ocr:ocr, the directory cannot be written. Likely a read-only mount." >&2
   exit 1
 fi
 rm -f "${TRT_CACHE_SENTINEL}"

@@ -9,8 +9,10 @@
 #include <cuda_runtime.h>
 
 #include <algorithm>
+#include <cerrno>
 #include <chrono>
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <unistd.h>
 #include <fstream>
@@ -137,9 +139,15 @@ static bool build_engine(const std::string &onnx_path,
       nvinfer1::createInferBuilder(s_logger));
   if (!builder) return false;
 
+  // Pass 0 — no NetworkDefinitionCreationFlag bits. In TRT 10 networks are
+  // always explicit batch (kEXPLICIT_BATCH is value 0, deprecated, ignored),
+  // and bit 0 now means kSTRONGLY_TYPED. The legacy `1U << kEXPLICIT_BATCH`
+  // expression therefore evaluated to 1 — silently selecting a strongly-
+  // typed network, which forbids setFlag(kFP16) below. TRT then silently
+  // returns a null serialized plan with no kERROR log, surfacing only as
+  // "Failed to build engine from <onnx_path>" on cold builds.
   auto network = std::unique_ptr<nvinfer1::INetworkDefinition>(
-      builder->createNetworkV2(1U << static_cast<uint32_t>(
-          nvinfer1::NetworkDefinitionCreationFlag::kEXPLICIT_BATCH)));
+      builder->createNetworkV2(0U));
   if (!network) return false;
 
   auto parser = std::unique_ptr<nvonnxparser::IParser>(
@@ -253,14 +261,25 @@ static bool build_engine(const std::string &onnx_path,
 
   // Write to a temp file first, then atomic rename (prevents corruption from
   // concurrent builds in multi-replica Docker deployments).
+  //
+  // Both the open and the close-after-write check log on failure with the
+  // strerror text. Earlier the open path was a silent `return false`, and
+  // a uid-mismatch on a bind-mounted engine cache (host uid 1000, container
+  // ocr uid 1001) hit it as EACCES — which surfaced only as "Failed to
+  // build engine from <onnx>" from the caller, despite TRT having built
+  // the engine successfully. Hours of bisection later, ergo this errno log.
   const auto tmp_path = trt_path + ".tmp." + std::to_string(getpid());
   std::ofstream file(tmp_path, std::ios::binary);
-  if (!file) return false;
+  if (!file) {
+    std::cerr << "[TRT] Failed to open temp file " << tmp_path << ": "
+              << std::strerror(errno) << '\n';
+    return false;
+  }
   file.write(static_cast<const char *>(plan->data()), plan->size());
   file.close();
   if (!file) {
     std::cerr << "[TRT] Failed to write temp file " << tmp_path
-              << " (disk full?)\n";
+              << " (disk full?): " << std::strerror(errno) << '\n';
     fs::remove(tmp_path, ec);
     return false;
   }
