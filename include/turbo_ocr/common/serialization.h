@@ -162,9 +162,16 @@ results_to_json(const std::vector<OCRResultItem> &results) {
 //
 // Matching rule: a text item's `layout_id` is the id of the first layout
 // region whose axis-aligned bbox contains the text item's bounding-box
-// center. If no layout region contains the center, layout_id stays -1.
+// center. If no layout region contains the center, the item is added to
+// a synthesised "SupplementaryRegion" block whose bbox is the minimum
+// enclosing rectangle of the unmatched items — mirroring PaddleX's
+// pipeline_v2 fallback so every result keeps a valid layout_id.
 inline void assign_layout_ids(std::vector<OCRResultItem> &results,
                               std::vector<layout::LayoutBox> &layout) {
+  // Backward-compat: when the caller didn't request layout (empty input)
+  // we don't synthesise anything — the serializer then omits the layout
+  // key + per-result layout_id keys, keeping responses byte-identical to
+  // pre-layout clients.
   if (layout.empty()) return;
 
   // Idempotent short-circuit: pipelines run this before reading-order so
@@ -207,6 +214,40 @@ inline void assign_layout_ids(std::vector<OCRResultItem> &results,
         break;
       }
     }
+  }
+
+  // 3. Supplementary region for orphans. Walk the results once: any item
+  //    still at layout_id == -1 contributes its AABB to a running
+  //    minimum-enclosing rectangle. If at least one orphan exists, append
+  //    a synthetic LayoutBox covering them all and rebind their
+  //    layout_ids to the synthetic block.
+  int supp_x0 = INT_MAX, supp_y0 = INT_MAX;
+  int supp_x1 = INT_MIN, supp_y1 = INT_MIN;
+  bool has_orphan = false;
+  for (const auto &it : results) {
+    if (it.layout_id >= 0) continue;
+    auto [x0, y0, x1, y1] = turbo_ocr::aabb(it.box);
+    supp_x0 = std::min(supp_x0, x0);
+    supp_y0 = std::min(supp_y0, y0);
+    supp_x1 = std::max(supp_x1, x1);
+    supp_y1 = std::max(supp_y1, y1);
+    has_orphan = true;
+  }
+  if (!has_orphan) return;
+
+  layout::LayoutBox supp;
+  supp.class_id = layout::kSupplementaryRegionClassId;
+  supp.score = 1.0f;
+  supp.box[0] = {supp_x0, supp_y0};
+  supp.box[1] = {supp_x1, supp_y0};
+  supp.box[2] = {supp_x1, supp_y1};
+  supp.box[3] = {supp_x0, supp_y1};
+  const int supp_idx = static_cast<int>(layout.size());
+  supp.id = supp_idx;
+  layout.push_back(supp);
+
+  for (auto &it : results) {
+    if (it.layout_id < 0) it.layout_id = supp_idx;
   }
 }
 

@@ -26,7 +26,18 @@ inline constexpr auto kLayoutLabels = std::to_array<std::string_view>({
     "vision_footnote",
 });
 
+// Sentinel class_id used for layout boxes synthesised after the fact —
+// e.g. minimum-enclosing region for OCR results that didn't land inside
+// any detected layout box. Mirrors PaddleX's "SupplementaryRegion"
+// fallback: every result is guaranteed a layout_id pointing into the
+// layout array, even when the layout model missed its region.
+inline constexpr int kSupplementaryRegionClassId = -1;
+inline constexpr std::string_view kSupplementaryRegionLabel =
+    "SupplementaryRegion";
+
 inline constexpr std::string_view label_name(int class_id) noexcept {
+  if (class_id == kSupplementaryRegionClassId)
+    return kSupplementaryRegionLabel;
   if (class_id >= 0 && class_id < static_cast<int>(kLayoutLabels.size()))
     return kLayoutLabels[class_id];
   return {};

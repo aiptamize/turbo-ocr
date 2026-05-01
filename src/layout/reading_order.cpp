@@ -513,8 +513,10 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
   size_t matched_count = 0;
   for (size_t ri = 0; ri < results.size(); ++ri) {
     int lid = results[ri].layout_id;
-    if (lid >= 0 && static_cast<size_t>(lid) < layout.size())
-      ++matched_count;
+    if (lid < 0 || static_cast<size_t>(lid) >= layout.size()) continue;
+    if (layout[static_cast<size_t>(lid)].class_id ==
+        kSupplementaryRegionClassId) continue;
+    ++matched_count;
   }
   // 5% threshold: fewer than ceil(0.05 * N) matches means "almost no
   // signal from layout" — better to fall back than risk the regression.
@@ -547,6 +549,13 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
     std::vector<AugRect> aug;
     aug.reserve(layout.size());
     for (size_t li = 0; li < layout.size(); ++li) {
+      // SupplementaryRegion is a synthetic block that wraps the
+      // minimum-enclosing rectangle of orphan results. We don't want
+      // to XY-cut by it as a single unit (its bbox can span the whole
+      // page when orphans are scattered) — instead the orphans inside
+      // it are emitted individually in the bucket==1 loop below, so
+      // each one lands at its true geometric position.
+      if (layout[li].class_id == kSupplementaryRegionClassId) continue;
       if (reading_priority_bucket(layout[li].class_id) == bucket) {
         aug.push_back({layout_aabb[li], 0, static_cast<int>(li)});
       }
@@ -554,7 +563,12 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
     if (bucket == 1) {
       for (size_t ri = 0; ri < results.size(); ++ri) {
         int lid = results[ri].layout_id;
-        if (lid < 0 || static_cast<size_t>(lid) >= layout.size()) {
+        const bool is_orphan =
+            (lid < 0) ||
+            (static_cast<size_t>(lid) >= layout.size()) ||
+            (layout[static_cast<size_t>(lid)].class_id ==
+             kSupplementaryRegionClassId);
+        if (is_orphan) {
           auto [x0, y0, x1, y1] = turbo_ocr::aabb(results[ri].box);
           aug.push_back({{x0, y0, x1, y1}, 1, static_cast<int>(ri)});
         }

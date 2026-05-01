@@ -6,6 +6,7 @@
 
 #include <catch_amalgamated.hpp>
 
+#include "turbo_ocr/common/serialization.h"
 #include "turbo_ocr/layout/reading_order.h"
 
 using turbo_ocr::Box;
@@ -461,4 +462,131 @@ TEST_CASE("assign_reading_order_for_results: orphan stays in body even near head
   // Body bucket: orphan (y=10) above body line (y=220).
   CHECK(order[1] == 1);  // orphan
   CHECK(order[2] == 0);  // body line
+}
+
+TEST_CASE("assign_layout_ids synthesises SupplementaryRegion for orphans",
+          "[layout_ids][supplementary]") {
+  // Two real layout boxes; result #1 falls inside layout[0], result #2
+  // falls inside layout[1], result #0 has its centroid OUTSIDE both —
+  // that's the orphan case. After assign_layout_ids:
+  //   - layout vector grows by one entry (index 2) tagged
+  //     class_id == kSupplementaryRegionClassId
+  //   - the synthetic block's bbox encloses the orphan's bbox
+  //   - the orphan's layout_id points at the synthetic block
+  //   - the matched results keep their original layout_id
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(100, 100, 200, 200),   // idx 0
+      make_layout(300, 300, 400, 400),   // idx 1
+  };
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      make_result(500, 500, 540, 520, /*layout_id=*/-1), // orphan
+      make_result(110, 110, 190, 190, /*layout_id=*/-1), // → layout[0]
+      make_result(310, 310, 390, 390, /*layout_id=*/-1), // → layout[1]
+  };
+
+  turbo_ocr::assign_layout_ids(results, layout);
+
+  REQUIRE(layout.size() == 3);
+  CHECK(layout[2].class_id ==
+        turbo_ocr::layout::kSupplementaryRegionClassId);
+  CHECK(layout[2].id == 2);
+  CHECK(turbo_ocr::layout::label_name(layout[2].class_id) ==
+        "SupplementaryRegion");
+
+  // Synthetic bbox covers the orphan's AABB exactly (single orphan).
+  auto [sx0, sy0, sx1, sy1] = turbo_ocr::aabb(layout[2].box);
+  CHECK(sx0 == 500);
+  CHECK(sy0 == 500);
+  CHECK(sx1 == 540);
+  CHECK(sy1 == 520);
+
+  CHECK(results[0].layout_id == 2);  // orphan → SupplementaryRegion
+  CHECK(results[1].layout_id == 0);  // matched
+  CHECK(results[2].layout_id == 1);  // matched
+}
+
+TEST_CASE("assign_layout_ids: SupplementaryRegion encloses ALL orphans",
+          "[layout_ids][supplementary]") {
+  // Multiple scattered orphans → one SupplementaryRegion whose bbox
+  // is the minimum-enclosing rectangle of all of them.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(100, 100, 200, 200),
+  };
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      make_result( 50,  60,  80,  80, /*layout_id=*/-1),  // top-left orphan
+      make_result(110, 110, 190, 190, /*layout_id=*/-1),  // matched
+      make_result(500, 500, 540, 540, /*layout_id=*/-1),  // bottom-right orphan
+      make_result(300,  20, 320,  40, /*layout_id=*/-1),  // top-right orphan
+  };
+
+  turbo_ocr::assign_layout_ids(results, layout);
+
+  REQUIRE(layout.size() == 2);
+  auto [sx0, sy0, sx1, sy1] = turbo_ocr::aabb(layout[1].box);
+  // Min-enclosing of {50,60,80,80}, {500,500,540,540}, {300,20,320,40}
+  CHECK(sx0 == 50);
+  CHECK(sy0 == 20);
+  CHECK(sx1 == 540);
+  CHECK(sy1 == 540);
+
+  CHECK(results[0].layout_id == 1);  // orphan → SupplementaryRegion
+  CHECK(results[1].layout_id == 0);  // matched
+  CHECK(results[2].layout_id == 1);
+  CHECK(results[3].layout_id == 1);
+}
+
+TEST_CASE("assign_layout_ids: no orphans → no SupplementaryRegion appended",
+          "[layout_ids][supplementary]") {
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(100, 100, 200, 200),
+  };
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      make_result(110, 110, 190, 190, /*layout_id=*/-1),
+  };
+  turbo_ocr::assign_layout_ids(results, layout);
+  REQUIRE(layout.size() == 1);   // unchanged
+  CHECK(results[0].layout_id == 0);
+}
+
+TEST_CASE("assign_layout_ids: empty layout stays empty (backward-compat)",
+          "[layout_ids][supplementary]") {
+  // When the caller did not request layout (empty input) we DO NOT
+  // synthesise a SupplementaryRegion. The serializer then omits the
+  // layout key + per-result layout_id keys entirely, keeping responses
+  // byte-identical to pre-layout clients.
+  std::vector<turbo_ocr::layout::LayoutBox> layout;
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      make_result(10, 20, 30, 40, /*layout_id=*/-1),
+      make_result(50, 60, 70, 80, /*layout_id=*/-1),
+  };
+  turbo_ocr::assign_layout_ids(results, layout);
+  REQUIRE(layout.empty());
+  CHECK(results[0].layout_id == -1);
+  CHECK(results[1].layout_id == -1);
+}
+
+TEST_CASE("assign_reading_order_for_results: orphans inside SupplementaryRegion "
+          "still placed individually by XY-cut",
+          "[layout_ids][supplementary][xy_cut]") {
+  // Real layout that misses both result boxes — both become orphans,
+  // get assigned to a synthesised SupplementaryRegion, and the
+  // reading-order code must still emit them in geometric order rather
+  // than treating the synthetic region as one indivisible block.
+  std::vector<turbo_ocr::layout::LayoutBox> layout = {
+      make_layout(800, 800, 900, 900),  // far-away real layout, contains nothing
+  };
+  std::vector<turbo_ocr::OCRResultItem> results = {
+      make_result(50, 200, 100, 220, /*layout_id=*/-1),  // bottom
+      make_result(50,  20, 100,  40, /*layout_id=*/-1),  // top
+  };
+  turbo_ocr::assign_layout_ids(results, layout);
+  REQUIRE(layout.size() == 2);
+  CHECK(results[0].layout_id == 1);
+  CHECK(results[1].layout_id == 1);
+
+  auto order = assign_reading_order_for_results(results, layout);
+  REQUIRE(order.size() == 2);
+  // Top result should come first geometrically.
+  CHECK(order[0] == 1);
+  CHECK(order[1] == 0);
 }
