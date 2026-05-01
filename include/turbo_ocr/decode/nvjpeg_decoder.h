@@ -49,6 +49,12 @@ public:
   }
 
   ~NvJpegDecoder() noexcept {
+    // Safety contract: every public call (decode/batch_decode/decode_to_gpu
+    // when caller-synced) returns only after its CUDA stream has either
+    // synchronized or been queued behind the caller's sync. So when this
+    // dtor runs there is no in-flight work referencing state_/handle_.
+    // If a future caller adds an unsynchronized path, sync the default
+    // stream HERE before destroying handles to keep the contract.
     if (state_) nvjpegJpegStateDestroy(state_);
     if (handle_) nvjpegDestroy(handle_);
   }
