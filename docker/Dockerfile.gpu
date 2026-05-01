@@ -8,7 +8,13 @@
 # The -v mount persists them so subsequent starts are instant.
 # ============================================================
 
-FROM nvcr.io/nvidia/tensorrt:26.03-py3
+# Base image pinned by multi-arch manifest digest. To refresh:
+#   docker manifest inspect nvcr.io/nvidia/tensorrt:26.03-py3
+# or for the index digest specifically:
+#   curl -sI -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
+#     -H "Authorization: Bearer $(curl -s 'https://nvcr.io/proxy_auth?scope=repository:nvidia/tensorrt:pull&service=nvcr.io' | jq -r .token)" \
+#     https://nvcr.io/v2/nvidia/tensorrt/manifests/26.03-py3 | grep -i docker-content-digest
+FROM nvcr.io/nvidia/tensorrt:26.03-py3@sha256:ade1b30517b3d66b911a3cd7faf0146484ab8956098abe66b96b944fa36f4861
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -17,6 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libopencv-dev \
     nginx \
     gosu \
+    libwebp-dev \
     libgrpc++-dev \
     libprotobuf-dev \
     protobuf-compiler-grpc \
@@ -28,6 +35,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     wget \
     curl \
+    gettext-base \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Drogon HTTP framework (async, epoll-based — replaces Crow)
@@ -51,10 +59,15 @@ RUN cd /tmp && \
     cp -r cmake-${CMAKE_VERSION}-linux-x86_64/share/* /usr/local/share/ && \
     rm -rf /tmp/cmake*
 
-# Install ONNX Runtime C++ SDK (for CPU mode)
+# Install ONNX Runtime C++ SDK (for CPU mode).
+# Pinned tarball SHA256 — must match ORT_VERSION below. To refresh after a
+# version bump, recompute via:
+#   curl -sL https://github.com/microsoft/onnxruntime/releases/download/v<NEW>/onnxruntime-linux-x64-<NEW>.tgz | sha256sum
 ARG ORT_VERSION=1.22.0
+ARG ORT_SHA256=8344d55f93d5bc5021ce342db50f62079daf39aaafb5d311a451846228be49b3
 RUN cd /tmp && \
-    wget -q "https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/onnxruntime-linux-x64-${ORT_VERSION}.tgz" && \
+    wget -q "https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/onnxruntime-linux-x64-${ORT_VERSION}.tgz" -O onnxruntime-linux-x64-${ORT_VERSION}.tgz && \
+    echo "${ORT_SHA256}  onnxruntime-linux-x64-${ORT_VERSION}.tgz" | sha256sum -c - && \
     tar xzf onnxruntime-linux-x64-${ORT_VERSION}.tgz && \
     cp -r onnxruntime-linux-x64-${ORT_VERSION}/include/* /usr/local/include/ && \
     cp onnxruntime-linux-x64-${ORT_VERSION}/lib/libonnxruntime.so* /usr/local/lib/ && \

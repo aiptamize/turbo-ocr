@@ -7,6 +7,10 @@
 
 #include <opencv2/imgproc.hpp>
 
+#include "turbo_ocr/common/box.h"
+#include "turbo_ocr/common/serialization.h"
+#include "turbo_ocr/layout/reading_order.h"
+
 namespace turbo_ocr::pipeline {
 
 using ::turbo_ocr::Box;
@@ -97,11 +101,24 @@ bool CpuOcrPipeline::load_layout_model(const std::string &onnx_path) {
 }
 
 OcrPipelineResult CpuOcrPipeline::run_with_layout(const cv::Mat &img,
-                                                    bool want_layout) {
+                                                    bool want_layout,
+                                                    bool want_reading_order) {
   OcrPipelineResult out;
   out.results = run(img);
   if (want_layout && layout_)
     out.layout = layout_->run(img);
+
+  // Reading-order over layout regions, with synthetic XY-cut entries
+  // for orphan results (results whose centroid falls outside every
+  // layout box). assign_layout_ids() resolves layout_id by centroid
+  // containment so the helper can synthesise correctly. Idempotent —
+  // serialization re-runs it but the second call is a no-op.
+  if (want_reading_order && !out.layout.empty()) {
+    turbo_ocr::assign_layout_ids(out.results, out.layout);
+    out.reading_order =
+        layout::assign_reading_order_for_results(out.results, out.layout);
+  }
+
   return out;
 }
 

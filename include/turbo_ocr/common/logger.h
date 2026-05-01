@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
@@ -254,6 +255,73 @@ void log_msg(Level lvl, std::string_view msg, KVs &&...kvs) {
   std::fwrite(buf, 1, len, stderr);
 }
 
+// ── Per-call-site rate limiting ─────────────────────────────────────────
+// Goal: prevent a hot error path (e.g. 1000 qps × 3 lines) from flooding
+// stderr / log aggregators. Each call site keeps its own atomic state;
+// when a window rolls over, a single "[suppressed K logs]" line is emitted.
+
+struct RateLimitConfig {
+  int      max_logs_per_window;  // N (0 disables rate limiting)
+  long     window_ms;            // W in milliseconds
+};
+
+inline const RateLimitConfig &ratelimit_config() {
+  static const RateLimitConfig cfg = []() {
+    RateLimitConfig c{10, 1000};
+    if (const char *s = std::getenv("TOCR_LOG_RATELIMIT")) {
+      // "0" disables; "N" sets max logs per default 1s window;
+      // "N:W_MS" sets both. Anything unparseable falls back to defaults.
+      char *end = nullptr;
+      long n = std::strtol(s, &end, 10);
+      if (end != s) {
+        c.max_logs_per_window = static_cast<int>(n);
+        if (end && *end == ':') {
+          char *end2 = nullptr;
+          long w = std::strtol(end + 1, &end2, 10);
+          if (end2 != end + 1 && w > 0) c.window_ms = w;
+        }
+      }
+    }
+    return c;
+  }();
+  return cfg;
+}
+
+struct RateLimitSlot {
+  std::atomic<long long> window_start_ms{0};
+  std::atomic<int>       count{0};
+  std::atomic<int>       suppressed{0};
+};
+
+// Returns: 1 if the current call should log normally, 0 if it should be
+// suppressed. Out-param suppressed_to_emit, if non-zero, is the count of
+// logs suppressed during the previous window — caller should emit a
+// rollup line for them.
+inline int ratelimit_check(RateLimitSlot &slot, int &suppressed_to_emit) {
+  suppressed_to_emit = 0;
+  const auto &cfg = ratelimit_config();
+  if (cfg.max_logs_per_window <= 0) return 1;  // disabled
+
+  auto now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::steady_clock::now().time_since_epoch()).count();
+  long long ws = slot.window_start_ms.load(std::memory_order_relaxed);
+  if (ws == 0 || now_ms - ws >= cfg.window_ms) {
+    // Try to roll the window. The thread that wins the CAS owns the
+    // rollup emission for the prior window's suppressed count.
+    if (slot.window_start_ms.compare_exchange_strong(
+            ws, now_ms, std::memory_order_acq_rel)) {
+      suppressed_to_emit = slot.suppressed.exchange(0, std::memory_order_acq_rel);
+      slot.count.store(1, std::memory_order_release);
+      return 1;
+    }
+    // Lost the race — fall through and treat as same window.
+  }
+  int prev = slot.count.fetch_add(1, std::memory_order_acq_rel);
+  if (prev < cfg.max_logs_per_window) return 1;
+  slot.suppressed.fetch_add(1, std::memory_order_relaxed);
+  return 0;
+}
+
 } // namespace turbo_ocr::log
 
 // ── Convenience macros ─────────────────────────────────────────────────
@@ -263,3 +331,32 @@ void log_msg(Level lvl, std::string_view msg, KVs &&...kvs) {
 #define TOCR_LOG_INFO(msg, ...)  ::turbo_ocr::log::log_msg(::turbo_ocr::log::Level::Info,  msg, ##__VA_ARGS__)
 #define TOCR_LOG_WARN(msg, ...)  ::turbo_ocr::log::log_msg(::turbo_ocr::log::Level::Warn,  msg, ##__VA_ARGS__)
 #define TOCR_LOG_ERROR(msg, ...) ::turbo_ocr::log::log_msg(::turbo_ocr::log::Level::Error, msg, ##__VA_ARGS__)
+
+// Rate-limited variant. Each expansion site has its own static atomic
+// counter — when more than N logs would fire within W ms, extras are
+// dropped and a single "[suppressed logs]" rollup is emitted at window
+// roll. Set TOCR_LOG_RATELIMIT=0 to disable; "N" or "N:W_MS" to
+// override (defaults N=10, W=1000).
+#define TOCR_LOG_STRINGIZE_INNER(x) #x
+#define TOCR_LOG_STRINGIZE(x) TOCR_LOG_STRINGIZE_INNER(x)
+
+#define TOCR_LOG_RATELIMITED(level, msg, ...)                                      \
+  do {                                                                             \
+    static ::turbo_ocr::log::RateLimitSlot _tocr_rl_slot;                          \
+    int _tocr_rl_drained = 0;                                                      \
+    int _tocr_rl_pass = ::turbo_ocr::log::ratelimit_check(                         \
+        _tocr_rl_slot, _tocr_rl_drained);                                          \
+    if (_tocr_rl_drained > 0) {                                                    \
+      ::turbo_ocr::log::log_msg(level, "[suppressed logs]",                        \
+          "site", ::std::string_view(__FILE__ ":" TOCR_LOG_STRINGIZE(__LINE__)),   \
+          "count", _tocr_rl_drained);                                              \
+    }                                                                              \
+    if (_tocr_rl_pass) {                                                           \
+      ::turbo_ocr::log::log_msg(level, msg, ##__VA_ARGS__);                        \
+    }                                                                              \
+  } while (0)
+
+#define TOCR_LOG_DEBUG_RL(msg, ...) TOCR_LOG_RATELIMITED(::turbo_ocr::log::Level::Debug, msg, ##__VA_ARGS__)
+#define TOCR_LOG_INFO_RL(msg, ...)  TOCR_LOG_RATELIMITED(::turbo_ocr::log::Level::Info,  msg, ##__VA_ARGS__)
+#define TOCR_LOG_WARN_RL(msg, ...)  TOCR_LOG_RATELIMITED(::turbo_ocr::log::Level::Warn,  msg, ##__VA_ARGS__)
+#define TOCR_LOG_ERROR_RL(msg, ...) TOCR_LOG_RATELIMITED(::turbo_ocr::log::Level::Error, msg, ##__VA_ARGS__)

@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <format>
 #include <ranges>
 
@@ -160,19 +161,23 @@ PaddleRec::run(const GpuImage &img, const std::vector<Box> &boxes,
       slot = 0;
     }
 
-    // Build transforms using per-slot pinned host buffers (avoids DMA race)
+    // Build transforms using per-slot pinned host buffers (avoids DMA race).
+    // Cache raw pinned pointers once — the inner loop is hot (called per
+    // batch × per crop) and per-iteration .get() calls add up.
     auto &os = output_slots_[slot];
+    float *h_M_invs_ptr = os.h_M_invs.get();
+    int *h_crop_widths_ptr = os.h_crop_widths.get();
     for (int j = 0; j < cur_batch; ++j) {
       int orig_idx = crops[beg + j].orig_idx;
       auto ct = turbo_ocr::compute_crop_transform(boxes[orig_idx], rec_image_h_, imgW);
-      os.h_crop_widths.get()[j] = ct.crop_width;
-      std::copy_n(ct.M_inv, 9, os.h_M_invs.get() + j * 9);
+      h_crop_widths_ptr[j] = ct.crop_width;
+      std::memcpy(h_M_invs_ptr + j * 9, ct.M_inv, 9 * sizeof(float));
     }
 
     // Upload + warp + infer (all async on stream)
-    CUDA_CHECK(cudaMemcpyAsync(d_M_invs_.get(), os.h_M_invs.get(), cur_batch * 9 * sizeof(float),
+    CUDA_CHECK(cudaMemcpyAsync(d_M_invs_.get(), h_M_invs_ptr, cur_batch * 9 * sizeof(float),
                                 cudaMemcpyHostToDevice, stream));
-    CUDA_CHECK(cudaMemcpyAsync(d_crop_widths_.get(), os.h_crop_widths.get(), cur_batch * sizeof(int),
+    CUDA_CHECK(cudaMemcpyAsync(d_crop_widths_.get(), h_crop_widths_ptr, cur_batch * sizeof(int),
                                 cudaMemcpyHostToDevice, stream));
 
     turbo_ocr::kernels::cuda_batch_roi_warp(img, d_M_invs_.get(), d_crop_widths_.get(),
@@ -325,20 +330,23 @@ PaddleRec::run_multi(const std::vector<ImageCrops> &image_crops,
       slot = 0;
     }
 
-    // Build transforms using per-slot pinned buffers (avoids DMA race)
+    // Build transforms using per-slot pinned buffers (avoids DMA race).
+    // Cache raw pinned pointers once — see notes in run() above.
     auto &os = output_slots_[slot];
+    float *h_M_invs_ptr = os.h_M_invs.get();
+    int *h_crop_widths_ptr = os.h_crop_widths.get();
     for (int j = 0; j < cur_batch; ++j) {
       const auto &ci = crops[beg + j];
       const auto &box = image_crops[ci.img_idx].boxes[ci.box_idx];
       auto ct = turbo_ocr::compute_crop_transform(box, rec_image_h_, imgW);
-      os.h_crop_widths.get()[j] = ct.crop_width;
-      std::copy_n(ct.M_inv, 9, os.h_M_invs.get() + j * 9);
+      h_crop_widths_ptr[j] = ct.crop_width;
+      std::memcpy(h_M_invs_ptr + j * 9, ct.M_inv, 9 * sizeof(float));
     }
 
-    CUDA_CHECK(cudaMemcpyAsync(d_M_invs_.get(), os.h_M_invs.get(),
+    CUDA_CHECK(cudaMemcpyAsync(d_M_invs_.get(), h_M_invs_ptr,
                                 cur_batch * 9 * sizeof(float),
                                 cudaMemcpyHostToDevice, stream));
-    CUDA_CHECK(cudaMemcpyAsync(d_crop_widths_.get(), os.h_crop_widths.get(),
+    CUDA_CHECK(cudaMemcpyAsync(d_crop_widths_.get(), h_crop_widths_ptr,
                                 cur_batch * sizeof(int),
                                 cudaMemcpyHostToDevice, stream));
 

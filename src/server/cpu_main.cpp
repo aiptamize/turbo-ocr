@@ -1,7 +1,10 @@
 #include <atomic>
+#include <chrono>
 #include <csignal>
 #include <cstdlib>
+#include <filesystem>
 #include <format>
+#include <iostream>
 #include <string>
 #include <thread>
 #include <vector>
@@ -10,6 +13,8 @@
 #include <json/json.h>
 
 #include "turbo_ocr/common/logger.h"
+#include "turbo_ocr/decode/image_dims.h"
+#include "turbo_ocr/decode/image_config.h"
 
 #include "turbo_ocr/pdf/pdf_extraction_mode.h"
 #include "turbo_ocr/pdf/pdf_text_layer.h"
@@ -28,14 +33,33 @@ using turbo_ocr::Box;
 using turbo_ocr::OCRResultItem;
 using turbo_ocr::base64_decode;
 using turbo_ocr::results_to_json;
+using turbo_ocr::emit_results_json;
 using turbo_ocr::server::env_or;
 
 namespace {
 std::atomic<bool> g_shutdown_requested{false};
+turbo_ocr::server::WorkPool *g_work_pool_for_drain = nullptr;
 
-void shutdown_handler(int) {
+int shutdown_grace_seconds() {
+  return turbo_ocr::server::env_int("SHUTDOWN_GRACE_SECONDS", 30, 0, 600);
+}
+
+// Mirrors the GPU binary: graceful drain of WorkPool inflight before
+// app().quit() so K8s SIGTERM doesn't truncate inflight responses.
+void begin_graceful_shutdown(const char *signal_name) {
   if (g_shutdown_requested.exchange(true)) return;
-  drogon::app().quit();
+  TOCR_LOG_INFO("Graceful shutdown requested",
+                "signal", std::string_view(signal_name),
+                "grace_seconds", shutdown_grace_seconds());
+  std::thread([signal_name]() {
+    if (g_work_pool_for_drain) {
+      auto deadline = std::chrono::seconds(shutdown_grace_seconds());
+      bool drained = g_work_pool_for_drain->wait_drain(deadline);
+      TOCR_LOG_INFO("Inflight work drain complete",
+                    "drained", drained, "signal", std::string_view(signal_name));
+    }
+    drogon::app().quit();
+  }).detach();
 }
 } // namespace
 
@@ -52,12 +76,33 @@ int main() {
   auto rec_model = rec_paths.rec;
   auto rec_dict = rec_paths.dict;
   auto cls_model = env_or("CLS_MODEL", "models/cls.onnx");
+
+  // Validate model paths up front so a missing models/ tree fails fast
+  // with a clear error rather than tripping a confusing ORT load failure
+  // deep in pipeline construction. Dict file is also required on CPU.
+  auto require_model = [](const std::string &path, const char *purpose) {
+    if (!std::filesystem::exists(path)) {
+      TOCR_LOG_ERROR("Model file missing",
+                     "purpose", std::string_view(purpose),
+                     "path", std::string_view(path));
+      std::cerr << "[FATAL] " << purpose << " file not found at: " << path
+                << "\n        Run scripts/download_models.sh or set "
+                << purpose << "_MODEL env var.\n";
+      std::exit(1);
+    }
+  };
+  require_model(det_model, "DET");
+  require_model(rec_model, "REC");
+  require_model(rec_dict, "REC_DICT");
+  require_model(cls_model, "CLS");
+
   if (turbo_ocr::server::env_enabled("DISABLE_ANGLE_CLS")) {
     cls_model.clear();
     TOCR_LOG_INFO("Angle classification disabled via DISABLE_ANGLE_CLS=1");
   }
 
-  // Layout model (CPU via ONNX Runtime) — on by default
+  // Layout model (CPU via ONNX Runtime) — on by default. Optional: a
+  // missing layout.onnx soft-disables the stage below rather than aborting.
   std::string layout_model = env_or("LAYOUT_ONNX", "models/layout/layout.onnx");
   bool layout_disabled = turbo_ocr::server::env_enabled("DISABLE_LAYOUT");
   bool layout_available = false;
@@ -90,12 +135,16 @@ int main() {
   }
 
   turbo_ocr::server::InferFunc infer =
-      [&pool](const cv::Mat &img, bool want_layout) -> turbo_ocr::server::InferResult {
+      [&pool](const cv::Mat &img,
+              const turbo_ocr::server::InferOptions &opts)
+          -> turbo_ocr::server::InferResult {
     auto handle = pool->acquire();
-    auto out = handle->run_with_layout(img, want_layout);
+    auto out = handle->run_with_layout(img, opts.want_layout,
+                                        opts.want_reading_order);
     return turbo_ocr::server::InferResult{
-        .results = std::move(out.results),
-        .layout  = std::move(out.layout),
+        .results       = std::move(out.results),
+        .layout        = std::move(out.layout),
+        .reading_order = std::move(out.reading_order),
     };
   };
 
@@ -108,7 +157,21 @@ int main() {
   turbo_ocr::server::Metrics::instance().set_pool_size(pool_size);
   turbo_ocr::server::register_observability_middleware();
   turbo_ocr::server::register_metrics_route();
-  turbo_ocr::routes::register_common_routes(work_pool, infer, decode, layout_available);
+
+  // Single readiness probe shared by HTTP /health/ready and gRPC Health.
+  // Acquires a pool handle to verify the work pool isn't wedged; cheap
+  // and matches what the GPU binary does at /health/ready.
+  auto readiness = [&pool]() -> bool {
+    try {
+      auto handle = pool->acquire();
+      (void)handle;
+      return true;
+    } catch (...) {
+      return false;
+    }
+  };
+  turbo_ocr::routes::register_common_routes(work_pool, infer, decode,
+                                             layout_available, readiness);
 
   // --- /ocr/pixels endpoint (raw BGR pixel data, zero decode overhead) ---
   drogon::app().registerHandler(
@@ -116,11 +179,12 @@ int main() {
       [&work_pool, &infer, layout_available](
           const drogon::HttpRequestPtr &req,
           std::function<void(const drogon::HttpResponsePtr &)> &&callback) {
-        bool want_layout = false;
-        if (auto err = turbo_ocr::server::parse_layout_query(
-                req, layout_available, &want_layout);
-            !err.empty()) {
-          callback(turbo_ocr::server::error_response(drogon::k400BadRequest, "INVALID_PARAMETER", err));
+        turbo_ocr::server::InferOptions opts;
+        if (auto r = turbo_ocr::server::parse_query_options(
+                req, layout_available, &opts);
+            !r.error.empty()) {
+          callback(turbo_ocr::server::error_response(
+              drogon::k400BadRequest, r.error_code.c_str(), r.error));
           return;
         }
 
@@ -151,7 +215,9 @@ int main() {
           return;
         }
 
-        constexpr int kMaxPixelDim = 16384;
+        // Configurable via MAX_IMAGE_DIM (default 16384). Same env var as
+        // the GPU path so both servers share one knob.
+        const int kMaxPixelDim = turbo_ocr::decode::max_image_dim();
         if (width > kMaxPixelDim || height > kMaxPixelDim) {
           callback(turbo_ocr::server::error_response(drogon::k400BadRequest,
               "DIMENSIONS_TOO_LARGE", std::format("Dimensions {}x{} exceed maximum of {}x{}",
@@ -168,14 +234,14 @@ int main() {
         }
 
         turbo_ocr::server::submit_work(work_pool, std::move(callback),
-            [req, &infer, width, height, channels, want_layout](turbo_ocr::server::DrogonCallback &cb) {
+            [req, &infer, width, height, channels, opts](turbo_ocr::server::DrogonCallback &cb) {
           turbo_ocr::server::run_with_error_handling(cb, "/ocr/pixels", [&] {
             cv::Mat img(height, width,
                         channels == 3 ? CV_8UC3 : CV_8UC1,
                         const_cast<char *>(req->body().data()));
-            auto inf = infer(img, want_layout);
+            auto inf = infer(img, opts);
             cb(turbo_ocr::server::json_response(
-                turbo_ocr::results_to_json(inf.results, inf.layout)));
+                turbo_ocr::emit_results_json(inf.results, inf.layout, inf.reading_order, opts.want_blocks)));
           });
         });
       },
@@ -204,11 +270,15 @@ int main() {
           const drogon::HttpRequestPtr &req,
           std::function<void(const drogon::HttpResponsePtr &)> &&callback) {
 
-        bool want_layout = false;
-        if (auto err = turbo_ocr::server::parse_layout_query(req, layout_available, &want_layout); !err.empty()) {
-          callback(turbo_ocr::server::error_response(drogon::k400BadRequest, "INVALID_PARAMETER", err));
+        turbo_ocr::server::InferOptions opts;
+        if (auto r = turbo_ocr::server::parse_query_options(
+                req, layout_available, &opts);
+            !r.error.empty()) {
+          callback(turbo_ocr::server::error_response(
+              drogon::k400BadRequest, r.error_code.c_str(), r.error));
           return;
         }
+        const bool want_layout = opts.want_layout;
 
         auto json = req->getJsonObject();
         if (!json) {
@@ -233,63 +303,149 @@ int main() {
           (*raw_bytes)[i] = base64_decode(images_json[static_cast<int>(i)].asString());
 
         turbo_ocr::server::submit_work(work_pool, std::move(callback),
-            [raw_bytes, n, &pool, pool_size, &decode, want_layout](turbo_ocr::server::DrogonCallback &cb) {
-          std::vector<cv::Mat> imgs;
-          imgs.reserve(n);
-          for (size_t i = 0; i < n; ++i) {
-            auto &raw = (*raw_bytes)[i];
-            if (raw.empty()) continue;
-            cv::Mat img = decode(
-                reinterpret_cast<const unsigned char *>(raw.data()),
-                raw.size());
-            if (!img.empty())
-              imgs.push_back(img);
-          }
+            [raw_bytes, n, &pool, pool_size, &decode, opts](turbo_ocr::server::DrogonCallback &cb) {
+          const bool want_layout = opts.want_layout;
+          // Same MAX_IMAGE_DIM cap as /ocr, /ocr/raw, /ocr/pixels.
+          const int kMaxImageDim = turbo_ocr::decode::max_image_dim();
 
-          if (imgs.empty()) {
-            cb(turbo_ocr::server::error_response(drogon::k400BadRequest, "IMAGE_DECODE_FAILED", "No valid images"));
-            return;
-          }
-
+          // Per-slot batch state. Cardinality MUST equal the input array
+          // length so callers can correlate batch_results[i] with their
+          // images[i]; failed slots get tagged in `error`, never dropped.
           struct BatchItem {
             std::vector<OCRResultItem> results;
             std::vector<turbo_ocr::layout::LayoutBox> layout;
+            std::vector<int> reading_order;
+            std::string error;          // empty when the slot succeeded
           };
-          std::vector<BatchItem> batch_items(imgs.size());
-          std::atomic<size_t> next_idx{0};
+          std::vector<BatchItem> batch_items(n);
+          std::vector<cv::Mat> imgs(n);
 
-          int num_workers = std::min(static_cast<int>(imgs.size()), pool_size);
+          // Empty inputs short-circuit so we never pay decode cost on
+          // slots the caller never filled in.
+          for (size_t i = 0; i < n; ++i) {
+            if ((*raw_bytes)[i].empty()) batch_items[i].error = "empty";
+          }
+
+          // Pre-decode dim sniff: refuses oversized PNG/JPEG/WebP per-slot
+          // before the decoder allocates a buffer. Mirrors GPU /ocr/batch.
+          for (size_t i = 0; i < n; ++i) {
+            if (!batch_items[i].error.empty()) continue;
+            const auto &raw = (*raw_bytes)[i];
+            if (auto d = turbo_ocr::decode::peek_image_dimensions(
+                    reinterpret_cast<const unsigned char *>(raw.data()), raw.size())) {
+              if (d->width > kMaxImageDim || d->height > kMaxImageDim) {
+                batch_items[i].error = std::format(
+                    "dimensions_too_large ({}x{} > {}x{})",
+                    d->width, d->height, kMaxImageDim, kMaxImageDim);
+              }
+            }
+          }
+
+          // Decode every still-valid slot; tag decode failures per-slot.
+          for (size_t i = 0; i < n; ++i) {
+            if (!batch_items[i].error.empty()) continue;
+            const auto &raw = (*raw_bytes)[i];
+            imgs[i] = decode(
+                reinterpret_cast<const unsigned char *>(raw.data()),
+                raw.size());
+            if (imgs[i].empty()) {
+              batch_items[i].error = "decode_failed";
+              continue;
+            }
+            // Post-decode safety net for BMP/TIFF/GIF (non-sniffed formats).
+            if (imgs[i].cols > kMaxImageDim || imgs[i].rows > kMaxImageDim) {
+              batch_items[i].error = std::format(
+                  "dimensions_too_large ({}x{} > {}x{})",
+                  imgs[i].cols, imgs[i].rows, kMaxImageDim, kMaxImageDim);
+              imgs[i].release();
+            }
+          }
+
+          // Build the work index list (slots that survived all checks).
+          std::vector<size_t> valid_indices;
+          valid_indices.reserve(n);
+          for (size_t i = 0; i < n; ++i) {
+            if (batch_items[i].error.empty() && !imgs[i].empty())
+              valid_indices.push_back(i);
+          }
+
+          std::atomic<size_t> next_valid{0};
+          int num_workers = valid_indices.empty()
+              ? 0
+              : std::min(static_cast<int>(valid_indices.size()), pool_size);
           {
             std::vector<std::jthread> threads;
             threads.reserve(num_workers);
             for (int w = 0; w < num_workers; ++w) {
               threads.emplace_back([&]() {
+                // Acquire the pool handle outside the per-image loop —
+                // pool exhaustion is a fatal worker-level error (no point
+                // trying again), so it tags every remaining slot.
+                std::unique_ptr<decltype(pool->acquire())> handle_holder;
                 try {
-                  auto handle = pool->acquire();
+                  handle_holder = std::make_unique<decltype(pool->acquire())>(
+                      pool->acquire());
+                } catch (const turbo_ocr::PoolExhaustedError &e) {
+                  TOCR_LOG_ERROR("Batch worker pool exhausted", "route", "/ocr/batch");
+                  // Tag every UNCLAIMED valid slot as failed so callers see it.
                   while (true) {
-                    size_t idx = next_idx.fetch_add(1);
-                    if (idx >= imgs.size()) break;
-                    auto out = handle->run_with_layout(imgs[idx], want_layout);
+                    size_t k = next_valid.fetch_add(1);
+                    if (k >= valid_indices.size()) break;
+                    batch_items[valid_indices[k]].error = "pool_exhausted";
+                  }
+                  return;
+                }
+                auto &handle = *handle_holder;
+                while (true) {
+                  size_t k = next_valid.fetch_add(1);
+                  if (k >= valid_indices.size()) break;
+                  size_t idx = valid_indices[k];
+                  // Per-image try/catch so one image failing does NOT
+                  // leave all later slots silently empty with HTTP 200.
+                  try {
+                    auto out = handle->run_with_layout(imgs[idx], want_layout,
+                                                       opts.want_reading_order);
                     batch_items[idx].results = std::move(out.results);
                     batch_items[idx].layout = std::move(out.layout);
+                    batch_items[idx].reading_order = std::move(out.reading_order);
+                  } catch (const std::exception &e) {
+                    TOCR_LOG_ERROR("Batch image error", "route", "/ocr/batch",
+                                   "image_index", idx, "error",
+                                   std::string_view(e.what()));
+                    batch_items[idx].error = e.what();
+                  } catch (...) {
+                    TOCR_LOG_ERROR("Batch image error: unknown",
+                                   "route", "/ocr/batch", "image_index", idx);
+                    batch_items[idx].error = "unknown";
                   }
-                } catch (const turbo_ocr::PoolExhaustedError &) {
-                  TOCR_LOG_ERROR("Batch worker error: pool exhausted", "route", "/ocr/batch");
-                } catch (const std::exception &e) {
-                  TOCR_LOG_ERROR("Batch worker error", "route", "/ocr/batch", "error", std::string_view(e.what()));
-                } catch (...) {
-                  TOCR_LOG_ERROR("Batch worker error: unknown exception", "route", "/ocr/batch");
                 }
               });
             }
           } // jthreads auto-join here
 
+          // Emit per-image results AND a sibling errors array so clients
+          // can see which slots failed without having to compare lengths.
           std::string json_str;
           json_str.reserve(batch_items.size() * 1024);
           json_str += "{\"batch_results\":[";
           for (size_t i = 0; i < batch_items.size(); ++i) {
             if (i > 0) json_str += ',';
-            json_str += results_to_json(batch_items[i].results, batch_items[i].layout);
+            json_str += emit_results_json(batch_items[i].results, batch_items[i].layout, batch_items[i].reading_order, opts.want_blocks);
+          }
+          json_str += "],\"errors\":[";
+          for (size_t i = 0; i < batch_items.size(); ++i) {
+            if (i > 0) json_str += ',';
+            const auto &e = batch_items[i].error;
+            if (e.empty()) {
+              json_str += "null";
+            } else {
+              json_str += '"';
+              for (char c : e) {
+                if (c == '"' || c == '\\') json_str += '\\';
+                json_str += c;
+              }
+              json_str += '"';
+            }
           }
           json_str += "]}";
           cb(turbo_ocr::server::json_response(std::move(json_str)));
@@ -302,25 +458,42 @@ int main() {
   if (const char *env = std::getenv("GRPC_PORT"))
     grpc_port = std::max(1, std::atoi(env));
   auto grpc_handle = turbo_ocr::server::start_grpc_server(
-      infer, grpc_port, &pdf_renderer, default_pdf_mode, layout_available);
+      infer, grpc_port, &pdf_renderer, default_pdf_mode, layout_available,
+      readiness);
 
   // HTTP server (Drogon)
   int port = 8080;
   if (const char *env = std::getenv("PORT"))
     port = std::max(1, std::atoi(env));
 
-  TOCR_LOG_INFO("Starting CPU-Only OCR Server", "port", port, "grpc_port", grpc_port);
+  // MAX_BODY_MB caps the largest accepted upload (default 100).
+  // MAX_BODY_MEMORY_MB tunes the in-memory buffer threshold (default
+  // 1024 MB / 1 GiB); bodies above it spill to /tmp. The cap is
+  // clamped to MAX_BODY_MB below, so the default keeps every body in
+  // RAM until the operator raises MAX_BODY_MB past 1 GiB. See main.cpp
+  // for the full rationale — same knob on both CPU and GPU servers.
+  int max_body_mb = turbo_ocr::server::env_int("MAX_BODY_MB", 100, 1, 102400);
+  int max_body_mem_mb = turbo_ocr::server::env_int(
+      "MAX_BODY_MEMORY_MB", 1024, 1, 102400);
+  if (max_body_mem_mb > max_body_mb) max_body_mem_mb = max_body_mb;
+  size_t max_body_bytes = static_cast<size_t>(max_body_mb) * 1024 * 1024;
+  size_t max_mem_bytes  = static_cast<size_t>(max_body_mem_mb) * 1024 * 1024;
 
-  // Graceful shutdown on SIGTERM (Docker stop) and SIGINT (Ctrl-C)
-  std::signal(SIGTERM, shutdown_handler);
-  std::signal(SIGINT,  shutdown_handler);
+  TOCR_LOG_INFO("Starting CPU-Only OCR Server", "port", port, "grpc_port",
+                grpc_port, "body_cap_mb_drogon", max_body_mb,
+                "body_cap_mb_nginx", max_body_mb, "body_mem_mb", max_body_mem_mb);
 
+  // Graceful shutdown on SIGTERM (Docker / K8s) and SIGINT (Ctrl-C):
+  // drain WorkPool inflight up to SHUTDOWN_GRACE_SECONDS before quit().
+  g_work_pool_for_drain = &work_pool;
   drogon::app()
+      .setTermSignalHandler([] { begin_graceful_shutdown("SIGTERM"); })
+      .setIntSignalHandler([]  { begin_graceful_shutdown("SIGINT");  })
       .addListener("0.0.0.0", port)
       .setThreadNum(4)
       .setIdleConnectionTimeout(120)
-      .setClientMaxBodySize(100 * 1024 * 1024)
-      .setClientMaxMemoryBodySize(100 * 1024 * 1024)
+      .setClientMaxBodySize(max_body_bytes)
+      .setClientMaxMemoryBodySize(max_mem_bytes)
       .run();
 
   TOCR_LOG_INFO("HTTP server stopped, shutting down gRPC");

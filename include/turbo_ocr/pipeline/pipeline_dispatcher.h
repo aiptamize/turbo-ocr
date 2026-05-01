@@ -32,9 +32,13 @@ public:
           WorkFn work;
           {
             std::unique_lock lock(mutex_);
-            cv_.wait(lock, [this] { return stop_.load(std::memory_order_acquire) || !queue_.empty(); });
+            // Predicate form of wait() is atomic w.r.t. notify only when
+            // the notifier holds the same mutex around the state change.
+            // The dtor takes mutex_ before flipping stop_ and calling
+            // notify_all() — see ~PipelineDispatcher.
+            cv_.wait(lock, [this] { return stop_ || !queue_.empty(); });
             if (queue_.empty()) {
-              if (stop_.load(std::memory_order_acquire)) return;
+              if (stop_) return;
               continue;
             }
             work = std::move(queue_.front());
@@ -47,7 +51,10 @@ public:
   }
 
   ~PipelineDispatcher() {
-    stop_.store(true, std::memory_order_release);
+    {
+      std::lock_guard lock(mutex_);
+      stop_ = true;
+    }
     cv_.notify_all();
     for (auto &w : workers_)
       if (w.joinable()) w.join();
@@ -87,7 +94,7 @@ private:
   std::mutex mutex_;
   std::condition_variable cv_;
   std::vector<std::thread> workers_;
-  std::atomic<bool> stop_{false};
+  bool stop_{false};  // guarded by mutex_
   size_t max_queue_depth_ = 4096;
 };
 

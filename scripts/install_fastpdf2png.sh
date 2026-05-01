@@ -7,7 +7,10 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(dirname "$SCRIPT_DIR")"
 BIN_DIR="$ROOT/bin"
 REPO="https://github.com/nataell95/fastpdf2png.git"
-BRANCH="main"
+# Pinned commit on main. To refresh, run:
+#   git ls-remote https://github.com/nataell95/fastpdf2png.git refs/heads/main
+# and update FASTPDF2PNG_COMMIT below to the resulting 40-char SHA.
+FASTPDF2PNG_COMMIT="9f82350f7d6e1d0f6320abfb298865e7d544a286"
 TMP_DIR="/tmp/fastpdf2png_build_$$"
 
 echo "=== Installing fastpdf2png ==="
@@ -21,9 +24,15 @@ fi
 
 mkdir -p "$BIN_DIR"
 
-# Clone
-echo "Cloning $REPO ($BRANCH)..."
-git clone --depth 1 --branch "$BRANCH" "$REPO" "$TMP_DIR"
+# Clone at pinned commit (full history needed so we can checkout an exact SHA).
+echo "Cloning $REPO @ $FASTPDF2PNG_COMMIT..."
+git clone "$REPO" "$TMP_DIR"
+git -C "$TMP_DIR" checkout --quiet "$FASTPDF2PNG_COMMIT"
+ACTUAL_SHA="$(git -C "$TMP_DIR" rev-parse HEAD)"
+if [ "$ACTUAL_SHA" != "$FASTPDF2PNG_COMMIT" ]; then
+  echo "fastpdf2png commit mismatch: expected $FASTPDF2PNG_COMMIT, got $ACTUAL_SHA" >&2
+  exit 1
+fi
 
 # Pre-seed PDFium from the vendored copy if we have one, so the build doesn't
 # need network access to github.com/bblanchon/pdfium-binaries (which has been

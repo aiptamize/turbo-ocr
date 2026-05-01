@@ -26,11 +26,83 @@ inline constexpr auto kLayoutLabels = std::to_array<std::string_view>({
     "vision_footnote",
 });
 
+// Sentinel class_id used for layout boxes synthesised after the fact —
+// e.g. minimum-enclosing region for OCR results that didn't land inside
+// any detected layout box. Mirrors PaddleX's "SupplementaryRegion"
+// fallback: every result is guaranteed a layout_id pointing into the
+// layout array, even when the layout model missed its region.
+inline constexpr int kSupplementaryRegionClassId = -1;
+inline constexpr std::string_view kSupplementaryRegionLabel =
+    "SupplementaryRegion";
+
 inline constexpr std::string_view label_name(int class_id) noexcept {
+  if (class_id == kSupplementaryRegionClassId)
+    return kSupplementaryRegionLabel;
   if (class_id >= 0 && class_id < static_cast<int>(kLayoutLabels.size()))
     return kLayoutLabels[class_id];
   return {};
 }
+
+// Reading-order priority bucket per layout class.
+//
+// PaddleX's xycut_enhanced pipeline partitions layout regions into three
+// strata before running the spatial sort, so common page furniture lands
+// in the right slot regardless of where the layout model placed it:
+//
+//   0  TOP    — header, header_image. Read first.
+//   1  BODY   — every other class (text, paragraph_title, doc_title,
+//                table, image, abstract, formulas, figures, charts,
+//                seals, captions, asides, AND `number` because page
+//                numbers can appear at the top OR the bottom of a page).
+//                Run through XY-cut.
+//   2  BOTTOM — footer, footer_image, footnote, reference,
+//                reference_content, vision_footnote. Read last.
+//
+// Within each bucket we run XY-cut so the natural left-to-right /
+// top-to-bottom order still applies to multi-line headers, footers,
+// reference lists, etc. Static-asserts below pin the class IDs to the
+// label-array slots so a future PaddleX label re-shuffle can't silently
+// misroute a class.
+inline constexpr int reading_priority_bucket(int class_id) noexcept {
+  // Only the unambiguous header/footer/reference classes get bucketed.
+  // 'number' (page number) can sit at the top OR the bottom of a page
+  // depending on style, so we leave it in BODY and let XY-cut place it
+  // by geometric position.
+  switch (class_id) {
+    case 12: // header
+    case 13: // header_image
+      return 0;
+    case 8:  // footer
+    case 9:  // footer_image
+    case 10: // footnote
+    case 18: // reference
+    case 19: // reference_content
+    case 24: // vision_footnote
+      return 2;
+    default:
+      return 1;
+  }
+}
+
+// If PaddleX ever reshuffles the label list, fail at build time rather
+// than silently misrouting classes through reading_priority_bucket.
+static_assert(kLayoutLabels[8]  == "footer",            "class_id 8 must be 'footer'");
+static_assert(kLayoutLabels[9]  == "footer_image",      "class_id 9 must be 'footer_image'");
+static_assert(kLayoutLabels[10] == "footnote",          "class_id 10 must be 'footnote'");
+static_assert(kLayoutLabels[12] == "header",            "class_id 12 must be 'header'");
+static_assert(kLayoutLabels[13] == "header_image",      "class_id 13 must be 'header_image'");
+static_assert(kLayoutLabels[18] == "reference",         "class_id 18 must be 'reference'");
+static_assert(kLayoutLabels[19] == "reference_content", "class_id 19 must be 'reference_content'");
+static_assert(kLayoutLabels[24] == "vision_footnote",   "class_id 24 must be 'vision_footnote'");
+
+// Reading direction for a layout cell or for the page as a whole.
+// Mirrors PaddleX's "horizontal" / "vertical" string. Vertical is used
+// for CJK tategaki layouts (right-to-left columns, top-to-bottom within
+// a column).
+enum class Direction : int {
+  kHorizontal = 0,
+  kVertical = 1,
+};
 
 struct LayoutBox {
   int class_id = 0;
@@ -42,6 +114,26 @@ struct LayoutBox {
   // Cross-reference ID emitted when layout detection is enabled. Default
   // -1 means "not assigned" and the serializer omits the field.
   int id = -1;
+
+  // Text-line metadata populated by cluster_text_lines (a per-cell pre-
+  // pass that groups the OCR detection boxes whose layout_id maps to
+  // this cell). Default-zero values are the fallback when no result
+  // landed in this cell. None of these fields are serialised — they
+  // exist only to drive reading-order placement and child-block
+  // detection internally.
+  Direction direction = Direction::kHorizontal;
+  int num_of_lines = 0;
+  // Mean line height / width across the clustered TextLines. Useful as
+  // a proximity threshold scale (PaddleX's `2 * text_line_height`).
+  int text_line_height = 0;
+  int text_line_width = 0;
+  // Bbox coordinates of the FIRST and LAST text lines along the cell's
+  // primary direction. Used by get_seg_flag to detect paragraph
+  // continuation: a multi-line cell whose last line ends near the
+  // right margin (horizontal) or bottom margin (vertical) is
+  // continuing across a hard split.
+  int seg_start_coordinate = 0;  // left edge of first line (horizontal) / top of first line (vertical)
+  int seg_end_coordinate = 0;    // right edge of last line (horizontal) / bottom of last line (vertical)
 };
 
 } // namespace turbo_ocr::layout

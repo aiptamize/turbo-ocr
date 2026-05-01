@@ -2,6 +2,23 @@ syntax = "proto3";
 
 package ocr;
 
+// Error codes (HTTP parity)
+// -------------------------
+// Every non-OK gRPC response from this service carries a structured error
+// code in the trailing metadata under the key "x-error-code". The value is
+// the same string the HTTP API returns inside {"error":{"code":"..."}} so
+// clients can branch on a single set of identifiers regardless of transport.
+//
+// Known codes:
+//   LAYOUT_DISABLED, INVALID_PARAMETER, BASE64_DECODE_FAILED,
+//   IMAGE_DECODE_FAILED, DIMENSIONS_TOO_LARGE, EMPTY_BATCH, MISSING_IMAGE,
+//   MISSING_PDF, INVALID_DPI, INVALID_DIMENSIONS, BODY_SIZE_MISMATCH,
+//   PDF_RENDER_FAILED, PDF_NOT_AVAILABLE, EMPTY_PDF, SERVER_BUSY,
+//   INFERENCE_ERROR, NOT_READY.
+//
+// The legacy grpc::StatusCode + status message remain primary for older
+// clients; "x-error-code" is purely additive. Read it via
+// ClientContext::GetServerTrailingMetadata() after the call completes.
 service OCRService {
   rpc Recognize (OCRRequest) returns (OCRResponse);
   rpc RecognizeBatch (OCRBatchRequest) returns (OCRBatchResponse);
@@ -16,12 +33,18 @@ message OCRRequest {
   int32 width = 7;           // pixel width  (required with pixels field)
   int32 height = 8;          // pixel height (required with pixels field)
   int32 channels = 9;        // pixel channels (required with pixels field, typically 3)
+  bool reading_order = 10;   // emit reading_order permutation (auto-enables layout)
+  bool as_blocks = 11;       // emit `blocks` paragraph-level aggregate in json_response
+                             // (mirrors PaddleX PP-StructureV3 parsing_res_list).
+                             // Auto-enables layout + reading_order.
 }
 
 message OCRBatchRequest {
   repeated bytes images = 1;
   int32 det_batch_num = 2;
   bool layout = 3;           // enable layout analysis for all images in batch
+  bool reading_order = 4;    // emit reading_order permutation per image (auto-enables layout)
+  bool as_blocks = 5;        // emit `blocks` aggregate per image (auto-enables layout + reading_order)
 }
 
 message BoundingBox {
@@ -41,7 +64,13 @@ message OCRResponse {
   // Fast path: pre-serialized JSON (same as HTTP response).
   // When set, clients should use this instead of parsing repeated results.
   // Eliminates ~455 heap allocations per response for 35 detections.
+  // Also carries `reading_order` and `layout` when those flags are set.
   bytes json_response = 3;
+  // Reading-order permutation: indices into `results` in correct reading
+  // order. Populated only when the request set reading_order=true. Same
+  // contents as response.json_response.reading_order — duplicated here
+  // for clients that don't parse the JSON fast-path.
+  repeated int32 reading_order = 4;
 }
 
 message OCRBatchResponse {
@@ -54,6 +83,7 @@ message OCRPDFRequest {
   string mode = 2;        // "ocr", "geometric", "auto", "auto_verified" (default "ocr")
   int32 dpi = 3;          // render DPI (default 100)
   bool layout = 4;
+  bool as_blocks = 5;     // emit `blocks` aggregate per page (auto-enables layout)
 }
 
 message OCRPDFResponse {

@@ -1,4 +1,14 @@
 cmake_minimum_required(VERSION 3.20)
+
+# Default to Release when the user didn't pick a build type. Single-config
+# generators (Ninja/Make) leave CMAKE_BUILD_TYPE empty otherwise, which gives
+# unoptimized builds.
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Defaulting CMAKE_BUILD_TYPE to Release")
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release RelWithDebInfo MinSizeRel)
+endif()
+
 project(turbo_ocr VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -63,6 +73,10 @@ add_library(turbo_ocr_common STATIC
     src/recognition/crop_utils.cpp
     src/recognition/ctc_decode.cpp
     src/decode/fast_png_decoder.cpp
+    src/layout/reading_order.cpp
+    src/layout/match_unsorted.cpp
+    src/layout/child_blocks.cpp
+    src/layout/text_line_cluster.cpp
     third_party/clipper/clipper.cpp
     third_party/simdutf/simdutf.cpp
 )
@@ -85,6 +99,9 @@ add_executable(turbo_ocr_tests
     tests/cpp/test_ctc_decode.cpp
     tests/cpp/test_perspective.cpp
     tests/cpp/test_det_postprocess.cpp
+    tests/cpp/test_image_dims.cpp
+    tests/cpp/test_xy_cut.cpp
+    tests/cpp/test_logger_ratelimit.cpp
     src/render/pdf_renderer.cpp
     third_party/catch2/catch_amalgamated.cpp
 )
@@ -219,7 +236,21 @@ else()
     enable_language(CUDA)
     set(CMAKE_CUDA_STANDARD 20)
     set(CMAKE_CUDA_STANDARD_REQUIRED ON)
-    set(CMAKE_CUDA_ARCHITECTURES "75;80;86;89;120")
+    # Compute capabilities to bake into the GPU binary. Default targets
+    # sm_120 (Blackwell consumer, RTX 50-series) only — the full multi-arch
+    # fat binary balloons to ~12.5 GB and PTX-JIT cold-start adds 10-15 s.
+    # Override via -DCMAKE_CUDA_ARCHITECTURES="86;89;120" for other GPUs.
+    # Reference SMs:
+    #   75   Turing            (T4, RTX 20, GTX 16)
+    #   80   Ampere DC         (A100)
+    #   86   Ampere consumer   (RTX 30, A40, A10)
+    #   89   Ada Lovelace      (RTX 40, L40, L4)
+    #   90   Hopper            (H100, H200, GH200)              [needs CUDA 12.0+]
+    #   100  Blackwell DC      (B100, B200, B300, GB200)        [needs CUDA 12.8+]
+    #   120  Blackwell consumer (RTX 50-series)                 [needs CUDA 12.8+]
+    if(NOT CMAKE_CUDA_ARCHITECTURES)
+        set(CMAKE_CUDA_ARCHITECTURES "120" CACHE STRING "Comma-separated CUDA SMs to build for")
+    endif()
     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3 -lineinfo --expt-relaxed-constexpr")
 
     # --- GPU library ---
@@ -258,6 +289,13 @@ else()
     )
     target_compile_options(turbo_ocr_gpu PRIVATE ${TURBO_OCR_CXX_FLAGS})
     add_library(turbo_ocr::gpu ALIAS turbo_ocr_gpu)
+
+    # GPU tests link to GPU library so CUDA-dependent tests can be added here.
+    target_link_libraries(turbo_ocr_tests PRIVATE turbo_ocr_gpu CUDA::cudart)
+    target_include_directories(turbo_ocr_tests PRIVATE
+        ${CUDAToolkit_INCLUDE_DIRS}
+        ${TENSORRT_DIR}/include
+    )
 
     # GPU HTTP + gRPC server (shared pipeline pool)
     add_executable(paddle_highspeed_cpp
@@ -302,6 +340,35 @@ else()
         protobuf::libprotobuf
     )
 endif()
+
+# --- Interprocedural / link-time optimization (Release only) --------------
+# Skipped for turbo_ocr_tests: Catch2's amalgamated TU is large and LTO
+# linking adds significant time with no runtime payoff for unit tests.
+include(CheckIPOSupported)
+check_ipo_supported(RESULT _ipo_ok OUTPUT _ipo_err)
+if(_ipo_ok AND CMAKE_BUILD_TYPE STREQUAL "Release")
+    message(STATUS "Enabling IPO/LTO for Release targets")
+    set_property(TARGET turbo_ocr_common PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    if(USE_CPU_ONLY)
+        set_property(TARGET turbo_ocr_cpu PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+        set_property(TARGET paddle_cpu_server PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    else()
+        set_property(TARGET turbo_ocr_gpu PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+        set_property(TARGET paddle_highspeed_cpp PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    endif()
+elseif(NOT _ipo_ok)
+    message(STATUS "IPO/LTO not supported by this toolchain: ${_ipo_err}")
+endif()
+
+# --- Install rules --------------------------------------------------------
+# Minimal layout so `cmake --install build --prefix /usr/local` works.
+if(USE_CPU_ONLY)
+    install(TARGETS paddle_cpu_server RUNTIME DESTINATION bin)
+else()
+    install(TARGETS paddle_highspeed_cpp RUNTIME DESTINATION bin)
+endif()
+install(DIRECTORY models/ DESTINATION share/turbo-ocr/models OPTIONAL)
+install(DIRECTORY scripts/ DESTINATION share/turbo-ocr/scripts USE_SOURCE_PERMISSIONS)
 
 # --- Fetch OCR model bundles for native builds ----------------------------
 # Uses det.onnx as a sentinel — ninja/make skip the step once it exists.

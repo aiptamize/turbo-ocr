@@ -63,6 +63,7 @@ Turbo-OCR vs PaddleOCR · EasyOCR · VLMs — FUNSD (50 pages, RTX 5090)
 - 📄 **PDF native** &mdash; pages rendered and OCR'd in parallel
 - 🔒 **4 PDF modes** &mdash; pure OCR, native text layer, auto-dispatch, detection-verified hybrid
 - 🧩 **Layout detection** &mdash; PP-DocLayoutV3 with 25 region classes, per-request `?layout=1` toggle
+- 📖 **Reading order** &mdash; class-aware XY-cut (header → body → footer/reference), row-tolerant table-cell sort, orphan-aware placement, opt-in via `?reading_order=1`
 - 🌐 **HTTP + gRPC** from a single binary, sharing the same GPU pipeline pool
 - 🐳 **One-line Docker deploy** &mdash; `docker run` with auto TRT engine build on first start
 - 📊 **Prometheus metrics** &mdash; request counters, latency histograms, VRAM usage on `/metrics`
@@ -120,7 +121,7 @@ HTTP on port 8000, gRPC on port 50051 — single binary, shared GPU pipeline poo
 | `/ocr/raw` | Raw image bytes | Fastest path — PNG, JPEG, etc. |
 | `/ocr` | `{"image": "<base64>"}` | For clients that can only send JSON |
 | `/ocr/batch` | `{"images": ["<b64>", ...]}` | Multiple images in one request |
-| `/ocr/pixels` | Raw BGR bytes + `X-Width`/`X-Height` headers | Zero-decode path |
+| `/ocr/pixels` | Raw BGR bytes + `X-Width` / `X-Height` / `X-Channels` headers | Zero-decode path — see [/ocr/pixels](#ocrpixels-zero-decode-path) |
 | `/ocr/pdf` | Raw bytes, `{"pdf": "<b64>"}`, or `multipart/form-data` | All pages OCR'd in parallel |
 | `/metrics` | — | Prometheus metrics (text exposition format) |
 | gRPC | Raw bytes (protobuf) | Port 50051 — see `proto/ocr.proto` |
@@ -130,8 +131,12 @@ HTTP on port 8000, gRPC on port 50051 — single binary, shared GPU pipeline poo
 | Parameter | Endpoints | Values | Default |
 |-----------|-----------|--------|---------|
 | `layout` | all | `0` / `1` | `0` — include [layout regions](#layout-detection) (~20% throughput cost) |
-| `mode` | `/ocr/pdf` | `ocr` / `geometric` / `auto` / `auto_verified` | `ocr` |
+| `reading_order` | image routes | `0` / `1` | `0` — emit `reading_order` array indexing `results` in proper reading order (auto-enables `layout=1`). Class-aware: header → body → footer/footnote/reference; XY-cut on body with row-tolerant table-cell sort and orphan placement |
+| `as_blocks` | image + PDF routes | `0` / `1` | `0` — when `1`, response includes a `blocks` array: paragraph-level aggregate, one entry per non-empty layout cell, in reading order. Auto-enables `layout=1` and `reading_order=1`. Each block has `{id, layout_id, class, bounding_box, content, order_index}`. Mirrors PaddleX PP-StructureV3 `parsing_res_list` granularity. |
+| `mode` | `/ocr/pdf` | `ocr` / `geometric` / `auto` / `auto_verified` | `ocr` — on the CPU binary, `auto_verified` is silently aliased to `auto` (no native text re-verifier on CPU). Inspect the per-page `mode` field in the response to see which path actually ran. |
 | `dpi` | `/ocr/pdf` | `50`–`600` | `100` — render resolution |
+
+**Parameter parsing rules.** Parameter *names* are case-sensitive: `?layout=1` works, `?Layout=1` is silently ignored. Boolean values for `layout`, `reading_order`, and `as_blocks` accept any case of `1/0`, `true/false`, `on/off`, `yes/no`, and reject anything else with `400 INVALID_PARAMETER`. Values for `mode=` are **case-sensitive and silently fall back to the configured default** when unrecognized — `?mode=Auto`, `?mode=AUTO`, or `?mode=foobar` all run as `mode=ocr` (or whatever `ENABLE_PDF_MODE` is set to) without error. Always pass exactly `ocr`, `geometric`, `auto`, or `auto_verified`.
 
 ### Examples
 
@@ -162,6 +167,33 @@ grpcurl -plaintext -d '{"image":"'$(base64 -w0 doc.png)'"}' \
   localhost:50051 ocr.OCRService/Recognize
 ```
 
+### `/ocr/pixels` (zero-decode path)
+
+For clients that already hold a decoded image in memory (NumPy, OpenCV, custom pipelines), `/ocr/pixels` skips the PNG/JPEG decode step entirely. The body is sent as raw pixel bytes; dimensions travel in HTTP headers.
+
+| Header | Required | Values | Meaning |
+|--------|:---:|--------|---------|
+| `X-Width` | yes | `1`–`MAX_IMAGE_DIM` (default `16384`) | Image width in pixels |
+| `X-Height` | yes | `1`–`MAX_IMAGE_DIM` (default `16384`) | Image height in pixels |
+| `X-Channels` | no | `1` or `3` (default `3`) | `3` = BGR (OpenCV order, **not** RGB), `1` = grayscale |
+
+- **Body:** raw pixel bytes, length must equal `width * height * channels` exactly. A mismatch returns `400 BODY_SIZE_MISMATCH`.
+- **Query parameters:** the same `?layout=` and `?reading_order=` as `/ocr` apply.
+- **Errors:** `MISSING_HEADER` (no `X-Width` / `X-Height`), `INVALID_HEADER` (unparseable values), `INVALID_DIMENSIONS` (non-positive size or channels other than 1/3), `DIMENSIONS_TOO_LARGE` (exceeds `MAX_IMAGE_DIM`).
+- **Use case:** the hot path when upstream code already has a decoded `cv::Mat` / `np.ndarray` and you don't want to round-trip through PNG.
+
+```bash
+# Python — send a decoded OpenCV image (BGR)
+python -c "
+import cv2, requests
+img = cv2.imread('doc.png')        # BGR, HxWx3
+h, w, c = img.shape
+requests.post('http://localhost:8000/ocr/pixels',
+              data=img.tobytes(),
+              headers={'X-Width': str(w), 'X-Height': str(h), 'X-Channels': str(c)})
+"
+```
+
 ### Response Format
 
 **Image endpoints** return:
@@ -183,11 +215,19 @@ grpcurl -plaintext -d '{"image":"'$(base64 -w0 doc.png)'"}' \
 {
   "pages": [{
     "page": 1, "page_index": 0, "dpi": 100, "width": 1047, "height": 1389,
-    "mode": "ocr", "results": [...]
+    "mode": "ocr", "text_layer_quality": "absent", "results": [...]
   }]
 }
 ```
 Coordinate conversion: `x_pdf = x_px * 72 / dpi`.
+
+Per-page fields:
+- `mode` — the **resolved** mode that actually ran on this page (`ocr` / `geometric` / `auto_verified`). For `?mode=auto` requests, each page resolves to either `geometric` (text layer accepted) or `ocr` (fell back to OCR), never `auto`. On the CPU binary, `?mode=auto_verified` resolves to `auto` semantics, so per-page `mode` will be `geometric` or `ocr` — `auto_verified` only appears on the GPU binary.
+- `text_layer_quality` — assessment of the page's native text layer:
+  - `absent` — no usable text layer (image-only PDF, fewer than 10 chars, or empty lines)
+  - `rejected` — text layer present but failed sanity checks (non-zero rotation, >5% replacement chars, >10% non-printable chars)
+  - `trusted` — native text passed sanity checks and was used (`geometric` / `auto`) or considered for cross-check (`auto_verified`)
+  - For `mode=ocr` this is always `absent` (the text-layer pre-pass is skipped entirely).
 
 ### PDF Extraction Modes
 
@@ -217,6 +257,40 @@ Coordinate conversion: `x_pdf = x_px * 72 / dpi`.
 All endpoints accept `?layout=1` to detect document regions using [PP-DocLayoutV3](https://huggingface.co/PaddlePaddle/PP-DocLayoutV3) (25 classes):
 
 `abstract` · `algorithm` · `aside_text` · `chart` · `content` · `display_formula` · `doc_title` · `figure_title` · `footer` · `footer_image` · `footnote` · `formula_number` · `header` · `header_image` · `image` · `inline_formula` · `number` · `paragraph_title` · `reference` · `reference_content` · `seal` · `table` · `text` · `vertical_text` · `vision_footnote`
+
+#### Layout classes (reading-order buckets)
+
+When `?reading_order=1` is set, classes are partitioned into three strata before XY-cut runs, so common page furniture lands in the right slot regardless of where the layout model placed it spatially: `TOP` is read first, then `BODY` (sorted by XY-cut), then `BOTTOM`.
+
+| Class ID | Name | Bucket |
+|---:|---|---|
+| 0  | `abstract`           | BODY   |
+| 1  | `algorithm`          | BODY   |
+| 2  | `aside_text`         | BODY   |
+| 3  | `chart`              | BODY   |
+| 4  | `content`            | BODY   |
+| 5  | `display_formula`    | BODY   |
+| 6  | `doc_title`          | BODY   |
+| 7  | `figure_title`       | BODY   |
+| 8  | `footer`             | BOTTOM |
+| 9  | `footer_image`       | BOTTOM |
+| 10 | `footnote`           | BOTTOM |
+| 11 | `formula_number`     | BODY   |
+| 12 | `header`             | TOP    |
+| 13 | `header_image`       | TOP    |
+| 14 | `image`              | BODY   |
+| 15 | `inline_formula`     | BODY   |
+| 16 | `number`             | BODY   |
+| 17 | `paragraph_title`    | BODY   |
+| 18 | `reference`          | BOTTOM |
+| 19 | `reference_content`  | BOTTOM |
+| 20 | `seal`               | BODY   |
+| 21 | `table`              | BODY   |
+| 22 | `text`               | BODY   |
+| 23 | `vertical_text`      | BODY   |
+| 24 | `vision_footnote`    | BOTTOM |
+
+Class 16 (`number`, page numbers) deliberately stays in BODY because page numbers can appear at the top **or** the bottom of a page — XY-cut places them by geometry. Class IDs are pinned with `static_assert` against the PaddleX label list, so a future re-shuffle would fail the build rather than silently misroute classes.
 
 <p align="center">
   <img src="tests/benchmark/comparison/images/layout_example.png" alt="Layout detection overlay" width="500">
@@ -291,13 +365,20 @@ Reproduce: `python tests/benchmark/comparison/bench_turbo_ocr.py` (requires runn
 | `DISABLE_LAYOUT` | `0` | Set to `1` to disable PP-DocLayoutV3 layout detection and save ~300-500 MB VRAM |
 | `ENABLE_PDF_MODE` | `ocr` | Default PDF mode: `ocr` / `geometric` / `auto` / `auto_verified` |
 | `DISABLE_ANGLE_CLS` | `0` | Skip angle classifier (~0.4 ms savings) |
-| `DET_MAX_SIDE` | `960` | Max detection input size |
+| `DET_MAX_SIDE` | `960` | Max detection input side (px). Bounds: 32–4096. The TRT engine profile is built to match this value; changing it invalidates the cached engine and triggers a one-time rebuild. |
+| `TRT_OPT_LEVEL` | `5` | TensorRT builder optimization level. Bounds: 0–5. Lower values trade runtime perf for faster cold builds (`3` typically builds ~3-5× faster with <5% runtime regression). The cache key includes the level, so different values produce separate engines. |
+| `TRT_ENGINE_CACHE` | `~/.cache/turbo-ocr` | Directory for cached TensorRT engines. Set to a host-mounted path to share engines across container restarts. |
 | `PORT` / `GRPC_PORT` | `8000` / `50051` | Server ports |
 | `PDF_DAEMONS` / `PDF_WORKERS` | `16` / `4` | PDF render parallelism |
+| `GRPC_BATCH_WORKERS` | `8` | Parallel workers in gRPC `RecognizeBatch` for fan-out across pipeline pool |
 | `HTTP_THREADS` | `pool * 32` | Work pool threads for blocking inference |
 | `MAX_PDF_PAGES` | `2000` | Maximum pages per PDF request |
+| `MAX_BODY_MB` | `100` | Max request body size in MB. Applied at all three layers: nginx (413 at proxy), Drogon HTTP (`setClientMaxBodySize`), and gRPC (`SetMaxReceive/SendMessageSize`). Bounds: 1–102400. |
+| `MAX_BODY_MEMORY_MB` | `1024` | Per-request in-memory buffer threshold. Bodies up to this size stay in RAM; larger ones spill to a tempfile under `/tmp`. The default keeps every body in RAM until `MAX_BODY_MB` is raised past 1 GiB. Lower on memory-constrained hosts (e.g. `MAX_BODY_MEMORY_MB=50` caps buffer RSS at ~50 MB × concurrent requests). Clamped to `[1, MAX_BODY_MB]`. |
+| `MAX_IMAGE_DIM` | `16384` | Max width or height (px) accepted on `/ocr/pixels` and image-decode routes. Bounds: 64–65535. |
 | `LOG_LEVEL` | `info` | Log level: `debug` / `info` / `warn` / `error` |
 | `LOG_FORMAT` | `json` | Log format: `json` (structured) / `text` (human-readable) |
+| `TOCR_LOG_RATELIMIT` | `10` | Max rate-limited logs per call site per 1s window (applies to per-request error paths). `0` disables. Format `N` or `N:W_MS` (e.g. `5:2000` = 5 logs / 2s). On window roll a single `[suppressed logs]` rollup line is emitted. |
 
 Layout detection is **enabled by default**. The model is loaded at startup but only runs when a request includes `?layout=1`. Requests without `?layout=1` have zero overhead. Requests with `?layout=1` reduce throughput by ~20%. Set `DISABLE_LAYOUT=1` to skip loading the model entirely and save ~300-500 MB VRAM.
 
@@ -397,6 +478,13 @@ cmake --build build_cpu -j$(nproc)
 # If your distro's gRPC CMake config conflicts with system protobuf,
 # add -DCMAKE_DISABLE_FIND_PACKAGE_gRPC=ON to fall back to pkg-config.
 # To skip the model auto-fetch (e.g. in CI), add -DFETCH_MODELS=OFF.
+
+# CUDA SM target. Native builds default to sm_120 (Blackwell, RTX 50-series)
+# only — the full multi-arch fat binary is ~12.5 GB and adds 10-15 s of
+# PTX-JIT to first-start on cold cache. To target other GPUs, opt back in:
+#   cmake -B build -DCMAKE_CUDA_ARCHITECTURES="86;89;120" ...
+# Reference: 75=Turing, 80=A100, 86=Ampere consumer, 89=Ada, 90=Hopper,
+# 100=Blackwell DC, 120=Blackwell consumer.
 ```
 
 ---

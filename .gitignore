@@ -1,5 +1,6 @@
 build/
 build_cpu/
+predeploy/
 __pycache__/
 .pytest_cache/
 .venv*/
@@ -11,15 +12,11 @@ __pycache__/
 timing.cache
 .DS_Store
 
-# Layout detection model (~124 MB) — fetched on demand via
-# scripts/export_pp_doclayoutv3.py
-models/layout/
-
-# Non-default language bundles — fetched at container start by
-# scripts/entrypoint.sh when OCR_LANG=<lang> is set. Only Latin ships in
-# the repo as flat-layout models/{det,rec,cls}.onnx + keys.txt; every
-# other language is pulled on demand from the pinned PP-OCRv5 ONNX mirror.
-models/rec/
+# Model weights — all bundles are fetched at build time from the pinned
+# GitHub Release (scripts/fetch_release_models.sh). Native builds with
+# FETCH_MODELS=ON populate this dir on first cmake --build; nothing under
+# models/ should ever be tracked.
+models/
 
 # fastpdf2png binaries — auto-installed by scripts/install_fastpdf2png.sh
 bin/fastpdf2png

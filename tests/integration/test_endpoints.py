@@ -1006,13 +1006,16 @@ class TestResponseHeaders:
 
 
 class TestNginx413:
-    """Verify that oversized requests (>100MB) are rejected with 413."""
+    """Verify that oversized requests (>MAX_BODY_MB) are rejected with 413."""
 
     @pytest.mark.slow
     def test_ocr_raw_body_too_large(self, server_url):
-        """Sending >100MB should trigger nginx 413 Request Entity Too Large."""
-        # Generate ~101MB of data
-        oversized = b"\x00" * (101 * 1024 * 1024)
+        """Sending >MAX_BODY_MB should trigger 413 Request Entity Too Large."""
+        # Honour the same env var the server reads, so the test stays
+        # correct when the operator raises or lowers the cap. Defaults to 100.
+        import os
+        cap_mb = int(os.environ.get("MAX_BODY_MB", "100"))
+        oversized = b"\x00" * ((cap_mb + 1) * 1024 * 1024)
         try:
             r = requests.post(
                 f"{server_url}/ocr/raw",
@@ -1021,7 +1024,7 @@ class TestNginx413:
                 timeout=60,
             )
             assert r.status_code == 413, (
-                f"Expected 413 for >100MB body, got {r.status_code}"
+                f"Expected 413 for >{cap_mb}MB body, got {r.status_code}"
             )
         except requests.ConnectionError:
             # nginx may close the connection before reading all data;

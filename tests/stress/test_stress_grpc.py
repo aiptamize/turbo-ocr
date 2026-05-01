@@ -45,7 +45,7 @@ def test_stress_grpc_recognize(grpc_target):
         while time.monotonic() < stop_at:
             t0 = time.perf_counter()
             try:
-                stub.Recognize(ocr_pb2.RecognizeRequest(image=image_bytes))
+                stub.Recognize(ocr_pb2.OCRRequest(image=image_bytes))
                 local_lat.append((time.perf_counter() - t0) * 1000)
                 local_ok += 1
             except Exception:

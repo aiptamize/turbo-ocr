@@ -29,8 +29,12 @@ public:
   [[nodiscard]] std::vector<OCRResultItem> run(const cv::Mat &img) override;
 
   /// Run OCR + optional layout detection.
+  /// `want_reading_order` is opt-in and has no effect when layout is
+  /// unavailable — the returned vector stays empty so the JSON serializer
+  /// omits the key.
   [[nodiscard]] OcrPipelineResult run_with_layout(const cv::Mat &img,
-                                                   bool want_layout = false);
+                                                   bool want_layout = false,
+                                                   bool want_reading_order = false);
 
 private:
   std::unique_ptr<detection::CpuPaddleDet> det_;

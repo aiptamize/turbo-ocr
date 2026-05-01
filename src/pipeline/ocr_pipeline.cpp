@@ -2,6 +2,8 @@
 #include "turbo_ocr/common/cuda_check.h"
 #include "turbo_ocr/common/timing.h"
 #include "turbo_ocr/decode/gpu_image.h"
+#include "turbo_ocr/common/serialization.h"
+#include "turbo_ocr/layout/reading_order.h"
 
 #include <algorithm>
 #include <cstring>
@@ -149,7 +151,10 @@ void OcrPipeline::warmup_gpu(cudaStream_t stream) {
     if (needed > h_pinned_size_) {
       cudaFreeHost(h_pinned_buf_);
       h_pinned_buf_ = nullptr;
-      CUDA_CHECK(cudaMallocHost(&h_pinned_buf_, needed));
+      // Upload-only pinned buffer: CPU writes (memcpy) once and the GPU DMAs
+      // it. Write-combined uncached memory is ~10-15% faster for this access
+      // pattern (no read-back from CPU).
+      CUDA_CHECK(cudaHostAlloc(&h_pinned_buf_, needed, cudaHostAllocWriteCombined));
       h_pinned_size_ = needed;
     }
     std::memcpy(h_pinned_buf_, dummy_wide.data, needed);
@@ -192,7 +197,10 @@ GpuImage OcrPipeline::upload_image(const cv::Mat &img, cudaStream_t stream,
   if (needed > h_pinned_size_) [[unlikely]] {
     cudaFreeHost(h_pinned_buf_);
     h_pinned_buf_ = nullptr;
-    CUDA_CHECK(cudaMallocHost(&h_pinned_buf_, needed));
+    // Upload-only pinned buffer: CPU writes (memcpy) once and the GPU DMAs
+    // it. Write-combined uncached memory is ~10-15% faster for this access
+    // pattern (no read-back from CPU).
+    CUDA_CHECK(cudaHostAlloc(&h_pinned_buf_, needed, cudaHostAllocWriteCombined));
     h_pinned_size_ = needed;
   }
   std::memcpy(h_pinned_buf_, img.data, needed);
@@ -211,18 +219,35 @@ std::vector<OCRResultItem> OcrPipeline::run(const cv::Mat &img,
 
 OcrPipelineResult OcrPipeline::run_with_layout(const cv::Mat &img,
                                                cudaStream_t stream,
-                                               bool want_layout) {
+                                               bool want_layout,
+                                               bool want_reading_order) {
   const bool layout_active = use_layout_ && want_layout;
+  if (img.empty()) [[unlikely]] return OcrPipelineResult{};
+
   PipelineTimer timer;
   timer.init(stream);
   timer.reset();
 
-  auto gpu_img = upload_image(img, stream, timer);
-
-  // Detection
-  timer.gpu_start("detection_inference");
-  std::vector<Box> boxes = det_->run(gpu_img, img.rows, img.cols, stream);
-  timer.gpu_stop();
+  // Upload + detection wrapped: degenerate inputs (e.g. 1×1, corrupt-
+  // decoded Mats with zero-aligned pitch) trip CUDA "invalid pitch" in
+  // cudaMemcpy2DAsync or in the resize kernel. Reset the stream and
+  // return an empty result instead of bubbling up a 500 — there is no
+  // text to detect and the request shouldn't poison subsequent ones.
+  GpuImage gpu_img;
+  std::vector<Box> boxes;
+  try {
+    gpu_img = upload_image(img, stream, timer);
+    timer.gpu_start("detection_inference");
+    boxes = det_->run(gpu_img, img.rows, img.cols, stream);
+    timer.gpu_stop();
+  } catch (const turbo_ocr::CudaError &e) {
+    std::cerr << "[Pipeline] degenerate input "
+              << img.cols << "x" << img.rows
+              << " — returning empty result: " << e.what() << '\n';
+    cudaStreamSynchronize(stream);
+    cudaGetLastError(); // clear sticky error so next request works
+    return OcrPipelineResult{};
+  }
 
   // Sort boxes top-to-bottom, left-to-right (in-place)
   timer.cpu_start("box_postprocessing");
@@ -311,6 +336,16 @@ OcrPipelineResult OcrPipeline::run_with_layout(const cv::Mat &img,
     out.layout = layout_->collect();
   }
 
+  // Reading-order over layout regions, with synthetic XY-cut entries
+  // for orphan results so unmatched detections (page numbers, headers
+  // the layout model missed) land in their natural position instead of
+  // trailing the entire document. Helper is shared with cpu_ocr_pipeline.
+  if (want_reading_order && !out.layout.empty()) {
+    turbo_ocr::assign_layout_ids(out.results, out.layout);
+    out.reading_order =
+        turbo_ocr::layout::assign_reading_order_for_results(out.results, out.layout);
+  }
+
   timer.print_total();
 
   return out;
@@ -372,7 +407,8 @@ std::vector<OCRResultItem> OcrPipeline::run(GpuImage gpu_img,
 
 OcrPipelineResult OcrPipeline::run_with_layout(GpuImage gpu_img,
                                                cudaStream_t stream,
-                                               bool want_layout) {
+                                               bool want_layout,
+                                               bool want_reading_order) {
   const bool layout_active = use_layout_ && want_layout;
   PipelineTimer timer;
   timer.init(stream);
@@ -458,6 +494,14 @@ OcrPipelineResult OcrPipeline::run_with_layout(GpuImage gpu_img,
     out.layout = layout_->collect();
   }
 
+  // Reading-order — see run(...) above for the contract; helper handles
+  // orphan results (missing layout match) via synthetic XY-cut entries.
+  if (want_reading_order && !out.layout.empty()) {
+    turbo_ocr::assign_layout_ids(out.results, out.layout);
+    out.reading_order =
+        turbo_ocr::layout::assign_reading_order_for_results(out.results, out.layout);
+  }
+
   timer.print_total();
 
   return out;
@@ -518,7 +562,10 @@ std::vector<std::vector<OCRResultItem>> OcrPipeline::run_batch(
         cudaFreeHost(h_pinned_buf_);
         h_pinned_buf_ = nullptr;
       }
-      CUDA_CHECK(cudaMallocHost(&h_pinned_buf_, needed));
+      // Upload-only pinned buffer: CPU writes (memcpy) once and the GPU DMAs
+      // it. Write-combined uncached memory is ~10-15% faster for this access
+      // pattern (no read-back from CPU).
+      CUDA_CHECK(cudaHostAlloc(&h_pinned_buf_, needed, cudaHostAllocWriteCombined));
       h_pinned_size_ = needed;
     }
     std::memcpy(h_pinned_buf_, img.data, needed);
