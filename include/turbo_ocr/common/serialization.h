@@ -129,6 +129,16 @@ inline void append_layout_array(std::string &j,
   j += ']';
 }
 
+inline void append_reading_order_array(std::string &j,
+                                       const std::vector<int> &order) {
+  j += "\"reading_order\":[";
+  for (size_t i = 0; i < order.size(); ++i) {
+    if (i > 0) j += ',';
+    j += std::to_string(order[i]);
+  }
+  j += ']';
+}
+
 } // namespace detail
 
 // Back-compat: text-only response. Existing non-layout code paths keep
@@ -156,6 +166,13 @@ results_to_json(const std::vector<OCRResultItem> &results) {
 inline void assign_layout_ids(std::vector<OCRResultItem> &results,
                               std::vector<layout::LayoutBox> &layout) {
   if (layout.empty()) return;
+
+  // Idempotent short-circuit: pipelines run this before reading-order so
+  // assign_reading_order_for_results can read layout_id; serialization
+  // calls it again to be defensive when invoked directly. Detect a prior
+  // run by the side-effect we leave behind — layout[0].id transitions
+  // from -1 (default) to 0 once assigned.
+  if (layout.front().id == 0) return;
 
   // 1. Assign IDs to layout boxes and cache the axis-aligned bbox of
   //    each 4-corner Box. aabb() lives in common/box.h so the same
@@ -209,6 +226,33 @@ results_to_json(std::vector<OCRResultItem> &results,
   if (!layout.empty()) {
     j += ',';
     detail::append_layout_array(j, layout);
+  }
+  j += '}';
+  return j;
+}
+
+// Full response with optional reading_order. When `reading_order` is
+// empty the key is omitted entirely (no `"reading_order"`), keeping the
+// output byte-identical to the layout-only overload above. The existing
+// two-arg overloads remain unchanged so callers that don't know about
+// reading-order keep working.
+[[nodiscard]] inline std::string
+results_with_reading_order(
+    std::vector<OCRResultItem> &results,
+    std::vector<layout::LayoutBox> &layout,
+    const std::vector<int> &reading_order) {
+  assign_layout_ids(results, layout);
+  std::string j;
+  j.reserve(results.size() * 200 + layout.size() * 120);
+  j += '{';
+  detail::append_results_array(j, results);
+  if (!layout.empty()) {
+    j += ',';
+    detail::append_layout_array(j, layout);
+  }
+  if (!reading_order.empty()) {
+    j += ',';
+    detail::append_reading_order_array(j, reading_order);
   }
   j += '}';
   return j;
