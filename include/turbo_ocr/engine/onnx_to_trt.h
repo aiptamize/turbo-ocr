@@ -22,4 +22,11 @@ namespace turbo_ocr::engine {
 [[nodiscard]] std::string ensure_trt_engine(const std::string &onnx_path,
                                             const std::string &type);
 
+/// Remove orphaned `*.trt.tmp.*` files left behind by a previous process
+/// that crashed between fs::write and fs::rename. Skips files modified
+/// in the last `min_age_seconds` so an in-progress build by a sibling
+/// replica isn't deleted out from under it. Safe to call from any
+/// process; logs a one-line summary.
+void sweep_orphan_engine_temps(int min_age_seconds = 60);
+
 } // namespace turbo_ocr::engine

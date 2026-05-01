@@ -1,4 +1,5 @@
 #include "turbo_ocr/engine/trt_engine.h"
+#include "turbo_ocr/common/errors.h"
 
 #include <format>
 #include <fstream>
@@ -92,6 +93,12 @@ bool TrtEngine::infer_dynamic(const nvinfer1::Dims &input_dims,
     }
     last_input_dims_ = input_dims;
   }
+  // PP-DocLayoutV3 (and any future multi-input model) has more than one
+  // dynamic-shape input. If a caller forgets to set one, enqueueV3 silently
+  // produces garbage output with no error, so guard the dispatch.
+  if (!context_->allInputDimensionsSpecified()) [[unlikely]]
+    throw turbo_ocr::InferenceError(
+        "input dimensions not all set before enqueueV3 (" + model_path_ + ")");
   return context_->enqueueV3(stream);
 }
 
@@ -147,6 +154,12 @@ bool TrtEngine::set_input_shape(const std::string &name,
 bool TrtEngine::execute(cudaStream_t stream) {
   if (!context_) [[unlikely]]
     return false;
+  // PP-DocLayoutV3 (and any future multi-input model) has more than one
+  // dynamic-shape input. If a caller forgets to set one, enqueueV3 silently
+  // produces garbage output with no error, so guard the dispatch.
+  if (!context_->allInputDimensionsSpecified()) [[unlikely]]
+    throw turbo_ocr::InferenceError(
+        "input dimensions not all set before enqueueV3 (" + model_path_ + ")");
   return context_->enqueueV3(stream);
 }
 
