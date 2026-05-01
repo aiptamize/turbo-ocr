@@ -84,14 +84,24 @@ inline float overlap_small(const AABB &a, const AABB &b) noexcept {
   return small > 0 ? float(inter) / float(small) : 0.0f;
 }
 
-// Conservative paragraph-line-count estimate when we lack the per-cell
-// text-line metadata PaddleX builds. height/text_line_height with a
-// floor of 1 covers single-line headers/footnotes (the cases the child
-// rules actually gate on).
-inline int approx_num_lines(const AABB &b, int text_line_height) noexcept {
-  const int h = std::max(1, b.y1 - b.y0);
-  const int tlh = std::max(1, text_line_height);
+// Read the cluster pre-pass output for a layout cell. When the cell
+// has no clustered text lines (no OCR detection landed in it) we
+// fall back to the height-over-text_line_height approximation so
+// non-text layout cells (image, table, chart) still produce
+// sensible line counts for the proximity gates.
+inline int num_lines_for(const LayoutBox &lb, int page_text_line_height) noexcept {
+  if (lb.num_of_lines > 0) return lb.num_of_lines;
+  const int h = std::max(1, lb.box[3][1] - lb.box[0][1]);
+  const int tlh = std::max(1, page_text_line_height);
   return std::max(1, h / tlh);
+}
+
+// Per-cell text-line-height. Falls back to the page-level mean when
+// the cell has no clustered lines (vision blocks etc.).
+inline int line_height_for(const LayoutBox &lb,
+                            int page_text_line_height) noexcept {
+  return lb.text_line_height > 0 ? lb.text_line_height
+                                  : std::max(1, page_text_line_height);
 }
 
 // A "vertical neighbour" relation — used to pick the prev/post block
@@ -144,7 +154,7 @@ PrevPost get_nearest_neighbours(const AABB &parent,
 void detect_doc_title_children(int parent_idx,
                                 const std::vector<LayoutBox> &layout,
                                 const std::vector<int> &text_indices,
-                                int text_line_height,
+                                int page_text_line_height,
                                 std::vector<int> &children,
                                 std::unordered_set<int> &claimed) {
   const AABB parent = aabb_of(layout[parent_idx]);
@@ -159,8 +169,9 @@ void detect_doc_title_children(int parent_idx,
     const int long_s = long_side(cand);
     if (short_s >= parent_short * 4 / 5) return;
     if (long_s >= parent_long && long_s <= parent_long * 3 / 2) return;
-    if (approx_num_lines(cand, text_line_height) >= 3) return;
-    if (nearest_edge_distance(parent, cand) >= text_line_height * 2) return;
+    if (num_lines_for(layout[idx], page_text_line_height) >= 3) return;
+    const int tlh = line_height_for(layout[idx], page_text_line_height);
+    if (nearest_edge_distance(parent, cand) >= tlh * 2) return;
     children.push_back(idx);
     claimed.insert(idx);
   };
@@ -179,13 +190,18 @@ void detect_doc_title_children(int parent_idx,
 
 // Mirrors update_paragraph_title_child_blocks. Children: same-class
 // adjacent paragraph_titles with similar left edge (sub-headings).
+// Uses the MIN of parent and candidate text_line_heights as PaddleX
+// does (`min_text_line_height` in the reference) so a tall caption
+// next to a short subtitle still passes the proximity gate.
 void detect_paragraph_title_children(int parent_idx,
                                       const std::vector<LayoutBox> &layout,
                                       const std::vector<int> &paragraph_title_indices,
-                                      int text_line_height,
+                                      int page_text_line_height,
                                       std::vector<int> &children,
                                       std::unordered_set<int> &claimed) {
   const AABB parent = aabb_of(layout[parent_idx]);
+  const int parent_tlh = line_height_for(layout[parent_idx],
+                                          page_text_line_height);
   PrevPost neigh = get_nearest_neighbours(parent, layout, paragraph_title_indices);
 
   auto try_attach_run = [&](const std::vector<int> &run) {
@@ -193,8 +209,11 @@ void detect_paragraph_title_children(int parent_idx,
       if (idx == parent_idx) continue;
       if (claimed.count(idx)) break;
       const AABB cand = aabb_of(layout[idx]);
-      if (std::abs(cand.x0 - parent.x0) >= text_line_height * 2) break;
-      if (nearest_edge_distance(parent, cand) > text_line_height * 3 / 2) break;
+      const int min_tlh = std::min(parent_tlh,
+                                    line_height_for(layout[idx],
+                                                    page_text_line_height));
+      if (std::abs(cand.x0 - parent.x0) >= min_tlh * 2) break;
+      if (nearest_edge_distance(parent, cand) > min_tlh * 3 / 2) break;
       children.push_back(idx);
       claimed.insert(idx);
     }
@@ -209,7 +228,7 @@ void detect_vision_children(int parent_idx,
                              const std::vector<LayoutBox> &layout,
                              const std::vector<int> &text_indices,
                              const std::vector<int> &vision_title_indices,
-                             int text_line_height,
+                             int page_text_line_height,
                              std::vector<int> &children,
                              std::unordered_set<int> &claimed) {
   const AABB parent = aabb_of(layout[parent_idx]);
@@ -218,7 +237,6 @@ void detect_vision_children(int parent_idx,
   const auto parent_c = centroid(parent);
 
   bool has_vision_footnote = false;
-  bool has_vision_title = false;
 
   std::vector<int> ref_indices;
   ref_indices.reserve(text_indices.size() + vision_title_indices.size());
@@ -233,26 +251,25 @@ void detect_vision_children(int parent_idx,
     const AABB cand = aabb_of(layout[idx]);
     const int dist = nearest_edge_distance(parent, cand);
     const int cls = layout[idx].class_id;
-    if (is_vision_title(cls) && dist <= text_line_height * 2) {
-      has_vision_title = true;
+    const int cand_tlh = line_height_for(layout[idx], page_text_line_height);
+    if (is_vision_title(cls) && dist <= cand_tlh * 2) {
       children.push_back(idx);
       claimed.insert(idx);
       return true;
     }
     if (is_text(cls) && !has_vision_footnote &&
         long_side(cand) < parent_long &&
-        dist <= text_line_height * 2) {
+        dist <= cand_tlh * 2) {
       const auto cand_c = centroid(cand);
+      const int cand_lines = num_lines_for(layout[idx], page_text_line_height);
       const bool tight_caption =
           short_side(cand) < parent_short &&
           long_side(cand) < parent_long / 2 &&
           std::abs(parent_c[0] - cand_c[0]) < 10;
       const bool aligned_left =
-          std::abs(parent.x0 - cand.x0) < 10 &&
-          approx_num_lines(cand, text_line_height) == 1;
+          std::abs(parent.x0 - cand.x0) < 10 && cand_lines == 1;
       const bool aligned_right =
-          std::abs(parent.x1 - cand.x1) < 10 &&
-          approx_num_lines(cand, text_line_height) == 1;
+          std::abs(parent.x1 - cand.x1) < 10 && cand_lines == 1;
       if (tight_caption || aligned_left || aligned_right) {
         has_vision_footnote = true;
         children.push_back(idx);
@@ -275,7 +292,6 @@ void detect_vision_children(int parent_idx,
       claimed.insert(idx);
     }
   }
-  (void)has_vision_title;  // currently we don't gate further work on this
 }
 
 } // namespace
@@ -327,6 +343,57 @@ detect_child_blocks(const std::vector<LayoutBox> &layout,
   return out;
 }
 
+std::vector<int>
+flatten_descendants(int parent_idx,
+                    const std::vector<ChildLinks> &links,
+                    const std::vector<LayoutBox> &layout) {
+  std::vector<int> out;
+  if (parent_idx < 0 || static_cast<size_t>(parent_idx) >= layout.size())
+    return out;
+  if (links.size() != layout.size()) return out;
+  std::unordered_set<int> visited;
+  visited.insert(parent_idx);
+  // Iterative DFS keyed off a worklist of (idx, child_position) pairs.
+  // Each frame remembers its sorted children so we can resume after
+  // descending into a child. depth_limit equal to layout.size() is
+  // enough for any acyclic tree; anything deeper means a cycle that
+  // visited didn't catch (defence in depth).
+  struct Frame {
+    int idx;
+    std::vector<int> kids;
+    size_t cursor;
+  };
+  std::vector<Frame> stack;
+  auto sorted_kids = [&](int idx) {
+    std::vector<int> kids;
+    if (idx < 0 || static_cast<size_t>(idx) >= links.size()) return kids;
+    kids = links[static_cast<size_t>(idx)].child_indices;
+    std::sort(kids.begin(), kids.end(), [&](int a, int b) {
+      auto [ax0, ay0, ax1, ay1] = turbo_ocr::aabb(layout[a].box);
+      auto [bx0, by0, bx1, by1] = turbo_ocr::aabb(layout[b].box);
+      if (ay0 != by0) return ay0 < by0;
+      return ax0 < bx0;
+    });
+    return kids;
+  };
+  stack.push_back({parent_idx, sorted_kids(parent_idx), 0});
+  const size_t depth_limit = layout.size() + 1;
+  while (!stack.empty()) {
+    if (stack.size() > depth_limit) break;  // pathological cycle guard
+    auto &top = stack.back();
+    if (top.cursor >= top.kids.size()) {
+      stack.pop_back();
+      continue;
+    }
+    const int ci = top.kids[top.cursor++];
+    if (ci < 0 || static_cast<size_t>(ci) >= layout.size()) continue;
+    if (!visited.insert(ci).second) continue;  // skip if already seen
+    out.push_back(ci);
+    stack.push_back({ci, sorted_kids(ci), 0});
+  }
+  return out;
+}
+
 void splice_child_blocks(std::vector<UnsortedBlock> &sorted,
                          const std::vector<ChildLinks> &links,
                          const std::vector<LayoutBox> &layout) {
@@ -348,27 +415,19 @@ void splice_child_blocks(std::vector<UnsortedBlock> &sorted,
     filtered.push_back(b);
   }
 
-  // 3. For each parent that has children, splice (parent, children…)
-  //    into `filtered` at the parent's position. Children come right
-  //    after the parent, sorted top-then-left.
+  // 3. For each parent that has descendants (anywhere in the
+  //    sub-tree), splice (parent, descendants…) into `filtered` at
+  //    the parent's position. Descendants come right after the parent
+  //    in DFS order, each level sorted top-then-left — matching
+  //    flatten_descendants' walk.
   std::vector<UnsortedBlock> out;
   out.reserve(filtered.size() + child_layout_idxs.size());
   for (const auto &b : filtered) {
     out.push_back(b);
     if (b.layout_idx < 0 ||
         static_cast<size_t>(b.layout_idx) >= links.size()) continue;
-    const auto &cl = links[static_cast<size_t>(b.layout_idx)];
-    if (cl.child_indices.empty()) continue;
-
-    // Sort children top→bottom, ties broken left→right.
-    std::vector<int> kids = cl.child_indices;
-    std::sort(kids.begin(), kids.end(), [&](int a, int b_) {
-      auto [ax0, ay0, ax1, ay1] = turbo_ocr::aabb(layout[a].box);
-      auto [bx0, by0, bx1, by1] = turbo_ocr::aabb(layout[b_].box);
-      if (ay0 != by0) return ay0 < by0;
-      return ax0 < bx0;
-    });
-    for (int ci : kids) {
+    const auto descendants = flatten_descendants(b.layout_idx, links, layout);
+    for (int ci : descendants) {
       auto [x0, y0, x1, y1] = turbo_ocr::aabb(layout[ci].box);
       out.push_back({ci, {x0, y0, x1, y1}, OrderLabel::kBody,
                      layout[ci].class_id});

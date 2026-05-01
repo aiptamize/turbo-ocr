@@ -87,9 +87,16 @@ assign_reading_order(const std::vector<LayoutBox> &layout, int min_gap = 1);
 // has a valid layout_id; otherwise everything degrades to the y/x
 // fallback. Empty layout → indices [0..results.size()) sorted purely by
 // y/x. Empty results → empty output.
+//
+// `layout` is taken by non-const ref because the function runs
+// cluster_text_lines internally as a pre-pass — populating each
+// LayoutBox's direction / num_of_lines / text_line_height /
+// text_line_width / seg_*_coordinate fields. None of those fields are
+// serialised so the JSON output is unaffected, but downstream code
+// that re-uses `layout` will see the populated values.
 [[nodiscard]] std::vector<int>
 assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
-                                 const std::vector<LayoutBox> &layout,
+                                 std::vector<LayoutBox> &layout,
                                  int min_gap = 1);
 
 } // namespace turbo_ocr::layout

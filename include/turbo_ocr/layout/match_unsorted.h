@@ -11,26 +11,18 @@
 //   - weighted_distance_insert
 //   - match_unsorted_blocks (dispatch)
 //
-// Simplifications vs the Python reference:
-//   - We assume horizontal page direction. PP-DocLayoutV3 itself has
-//     no opinion on page direction — PaddleX infers it from bbox
-//     aspect ratios via a majority vote across the region's
-//     text-class children. Vertical-text documents (Japanese
-//     tategaki, traditional Chinese / Korean) will have scrambled
-//     cross-column reading order; locally text remains correct.
-//     Latin / Cyrillic / Greek / Arabic / Thai / Latin-typeset
-//     Chinese / Korean (i.e. >99% of expected production traffic)
-//     are unaffected.
+// Differences vs the Python reference:
 //   - No LayoutRegion abstraction — text_line_width / text_line_height
-//     are passed through as scalars derived from the median width /
-//     height of all text-class blocks on the page.
+//     and direction are passed through as parameters. Per-block
+//     metadata (num_of_lines, seg_*_coordinate, direction) lives on
+//     LayoutBox itself and is populated by cluster_text_lines.
 //   - tolerance_len for non-doc_title blocks is fixed at 2 px
 //     (PaddleX's default in XYCUT_SETTINGS["edge_distance_compare_
 //     tolerance_len"]); doc_title scales by text_line_width.
-//   - No `get_seg_flag` look-ahead — its inputs require per-paragraph
-//     text-line metadata we don't compute. Approximate via a
-//     "neighbour is multi-line and horizontally encloses" heuristic
-//     in the vision step-back branch.
+//   - get_seg_flag uses the cluster pre-pass output (num_of_lines +
+//     seg_start/end_coordinate) directly. Cells with no clustered
+//     lines (vision blocks, empty cells) yield the conservative
+//     default (paragraph start = true, paragraph end = true).
 
 #include <array>
 #include <vector>
@@ -51,6 +43,15 @@ enum class OrderLabel : int {
   kUnordered,        // aside_text, seal, page number, formula_number — manhattan_insert
 };
 
+// Per-block paragraph-segmentation flags. Computed via get_seg_flag
+// from the text-line cluster pre-pass output (num_of_lines + seg_*_
+// coordinate). Both default to true for blocks that aren't part of a
+// continuing paragraph.
+struct SegFlag {
+  bool seg_start_flag = true;  // true when block starts a new paragraph
+  bool seg_end_flag = true;    // true when block ends a paragraph
+};
+
 // Map a PP-DocLayoutV3 class_id to an OrderLabel. Class IDs not in any
 // special bucket fall through to kBody (which means "use whatever the
 // XY-cut bucketing decides").
@@ -69,9 +70,28 @@ struct UnsortedBlock {
   int class_id;
 };
 
+// Compute the (seg_start_flag, seg_end_flag) pair for `current`
+// relative to its predecessor `prev`. Mirrors PaddleX's get_seg_flag:
+//   - seg_start_flag = false ⟺ prev's last line ends near the right
+//     margin AND current's first line starts at the left margin AND
+//     prev has more than one line. That's the "current continues
+//     prev's paragraph" case.
+//   - seg_end_flag = false ⟺ same, but checked from current's last
+//     line to a hypothetical successor margin (here: current itself
+//     hits the right margin → it's still mid-paragraph at the end).
+//
+// `direction` selects which axis is "primary" (start = left for
+// horizontal, top for vertical).
+[[nodiscard]] SegFlag
+get_seg_flag(const LayoutBox &current,
+             const LayoutBox &prev,
+             Direction direction);
+
 void match_unsorted_block(UnsortedBlock block,
                           std::vector<UnsortedBlock> &sorted_blocks,
-                          int text_line_width);
+                          int text_line_width,
+                          Direction direction,
+                          const std::vector<LayoutBox> &layout);
 
 // Convenience: insert every block in `unsorted` into `sorted` using its
 // per-block strategy. Iteration order matches PaddleX:
@@ -79,6 +99,8 @@ void match_unsorted_block(UnsortedBlock block,
 //   - everything else after
 void match_unsorted_blocks(std::vector<UnsortedBlock> &sorted,
                            std::vector<UnsortedBlock> &unsorted,
-                           int text_line_width);
+                           int text_line_width,
+                           Direction direction,
+                           const std::vector<LayoutBox> &layout);
 
 } // namespace turbo_ocr::layout

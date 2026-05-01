@@ -49,4 +49,23 @@ void splice_child_blocks(std::vector<UnsortedBlock> &sorted,
                          const std::vector<ChildLinks> &links,
                          const std::vector<LayoutBox> &layout);
 
+// Return the descendants of `parent_idx` in emission order. Each
+// level is sorted top-down by y0 then x0 (matching PaddleX's
+// sort_child_blocks for horizontal direction). Recursion handles
+// arbitrary tree depth: a child's own children are emitted right
+// after the child, before its sibling.
+//
+// Cycle / self-loop protection: every visited index is recorded in a
+// `visited` set; revisits are skipped silently. The walk also bounds
+// recursion depth via the layout vector size — the deepest legitimate
+// chain is `layout.size()-1` long, so anything deeper indicates a
+// pathological cycle and the walk halts.
+//
+// Empty links → empty output. parent_idx not in [0, layout.size()) →
+// empty output.
+[[nodiscard]] std::vector<int>
+flatten_descendants(int parent_idx,
+                    const std::vector<ChildLinks> &links,
+                    const std::vector<LayoutBox> &layout);
+
 } // namespace turbo_ocr::layout

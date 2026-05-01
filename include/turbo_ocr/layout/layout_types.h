@@ -95,6 +95,15 @@ static_assert(kLayoutLabels[18] == "reference",         "class_id 18 must be 're
 static_assert(kLayoutLabels[19] == "reference_content", "class_id 19 must be 'reference_content'");
 static_assert(kLayoutLabels[24] == "vision_footnote",   "class_id 24 must be 'vision_footnote'");
 
+// Reading direction for a layout cell or for the page as a whole.
+// Mirrors PaddleX's "horizontal" / "vertical" string. Vertical is used
+// for CJK tategaki layouts (right-to-left columns, top-to-bottom within
+// a column).
+enum class Direction : int {
+  kHorizontal = 0,
+  kVertical = 1,
+};
+
 struct LayoutBox {
   int class_id = 0;
   float score = 0.0f;
@@ -105,6 +114,26 @@ struct LayoutBox {
   // Cross-reference ID emitted when layout detection is enabled. Default
   // -1 means "not assigned" and the serializer omits the field.
   int id = -1;
+
+  // Text-line metadata populated by cluster_text_lines (a per-cell pre-
+  // pass that groups the OCR detection boxes whose layout_id maps to
+  // this cell). Default-zero values are the fallback when no result
+  // landed in this cell. None of these fields are serialised — they
+  // exist only to drive reading-order placement and child-block
+  // detection internally.
+  Direction direction = Direction::kHorizontal;
+  int num_of_lines = 0;
+  // Mean line height / width across the clustered TextLines. Useful as
+  // a proximity threshold scale (PaddleX's `2 * text_line_height`).
+  int text_line_height = 0;
+  int text_line_width = 0;
+  // Bbox coordinates of the FIRST and LAST text lines along the cell's
+  // primary direction. Used by get_seg_flag to detect paragraph
+  // continuation: a multi-line cell whose last line ends near the
+  // right margin (horizontal) or bottom margin (vertical) is
+  // continuing across a hard split.
+  int seg_start_coordinate = 0;  // left edge of first line (horizontal) / top of first line (vertical)
+  int seg_end_coordinate = 0;    // right edge of last line (horizontal) / bottom of last line (vertical)
 };
 
 } // namespace turbo_ocr::layout

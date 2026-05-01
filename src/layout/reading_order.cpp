@@ -10,6 +10,7 @@
 #include "turbo_ocr/common/box.h"
 #include "turbo_ocr/layout/child_blocks.h"
 #include "turbo_ocr/layout/match_unsorted.h"
+#include "turbo_ocr/layout/text_line_cluster.h"
 
 namespace turbo_ocr::layout {
 
@@ -383,7 +384,7 @@ assign_reading_order(const std::vector<LayoutBox> &layout, int min_gap) {
 
 std::vector<int>
 assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
-                                 const std::vector<LayoutBox> &layout,
+                                 std::vector<LayoutBox> &layout,
                                  int min_gap) {
   std::vector<int> out;
   out.reserve(results.size());
@@ -543,28 +544,40 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
     return out;
   }
 
-  // Median text-line width + height — used by the label-aware
-  // insertion as a tolerance scale and by child-block detection as
-  // the proximity threshold. Falls back to 0 when no text-class
-  // layout is present (collapses tolerances to their base values).
+  // Cluster the OCR detection boxes into per-cell TextLines. This
+  // populates each LayoutBox with direction, num_of_lines,
+  // text_line_height, text_line_width, and seg_*_coordinate — which
+  // feed the label-aware insertion (weighted_distance_insert
+  // disperse term + get_seg_flag look-ahead) and the child-block
+  // detection (real proximity threshold per block instead of the
+  // height-over-text_line_height approximation).
+  cluster_text_lines(results, layout);
+
+  // Page-level direction (majority vote across text-class cells).
+  // Drives axis selection in weighted_distance_insert and the
+  // bucket-level sort key.
+  const Direction page_direction = infer_page_direction(layout);
+
+  // Page-level text_line_width / text_line_height as means across
+  // text-class cells — the disperse-term scale for doc_title in
+  // weighted_distance_insert, and the cross-cell proximity threshold
+  // for child-block detection. Falls back to 0 when no text cell got
+  // any clustered lines.
   int text_line_width = 0;
   int text_line_height = 0;
   {
-    std::vector<int> widths, heights;
-    widths.reserve(layout.size());
-    heights.reserve(layout.size());
+    long long sum_w = 0, sum_h = 0;
+    int n = 0;
     for (const auto &lb : layout) {
       if (lb.class_id != 22 /*text*/) continue;
-      widths.push_back(lb.box[1][0] - lb.box[0][0]);
-      heights.push_back(lb.box[3][1] - lb.box[0][1]);
+      if (lb.text_line_height <= 0) continue;
+      sum_w += lb.text_line_width;
+      sum_h += lb.text_line_height;
+      ++n;
     }
-    if (!widths.empty()) {
-      auto mw = widths.begin() + widths.size() / 2;
-      std::nth_element(widths.begin(), mw, widths.end());
-      text_line_width = *mw;
-      auto mh = heights.begin() + heights.size() / 2;
-      std::nth_element(heights.begin(), mh, heights.end());
-      text_line_height = *mh;
+    if (n > 0) {
+      text_line_width = static_cast<int>(sum_w / n);
+      text_line_height = static_cast<int>(sum_h / n);
     }
   }
 
@@ -629,10 +642,31 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
     }
     if (aug.empty() && unsorted.empty()) return;
 
-    // 1. XY-cut over the regulars.
+    // 1. XY-cut over the regulars. For vertical-direction pages we
+    //    mirror x coordinates around max_x BEFORE the cut so the
+    //    algorithm's left-to-right behaviour produces a right-to-left
+    //    column order (CJK tategaki). Coordinates are restored only
+    //    in the final layout-idx mapping so callers see the original
+    //    bbox.
     std::vector<std::array<int, 4>> rects;
     rects.reserve(aug.size());
-    for (const auto &a : aug) rects.push_back(a.aabb);
+    int mirror_x = 0;
+    if (page_direction == Direction::kVertical) {
+      for (const auto &a : aug) {
+        mirror_x = std::max(mirror_x, a.aabb[2]);
+      }
+    }
+    for (const auto &a : aug) {
+      if (page_direction == Direction::kVertical) {
+        // Reflect: new_x0 = mirror_x - old_x1, new_x1 = mirror_x - old_x0.
+        // Keeps width identical; flips order so the rightmost column
+        // becomes the leftmost in the cut input.
+        rects.push_back({mirror_x - a.aabb[2], a.aabb[1],
+                         mirror_x - a.aabb[0], a.aabb[3]});
+      } else {
+        rects.push_back(a.aabb);
+      }
+    }
     std::vector<int> aug_indices(aug.size());
     std::iota(aug_indices.begin(), aug_indices.end(), 0);
     std::vector<int> aug_order;
@@ -669,13 +703,16 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
 
     // 3. Insert label-aware unsorted blocks.
     if (!unsorted.empty()) {
-      match_unsorted_blocks(sorted_blocks, unsorted, text_line_width);
+      match_unsorted_blocks(sorted_blocks, unsorted, text_line_width,
+                              page_direction, layout);
     }
 
     // 4. Emit results. For each sorted layout entry, also splice in
-    //    the layout's children (vision_footnote, sub-titles, etc.)
-    //    immediately after, in top-down geometric order — mirrors
-    //    PaddleX's insert_child_blocks.
+    //    the layout's descendants (children, grandchildren, …) in
+    //    top-down geometric order — mirrors PaddleX's
+    //    insert_child_blocks. Descendants come from
+    //    flatten_descendants which handles arbitrary tree depth and
+    //    is cycle-safe.
     auto emit_layout = [&](int layout_idx) {
       for (int ri : by_layout[static_cast<size_t>(layout_idx)]) {
         if (!emitted[static_cast<size_t>(ri)]) {
@@ -687,17 +724,9 @@ assign_reading_order_for_results(const std::vector<OCRResultItem> &results,
     for (const auto &sb : sorted_blocks) {
       if (sb.layout_idx >= 0) {
         emit_layout(sb.layout_idx);
-        const auto &cl = child_links[static_cast<size_t>(sb.layout_idx)];
-        if (!cl.child_indices.empty()) {
-          std::vector<int> kids = cl.child_indices;
-          std::sort(kids.begin(), kids.end(), [&](int a, int b_) {
-            auto [ax0, ay0, ax1, ay1] = turbo_ocr::aabb(layout[a].box);
-            auto [bx0, by0, bx1, by1] = turbo_ocr::aabb(layout[b_].box);
-            if (ay0 != by0) return ay0 < by0;
-            return ax0 < bx0;
-          });
-          for (int ci : kids) emit_layout(ci);
-        }
+        const auto descendants =
+            flatten_descendants(sb.layout_idx, child_links, layout);
+        for (int ci : descendants) emit_layout(ci);
       } else {
         const int ri = -2 - sb.layout_idx;
         if (ri >= 0 && static_cast<size_t>(ri) < results.size() &&

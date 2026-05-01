@@ -85,12 +85,15 @@ inline double centroid_l2_sq(const std::array<int, 4> &a) noexcept {
   return cx * cx + cy * cy;
 }
 
-// _get_weights(label, direction="horizontal") for the four insertion
-// gap-direction weights. Mirrors xycut_enhanced/utils.py:_get_weights.
-inline std::array<float, 4> weights_for(OrderLabel ol) noexcept {
+// _get_weights(label, direction) for the four insertion gap-direction
+// weights. Mirrors xycut_enhanced/utils.py:_get_weights.
+inline std::array<float, 4> weights_for(OrderLabel ol,
+                                         Direction dir) noexcept {
   switch (ol) {
     case OrderLabel::kDocTitle:
-      return {1.0f, 0.1f, 0.1f, 1.0f};
+      return dir == Direction::kHorizontal
+                 ? std::array<float, 4>{1.0f, 0.1f, 0.1f, 1.0f}
+                 : std::array<float, 4>{0.2f, 0.1f, 1.0f, 1.0f};
     case OrderLabel::kParagraphTitle:
     case OrderLabel::kVisionTitle:
     case OrderLabel::kVision:
@@ -178,21 +181,25 @@ void euclidean_insert(UnsortedBlock block,
 // disperse term collapses to 0 and a doc_title's edge_distance ties
 // with the wrong neighbour, landing it mid-paragraph.
 //
-// Vision look-ahead approximation: PaddleX uses get_seg_flag (which
-// depends on per-paragraph text-line metadata we don't compute) to
-// decide whether to bump insertion ±1 around a vision block. Lacking
-// that signal we step back by 1 only when the neighbour is plausibly
-// multi-line — a simple "neighbour is taller than 1.5× the block AND
-// horizontally encloses it" heuristic that fires when the neighbour
-// is a real text paragraph but stays put when it's a single line.
+// `direction` flips the up-edge / left-edge axis assignments so the
+// algorithm handles vertical-direction (CJK tategaki) layouts. For
+// vertical pages, the "primary" axis is x (right-to-left columns,
+// top-to-bottom within each).
+//
+// `layout` is consulted via get_seg_flag for the vision step-back
+// branch — when an adjacent neighbour's last line continues into the
+// current vision block (paragraph wrap), step back so the figure
+// doesn't split the paragraph.
 void weighted_distance_insert(UnsortedBlock block,
                               std::vector<UnsortedBlock> &sorted_blocks,
-                              int text_line_width) {
+                              int text_line_width,
+                              Direction direction,
+                              const std::vector<LayoutBox> &layout) {
   if (sorted_blocks.empty()) {
     sorted_blocks.push_back(block);
     return;
   }
-  const auto weights = weights_for(block.order_label);
+  const auto weights = weights_for(block.order_label, direction);
   const int x1 = block.aabb[0], y1 = block.aabb[1];
   const int x2 = block.aabb[2];
 
@@ -213,11 +220,21 @@ void weighted_distance_insert(UnsortedBlock block,
     const int y1p = sb.aabb[1];
     const int x1p = sb.aabb[0];
     const int y2p = sb.aabb[3];
+    const int x2p = sb.aabb[2];
 
     float edge_distance = nearest_edge_distance(block.aabb, sb.aabb, weights);
-    float up_edge = float(y1p);
-    float left_edge = float(x1p);
-    const bool is_below_sorted = y2p < y1;
+    // PaddleX's primary "up_edge_distance" is y1' for horizontal,
+    // -x2' for vertical (a column closer to the right edge has a
+    // SMALLER -x2 → reads earlier).
+    float up_edge = direction == Direction::kHorizontal
+                        ? float(y1p)
+                        : -float(x2p);
+    float left_edge = direction == Direction::kHorizontal
+                          ? float(x1p)
+                          : float(y1p);
+    const bool is_below_sorted = direction == Direction::kHorizontal
+                                     ? y2p < y1
+                                     : x1p > x2;
 
     const bool flip_for_below =
         (block.order_label == OrderLabel::kDocTitle ||
@@ -247,9 +264,14 @@ void weighted_distance_insert(UnsortedBlock block,
       if (std::abs(y1 / 2 - y1p / 2) > 0) {
         sorted_distance = y1p;
         block_distance = y1;
-      } else if (std::abs(x1 / 2 - x2 / 2) > 0) {
+      } else if (direction == Direction::kHorizontal &&
+                 std::abs(x1 / 2 - x2 / 2) > 0) {
         sorted_distance = x1p;
         block_distance = x1;
+      } else if (direction == Direction::kVertical &&
+                 std::abs(x1 - x2) > 0) {
+        sorted_distance = -x2p;
+        block_distance = -x2;
       } else {
         const double sb_c = centroid_l2_sq(sb.aabb);
         const double bl_c = centroid_l2_sq(block.aabb);
@@ -258,26 +280,43 @@ void weighted_distance_insert(UnsortedBlock block,
       }
       if (block_distance > sorted_distance) {
         nearest = i + 1;
+        // Vision look-ahead: if the block we're inserting AFTER (sb)
+        // and the next block in sorted (i+1) form a paragraph
+        // continuation, bump past the next block so the figure
+        // doesn't split mid-paragraph.
+        if (i + 1 < sorted_blocks.size() &&
+            (block.order_label == OrderLabel::kVision ||
+             block.order_label == OrderLabel::kVisionTitle)) {
+          const int next_idx = sorted_blocks[i + 1].layout_idx;
+          if (next_idx >= 0 &&
+              static_cast<size_t>(next_idx) < layout.size() &&
+              sb.layout_idx >= 0 &&
+              static_cast<size_t>(sb.layout_idx) < layout.size()) {
+            const SegFlag sf = get_seg_flag(
+                layout[static_cast<size_t>(next_idx)],
+                layout[static_cast<size_t>(sb.layout_idx)],
+                direction);
+            if (!sf.seg_start_flag) ++nearest;
+          }
+        }
       } else if (i > 0) {
-        // PaddleX's get_seg_flag check requires per-paragraph text-line
-        // metadata. Approximate: only step back into the previous slot
-        // when the neighbour at i looks like a multi-line paragraph
-        // that spatially encloses the block (so insertion BEFORE it
-        // doesn't break a paragraph).
+        // Vision look-behind: only step into the previous slot when
+        // the current sorted block is mid-paragraph relative to its
+        // predecessor (i.e. not a clean paragraph start).
         const bool is_vision =
             block.order_label == OrderLabel::kVision ||
             block.order_label == OrderLabel::kVisionTitle;
         if (is_vision) {
-          const int sb_height = sb.aabb[3] - sb.aabb[1];
-          const int sb_width = sb.aabb[2] - sb.aabb[0];
-          const int bl_height = std::max(1, block.aabb[3] - block.aabb[1]);
-          const bool neighbour_is_multiline =
-              sb_height > bl_height * 3 / 2;
-          const bool neighbour_encloses_horizontally =
-              sb.aabb[0] <= x1 && sb.aabb[2] >= x2 &&
-              sb_width > (x2 - x1);
-          if (neighbour_is_multiline && neighbour_encloses_horizontally) {
-            nearest = i - 1;
+          const int curr_idx = sb.layout_idx;
+          const int prev_idx = sorted_blocks[i - 1].layout_idx;
+          if (curr_idx >= 0 && prev_idx >= 0 &&
+              static_cast<size_t>(curr_idx) < layout.size() &&
+              static_cast<size_t>(prev_idx) < layout.size()) {
+            const SegFlag sf = get_seg_flag(
+                layout[static_cast<size_t>(curr_idx)],
+                layout[static_cast<size_t>(prev_idx)],
+                direction);
+            if (!sf.seg_start_flag) nearest = i - 1;
           }
         }
       }
@@ -289,9 +328,74 @@ void weighted_distance_insert(UnsortedBlock block,
 
 } // namespace
 
+SegFlag get_seg_flag(const LayoutBox &current,
+                     const LayoutBox &prev,
+                     Direction direction) {
+  // Default: every block is its own paragraph (start AND end). We
+  // flip the flags only when the cluster pre-pass has populated
+  // text-line metadata — without it (no detection results inside the
+  // cell) we can't infer continuation.
+  SegFlag out;
+
+  // For paragraph-continuation we need the prev block to actually
+  // BE a multi-line paragraph and to have populated its seg_*_
+  // coordinate fields.
+  if (prev.num_of_lines <= 1 || current.num_of_lines == 0) return out;
+  if (prev.text_line_height <= 0) return out;
+
+  // Use the same direction's primary axis for both. Mismatch ⇒ keep
+  // defaults (we can't reason about cross-direction continuation).
+  if (prev.direction != direction || current.direction != direction) {
+    return out;
+  }
+
+  // Tolerance: PaddleX uses 10 pixels but scales loosely with line
+  // height. Stick with the absolute 10-px threshold — that's what
+  // appears as `< 10` literals in get_seg_flag.
+  constexpr int kEdgeTolerance = 10;
+
+  if (direction == Direction::kHorizontal) {
+    auto [prev_x0, prev_y0, prev_x1, prev_y1] = turbo_ocr::aabb(prev.box);
+    auto [cur_x0,  cur_y0,  cur_x1,  cur_y1]  = turbo_ocr::aabb(current.box);
+    // prev's last line ends within `tol` of its right margin?
+    const bool prev_full_right =
+        std::abs(prev.seg_end_coordinate - prev_x1) < kEdgeTolerance;
+    // current's first line starts within `tol` of its left margin?
+    const bool cur_full_left =
+        std::abs(current.seg_start_coordinate - cur_x0) < kEdgeTolerance;
+    if (prev_full_right && cur_full_left) {
+      out.seg_start_flag = false;  // current continues prev's paragraph
+    }
+    // current itself ends near its right margin → mid-paragraph at end.
+    const bool cur_full_right =
+        std::abs(current.seg_end_coordinate - cur_x1) < kEdgeTolerance;
+    if (cur_full_right && current.num_of_lines > 1) {
+      out.seg_end_flag = false;
+    }
+  } else {
+    auto [prev_x0, prev_y0, prev_x1, prev_y1] = turbo_ocr::aabb(prev.box);
+    auto [cur_x0,  cur_y0,  cur_x1,  cur_y1]  = turbo_ocr::aabb(current.box);
+    const bool prev_full_bottom =
+        std::abs(prev.seg_end_coordinate - prev_y1) < kEdgeTolerance;
+    const bool cur_full_top =
+        std::abs(current.seg_start_coordinate - cur_y0) < kEdgeTolerance;
+    if (prev_full_bottom && cur_full_top) {
+      out.seg_start_flag = false;
+    }
+    const bool cur_full_bottom =
+        std::abs(current.seg_end_coordinate - cur_y1) < kEdgeTolerance;
+    if (cur_full_bottom && current.num_of_lines > 1) {
+      out.seg_end_flag = false;
+    }
+  }
+  return out;
+}
+
 void match_unsorted_block(UnsortedBlock block,
                           std::vector<UnsortedBlock> &sorted_blocks,
-                          int text_line_width) {
+                          int text_line_width,
+                          Direction direction,
+                          const std::vector<LayoutBox> &layout) {
   switch (block.order_label) {
     case OrderLabel::kCrossReference:
       reference_insert(block, sorted_blocks);
@@ -303,7 +407,8 @@ void match_unsorted_block(UnsortedBlock block,
     case OrderLabel::kParagraphTitle:
     case OrderLabel::kVisionTitle:
     case OrderLabel::kVision:
-      weighted_distance_insert(block, sorted_blocks, text_line_width);
+      weighted_distance_insert(block, sorted_blocks, text_line_width,
+                                direction, layout);
       break;
     case OrderLabel::kBody:
     default:
@@ -314,7 +419,9 @@ void match_unsorted_block(UnsortedBlock block,
 
 void match_unsorted_blocks(std::vector<UnsortedBlock> &sorted,
                            std::vector<UnsortedBlock> &unsorted,
-                           int text_line_width) {
+                           int text_line_width,
+                           Direction direction,
+                           const std::vector<LayoutBox> &layout) {
   // Two-pass to honour the "doc_title pinned to 0 if first" rule: any
   // doc_title in `unsorted` goes through weighted_distance_insert first
   // (the algorithm naturally lands the first one at the top-left).
@@ -323,7 +430,7 @@ void match_unsorted_blocks(std::vector<UnsortedBlock> &sorted,
                           return b.order_label == OrderLabel::kDocTitle;
                         });
   for (auto &b : unsorted) {
-    match_unsorted_block(b, sorted, text_line_width);
+    match_unsorted_block(b, sorted, text_line_width, direction, layout);
   }
   unsorted.clear();
 }
